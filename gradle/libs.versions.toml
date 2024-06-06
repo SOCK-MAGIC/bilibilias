@@ -113,7 +113,7 @@ gsyvideoplayer-java = { module = "com.github.CarGuo.GSYVideoPlayer:gsyVideoPlaye
 
 tencent-bugly = { module = "com.tencent.bugly:crashreport", version.ref = "tencentBugly" }
 umeng-common = { module = "com.umeng.umsdk:common", version = "9.7.2" }
-umeng-asms = { module = "com.umeng.umsdk:asms", version = "1.8.2" }
+umeng-asms = { module = "com.umeng.umsdk:asms", version = "1.8.3" }
 umeng-abtest = { module = "com.umeng.umsdk:abtest", version = "1.0.1" }
 
 decompose = { module = "com.arkivanov.decompose:decompose", version.ref = "decompose" }
