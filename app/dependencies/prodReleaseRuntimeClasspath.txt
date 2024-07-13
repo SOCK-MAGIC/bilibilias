@@ -257,10 +257,10 @@ io.github.alexzhirkevich:qrose-android:1.0.1
 io.github.alexzhirkevich:qrose-core-android:1.0.1
 io.github.alexzhirkevich:qrose-core:1.0.1
 io.github.alexzhirkevich:qrose:1.0.1
-io.github.dokar3:sheets-core-android:0.6.0-alpha03
-io.github.dokar3:sheets-core:0.6.0-alpha03
-io.github.dokar3:sheets-m3-android:0.6.0-alpha03
-io.github.dokar3:sheets-m3:0.6.0-alpha03
+io.github.dokar3:sheets-core-android:0.6.0-alpha05
+io.github.dokar3:sheets-core:0.6.0-alpha05
+io.github.dokar3:sheets-m3-android:0.6.0-alpha05
+io.github.dokar3:sheets-m3:0.6.0-alpha05
 io.github.dokar3:sonner-android:0.3.8
 io.github.dokar3:sonner:0.3.8
 io.github.leavesczy:monitor-no-op:1.8.1
@@ -294,7 +294,7 @@ io.ktor:ktor-websockets:2.3.12
 javax.inject:javax.inject:1
 org.brotli:dec:0.1.2
 org.jetbrains.compose.foundation:foundation:1.6.11
-org.jetbrains.compose.material3:material3:1.6.10
+org.jetbrains.compose.material3:material3:1.6.11
 org.jetbrains.compose.runtime:runtime:1.6.11
 org.jetbrains.compose.ui:ui:1.6.11
 org.jetbrains.kotlin:kotlin-android-extensions-runtime:1.9.22
