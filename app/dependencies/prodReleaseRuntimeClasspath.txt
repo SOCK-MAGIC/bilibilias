@@ -259,10 +259,10 @@ io.github.dokar3:sheets-m3:0.6.0-alpha03
 io.github.dokar3:sonner-android:0.3.8
 io.github.dokar3:sonner:0.3.8
 io.github.leavesczy:monitor-no-op:1.8.1
-io.github.vinceglb:filekit-compose-android:0.7.0
-io.github.vinceglb:filekit-compose:0.7.0
-io.github.vinceglb:filekit-core-android:0.7.0
-io.github.vinceglb:filekit-core:0.7.0
+io.github.vinceglb:filekit-compose-android:0.8.0
+io.github.vinceglb:filekit-compose:0.8.0
+io.github.vinceglb:filekit-core-android:0.8.0
+io.github.vinceglb:filekit-core:0.8.0
 io.github.youth5201314:banner:2.2.3
 io.ktor:ktor-client-content-negotiation-jvm:2.3.12
 io.ktor:ktor-client-content-negotiation:2.3.12
@@ -299,10 +299,10 @@ org.jetbrains.compose.ui:ui:1.6.11
 org.jetbrains.kotlin:kotlin-android-extensions-runtime:1.9.22
 org.jetbrains.kotlin:kotlin-bom:1.8.22
 org.jetbrains.kotlin:kotlin-parcelize-runtime:1.9.22
-org.jetbrains.kotlin:kotlin-stdlib-common:2.0.0
+org.jetbrains.kotlin:kotlin-stdlib-common:2.0.10
 org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.0
 org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.0
-org.jetbrains.kotlin:kotlin-stdlib:2.0.0
+org.jetbrains.kotlin:kotlin-stdlib:2.0.10
 org.jetbrains.kotlinx:atomicfu-jvm:0.25.0
 org.jetbrains.kotlinx:atomicfu:0.25.0
 org.jetbrains.kotlinx:kotlinx-collections-immutable-jvm:0.3.7
