@@ -69,7 +69,7 @@ startupRuntime = "1.2.0"
 striktCore = "0.35.1"
 turbine = "1.1.0"
 truth = "1.4.4"
-urlencoderLib = "1.5.0"
+urlencoderLib = "1.6.0"
 [libraries]
 android-desugarJdkLibs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "androidDesugarJdkLibs" }
 androidx-annotation = { group = "androidx.annotation", name = "annotation", version.ref = "androidxAnnotation" }
