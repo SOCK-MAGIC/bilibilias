@@ -44,7 +44,7 @@ jobs:
         run: yes | sdkmanager --licenses || true
 
       - name: Build all build type and flavor permutations
-        run: ./gradlew :app:assembleDebug
+        run: ./gradlew :app:assemble
 
       - name: Upload build outputs (APKs)
         uses: actions/upload-artifact@v4
