@@ -30,7 +30,6 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -351,7 +350,7 @@ private fun LazyGridScope.onboarding(
         SearchResultUiState.Loading,
         SearchResultUiState.LoadFailed,
         SearchResultUiState.EmptyQuery,
-            -> Unit
+        -> Unit
 
         is SearchResultUiState.Success -> {
             items(12) {
