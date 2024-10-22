@@ -92,7 +92,7 @@ fun Bitmap.addWhiteBorder(borderSize: Int): Bitmap {
     val bmpWithBorder = Bitmap.createBitmap(
         getWidth() + borderSize * 2,
         getHeight() + borderSize * 2,
-        getConfig(),
+        getConfig() ?: Bitmap.Config.ARGB_8888,
     )
     val canvas = Canvas(bmpWithBorder)
     canvas.drawColor(Color.WHITE)
