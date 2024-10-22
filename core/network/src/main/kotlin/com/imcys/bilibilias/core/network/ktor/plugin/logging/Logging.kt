@@ -15,8 +15,6 @@ import io.ktor.client.statement.HttpReceivePipeline
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.HttpResponseContainer
 import io.ktor.client.statement.HttpResponsePipeline
-import io.ktor.client.statement.content
-import io.ktor.client.statement.readRawBytes
 import io.ktor.http.HttpHeaders
 import io.ktor.http.Url
 import io.ktor.http.charset
@@ -33,7 +31,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-private val ClientJsonAwareCallLogger = AttributeKey<HttpClientJsonAwareCallLogger>("JsonAwareCallLogger")
+private val ClientJsonAwareCallLogger =
+    AttributeKey<HttpClientJsonAwareCallLogger>("JsonAwareCallLogger")
 private val DisableJsonAwareLogging = AttributeKey<Unit>("DisableJsonAwareLogging")
 
 /**
@@ -89,7 +88,8 @@ public val JsonAwareLogging: ClientPlugin<JsonAwareLoggingConfig> =
         val filters: List<(HttpRequestBuilder) -> Boolean> = pluginConfig.filters
         val sanitizedHeaders: List<SanitizedHeader> = pluginConfig.sanitizedHeaders
 
-        fun shouldBeLogged(request: HttpRequestBuilder): Boolean = filters.isEmpty() || filters.any { it(request) }
+        fun shouldBeLogged(request: HttpRequestBuilder): Boolean =
+            filters.isEmpty() || filters.any { it(request) }
 
         @OptIn(DelicateCoroutinesApi::class)
         suspend fun logRequestBody(
@@ -149,7 +149,10 @@ public val JsonAwareLogging: ClientPlugin<JsonAwareLoggingConfig> =
                         .firstOrNull { it.predicate(HttpHeaders.ContentType) }
                         ?.placeholder
                     content.contentLength?.let {
-                        logHeader(HttpHeaders.ContentLength, contentLengthPlaceholder ?: it.toString())
+                        logHeader(
+                            HttpHeaders.ContentLength,
+                            contentLengthPlaceholder ?: it.toString(),
+                        )
                     }
                     content.contentType?.let {
                         logHeader(HttpHeaders.ContentType, contentTypePlaceholder ?: it.toString())
@@ -197,7 +200,10 @@ public val JsonAwareLogging: ClientPlugin<JsonAwareLoggingConfig> =
         }
 
         on(ResponseHook) { response ->
-            if (level == JsonAwareLogLevel.NONE || response.call.attributes.contains(DisableJsonAwareLogging)) return@on
+            if (level == JsonAwareLogLevel.NONE || response.call.attributes.contains(
+                    DisableJsonAwareLogging,
+                )
+            ) return@on
 
             val callLogger = response.call.attributes[ClientJsonAwareCallLogger]
             val header = StringBuilder()
@@ -238,7 +244,10 @@ public val JsonAwareLogging: ClientPlugin<JsonAwareLoggingConfig> =
 
         @OptIn(InternalAPI::class)
         val observer: ResponseHandler = observer@{
-            if (level == JsonAwareLogLevel.NONE || it.call.attributes.contains(DisableJsonAwareLogging)) {
+            if (level == JsonAwareLogLevel.NONE || it.call.attributes.contains(
+                    DisableJsonAwareLogging,
+                )
+            ) {
                 return@observer
             }
 
@@ -270,7 +279,8 @@ internal class SanitizedHeader(
     val predicate: (String) -> Boolean,
 )
 
-private object ResponseHook : ClientHook<suspend ResponseHook.Context.(response: HttpResponse) -> Unit> {
+private object ResponseHook :
+    ClientHook<suspend ResponseHook.Context.(response: HttpResponse) -> Unit> {
     class Context(private val context: PipelineContext<HttpResponse, Unit>) {
         suspend fun proceed() = context.proceed()
     }
@@ -285,7 +295,8 @@ private object ResponseHook : ClientHook<suspend ResponseHook.Context.(response:
     }
 }
 
-private object SendHook : ClientHook<suspend SendHook.Context.(response: HttpRequestBuilder) -> Unit> {
+private object SendHook :
+    ClientHook<suspend SendHook.Context.(response: HttpRequestBuilder) -> Unit> {
     class Context(private val context: PipelineContext<Any, HttpRequestBuilder>) {
         suspend fun proceedWith(content: Any) = context.proceedWith(content)
     }
@@ -300,7 +311,8 @@ private object SendHook : ClientHook<suspend SendHook.Context.(response: HttpReq
     }
 }
 
-private object ReceiveHook : ClientHook<suspend ReceiveHook.Context.(call: HttpClientCall) -> Unit> {
+private object ReceiveHook :
+    ClientHook<suspend ReceiveHook.Context.(call: HttpClientCall) -> Unit> {
     class Context(private val context: PipelineContext<HttpResponseContainer, HttpClientCall>) {
         suspend fun proceed() = context.proceed()
     }
