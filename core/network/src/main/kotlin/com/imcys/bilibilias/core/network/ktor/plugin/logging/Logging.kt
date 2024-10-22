@@ -200,10 +200,11 @@ public val JsonAwareLogging: ClientPlugin<JsonAwareLoggingConfig> =
         }
 
         on(ResponseHook) { response ->
-            if (level == JsonAwareLogLevel.NONE || response.call.attributes.contains(
-                    DisableJsonAwareLogging,
-                )
-            ) return@on
+            if (level == JsonAwareLogLevel.NONE ||
+                response.call.attributes.contains(DisableJsonAwareLogging)
+            ) {
+                return@on
+            }
 
             val callLogger = response.call.attributes[ClientJsonAwareCallLogger]
             val header = StringBuilder()
@@ -244,9 +245,8 @@ public val JsonAwareLogging: ClientPlugin<JsonAwareLoggingConfig> =
 
         @OptIn(InternalAPI::class)
         val observer: ResponseHandler = observer@{
-            if (level == JsonAwareLogLevel.NONE || it.call.attributes.contains(
-                    DisableJsonAwareLogging,
-                )
+            if (level == JsonAwareLogLevel.NONE ||
+                it.call.attributes.contains(DisableJsonAwareLogging)
             ) {
                 return@observer
             }
