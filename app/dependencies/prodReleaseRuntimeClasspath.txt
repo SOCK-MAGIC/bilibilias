@@ -114,7 +114,6 @@ androidx.localbroadcastmanager:localbroadcastmanager:1.0.0
 androidx.media3:media3-common:1.4.1
 androidx.media3:media3-container:1.4.1
 androidx.media3:media3-database:1.4.1
-androidx.media3:media3-datasource-okhttp:1.4.1
 androidx.media3:media3-datasource:1.4.1
 androidx.media3:media3-decoder:1.4.1
 androidx.media3:media3-exoplayer:1.4.1
