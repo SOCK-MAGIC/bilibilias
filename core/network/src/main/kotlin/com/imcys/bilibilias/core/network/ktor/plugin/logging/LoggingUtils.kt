@@ -10,6 +10,7 @@ import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.charsets.Charset
 import io.ktor.utils.io.charsets.Charsets
 import io.ktor.utils.io.core.readText
+import io.ktor.utils.io.readRemaining
 
 internal fun Appendable.logHeaders(
     headers: Set<Map.Entry<String, List<String>>>,

@@ -7,6 +7,8 @@ import io.ktor.client.request.parameter
 import io.ktor.client.statement.bodyAsChannel
 import io.ktor.util.Deflate
 import io.ktor.utils.io.core.readBytes
+import io.ktor.utils.io.readRemaining
+import kotlinx.io.readByteArray
 import javax.inject.Inject
 
 class DanmakuRepository @Inject constructor(
@@ -16,11 +18,9 @@ class DanmakuRepository @Inject constructor(
         val response = client.get(BilibiliApi.DM_REAL_TIME) {
             parameter("oid", cid)
         }.bodyAsChannel()
-        val channel = with(client) {
-            with(Deflate) {
-                decode(response)
-            }
+        val channel = with(Deflate) {
+            decode(response)
         }
-        return channel.readRemaining().readBytes()
+        return channel.readRemaining().readByteArray()
     }
 }

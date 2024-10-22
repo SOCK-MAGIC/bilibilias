@@ -5,7 +5,6 @@ import io.ktor.util.copyToBoth
 import io.ktor.utils.io.ByteChannel
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.ByteWriteChannel
-import io.ktor.utils.io.close
 import io.ktor.utils.io.writeFully
 import io.ktor.utils.io.writer
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -16,7 +15,7 @@ internal suspend fun OutgoingContent.observe(log: ByteWriteChannel): OutgoingCon
     when (this) {
         is OutgoingContent.ByteArrayContent -> {
             log.writeFully(bytes())
-            log.close()
+            log.flushAndClose()
             this
         }
         is OutgoingContent.ReadChannelContent -> {
@@ -32,7 +31,7 @@ internal suspend fun OutgoingContent.observe(log: ByteWriteChannel): OutgoingCon
             JsonAwareLoggedContent(this, responseChannel)
         }
         else -> {
-            log.close()
+            log.flushAndClose()
             this
         }
     }

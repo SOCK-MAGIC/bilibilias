@@ -1,4 +1,4 @@
-﻿package com.imcys.bilibilias.core.network.ktor
+package com.imcys.bilibilias.core.network.ktor
 
 import com.imcys.bilibilias.core.datastore.AsCookieStoreDataSource
 import com.imcys.bilibilias.core.datastore.UsersDataSource
@@ -22,11 +22,14 @@ class AsCookiesStorage @Inject constructor(
         if (cookie.name == "SESSDATA") usersDataSource.setLoginState(true)
     }
 
-    override suspend fun get(requestUrl: Url): List<KtorCookie> = asCookieStoreDataSource.cookies.first().values.map(AsCookie::mapToKtorCookie)
+    override suspend fun get(requestUrl: Url): List<KtorCookie> = asCookieStoreDataSource.cookies.first().values.map(
+        AsCookie::mapToKtorCookie
+    )
 
     override fun close() = Unit
 }
 
+@Deprecated("io.ktor.http.Cookie is Serializable")
 private fun AsCookie.mapToKtorCookie() =
     KtorCookie(
         name,
@@ -40,6 +43,7 @@ private fun AsCookie.mapToKtorCookie() =
         httpOnly,
     )
 
+@Deprecated("io.ktor.http.Cookie is Serializable")
 private fun KtorCookie.mapToAsCookie() = AsCookie(
     name,
     value,

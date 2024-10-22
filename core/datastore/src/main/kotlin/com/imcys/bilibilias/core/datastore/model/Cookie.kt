@@ -9,7 +9,7 @@ data class AsCookieStore(val cookies: Map<String, Cookie> = emptyMap())
 public data class Cookie(
     val name: String,
     val value: String,
-    val maxAge: Int = 0,
+    val maxAge: Int? = null,
     val timestamp: Long? = null,
     val domain: String? = null,
     val path: String? = null,

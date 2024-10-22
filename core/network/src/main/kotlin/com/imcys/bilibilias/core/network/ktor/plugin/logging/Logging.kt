@@ -15,16 +15,18 @@ import io.ktor.client.statement.HttpReceivePipeline
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.HttpResponseContainer
 import io.ktor.client.statement.HttpResponsePipeline
+import io.ktor.client.statement.content
+import io.ktor.client.statement.readRawBytes
 import io.ktor.http.HttpHeaders
 import io.ktor.http.Url
 import io.ktor.http.charset
 import io.ktor.http.content.OutgoingContent
 import io.ktor.http.contentType
 import io.ktor.util.AttributeKey
-import io.ktor.util.InternalAPI
-import io.ktor.util.KtorDsl
 import io.ktor.util.pipeline.PipelineContext
 import io.ktor.utils.io.ByteChannel
+import io.ktor.utils.io.InternalAPI
+import io.ktor.utils.io.KtorDsl
 import io.ktor.utils.io.charsets.Charsets
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -244,7 +246,7 @@ public val JsonAwareLogging: ClientPlugin<JsonAwareLoggingConfig> =
             val log = StringBuilder()
 
             try {
-                logResponseBody(log, it.contentType(), it.content, logger)
+                logResponseBody(log, it.contentType(), it.rawContent, logger)
             } catch (_: Throwable) {
             } finally {
                 callLogger.logResponseBody(log.toString().trim())
