@@ -14,8 +14,6 @@ dependencies {
     implementation(projects.core.network)
     implementation(projects.core.database)
 
-    implementation(libs.androidx.media3.datasource.okhttp)
-
     implementation(libs.androidx.media3.common)
     // implementation(libs.androidx.media3.common.ktx)
     implementation(libs.androidx.media3.exoplayer)
