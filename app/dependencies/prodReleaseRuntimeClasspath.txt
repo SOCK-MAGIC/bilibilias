@@ -4,8 +4,8 @@ androidx.activity:activity:1.9.3
 androidx.annotation:annotation-experimental:1.4.1
 androidx.annotation:annotation-jvm:1.9.1
 androidx.annotation:annotation:1.9.1
-androidx.appcompat:appcompat-resources:1.6.1
-androidx.appcompat:appcompat:1.6.1
+androidx.appcompat:appcompat-resources:1.7.0
+androidx.appcompat:appcompat:1.7.0
 androidx.arch.core:core-common:2.2.0
 androidx.arch.core:core-runtime:2.2.0
 androidx.autofill:autofill:1.0.0
@@ -151,7 +151,7 @@ androidx.startup:startup-runtime:1.2.0
 androidx.tracing:tracing-ktx:1.3.0-alpha02
 androidx.tracing:tracing-perfetto:1.0.0
 androidx.tracing:tracing:1.3.0-alpha02
-androidx.transition:transition:1.4.1
+androidx.transition:transition:1.5.0
 androidx.vectordrawable:vectordrawable-animated:1.1.0
 androidx.vectordrawable:vectordrawable:1.1.0
 androidx.versionedparcelable:versionedparcelable:1.1.1
@@ -198,7 +198,7 @@ com.github.skydoves:flexible-core:0.1.5
 com.goncalossilva:murmurhash-jvm:0.4.0
 com.goncalossilva:murmurhash:0.4.0
 com.google.accompanist:accompanist-drawablepainter:0.32.0
-com.google.android.material:material:1.11.0
+com.google.android.material:material:1.12.0
 com.google.code.findbugs:jsr305:3.0.2
 com.google.dagger:dagger-lint-aar:2.53
 com.google.dagger:dagger:2.53
@@ -223,7 +223,7 @@ io.coil-kt:coil-video:2.7.0
 io.coil-kt:coil:2.7.0
 io.github.aakira:napier-android:2.7.1
 io.github.aakira:napier:2.7.1
-io.github.afkt:DevAppX:2.4.6
+io.github.afkt:DevAppX:2.4.7
 io.github.alexzhirkevich:qrose-android:1.0.1
 io.github.alexzhirkevich:qrose-core-android:1.0.1
 io.github.alexzhirkevich:qrose-core:1.0.1
