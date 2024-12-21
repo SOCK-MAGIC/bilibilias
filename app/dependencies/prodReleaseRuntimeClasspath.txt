@@ -200,10 +200,10 @@ com.goncalossilva:murmurhash:0.4.0
 com.google.accompanist:accompanist-drawablepainter:0.32.0
 com.google.android.material:material:1.11.0
 com.google.code.findbugs:jsr305:3.0.2
-com.google.dagger:dagger-lint-aar:2.53
-com.google.dagger:dagger:2.53
-com.google.dagger:hilt-android:2.53
-com.google.dagger:hilt-core:2.53
+com.google.dagger:dagger-lint-aar:2.53.1
+com.google.dagger:dagger:2.53.1
+com.google.dagger:hilt-android:2.53.1
+com.google.dagger:hilt-core:2.53.1
 com.google.errorprone:error_prone_annotations:2.15.0
 com.google.guava:failureaccess:1.0.2
 com.google.guava:guava:33.3.1-android
