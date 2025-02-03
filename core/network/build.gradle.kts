@@ -37,6 +37,6 @@ dependencies {
     implementation(libs.androidx.paging.compose)
     testImplementation(libs.androidx.paging.common)
 
-    implementation("commons-codec:commons-codec:1.17.1")
+    implementation("commons-codec:commons-codec:1.18.0")
     implementation("com.goncalossilva:murmurhash:0.4.0")
 }
