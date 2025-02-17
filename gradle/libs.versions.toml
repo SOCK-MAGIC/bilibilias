@@ -1,5 +1,5 @@
 [versions]
-androidGradlePlugin = "8.8.0"
+androidGradlePlugin = "8.8.1"
 androidTools = "31.8.0"
 androidxTracing = "1.3.0-alpha02"
 androidxMacroBenchmark = "1.3.3"
