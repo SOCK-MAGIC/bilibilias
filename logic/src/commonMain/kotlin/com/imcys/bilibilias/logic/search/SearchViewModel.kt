@@ -63,7 +63,7 @@ class SearchViewModel(
                             is Success -> {
                                 val data = result.data
                                 if (data == null) {
-                                    SearchResultUiState.Error("解析失败")
+                                    SearchResultUiState.LoadFailed("解析失败")
                                 } else {
                                     SearchResultUiState.Success(
                                         episodeCacheListState = data,
@@ -73,7 +73,7 @@ class SearchViewModel(
                                 }
                             }
 
-                            is Error -> SearchResultUiState.Error(
+                            is Error -> SearchResultUiState.LoadFailed(
                                 result.exception.message ?: "Unknown error"
                             )
 

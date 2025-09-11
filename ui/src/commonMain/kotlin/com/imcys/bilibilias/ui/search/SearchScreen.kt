@@ -7,14 +7,18 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -40,6 +44,7 @@ import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.imcys.bilibilias.core.domain.model.EpisodeCacheRequest
 import com.imcys.bilibilias.core.domain.model.EpisodeCacheState
@@ -75,16 +80,16 @@ fun SearchScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchContent(
+internal fun SearchContent(
     searchQuery: String,
     searchResultUiState: SearchResultUiState,
     selfInfoUiState: SelfInfoUiState,
-    onSearchQueryChanged: (String) -> Unit,
-    onLogout: () -> Unit,
-    onCacheRequest: (request: EpisodeCacheRequest) -> Unit,
-    navigationToLogin: () -> Unit,
-    navigationToPlayer: () -> Unit,
-    navigationToSettings: () -> Unit,
+    onSearchQueryChanged: (String) -> Unit = {},
+    onLogout: () -> Unit = {},
+    onCacheRequest: (request: EpisodeCacheRequest) -> Unit = {},
+    navigationToLogin: () -> Unit = {},
+    navigationToPlayer: () -> Unit = {},
+    navigationToSettings: () -> Unit = {},
 ) {
     Scaffold(
         topBar = {
@@ -111,21 +116,54 @@ fun SearchContent(
             )
             when (searchResultUiState) {
                 SearchResultUiState.EmptyQuery -> {}
-                SearchResultUiState.LoadFailed -> {
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text("LoadFailed")
-                    }
-                }
 
                 SearchResultUiState.Loading -> {
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text("Loading")
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            text = "加载中...",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
                     }
                 }
 
-                is SearchResultUiState.Error -> {
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text(searchResultUiState.message)
+                is SearchResultUiState.LoadFailed -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize().padding(16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.ErrorOutline,
+                                contentDescription = "错误",
+                                tint = MaterialTheme.colorScheme.error
+                            )
+                            Text(
+                                text = "糟糕，出错了！",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = searchResultUiState.message,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                textAlign = TextAlign.Center
+                            )
+                            Button(
+                                onClick = {
+                                    onSearchQueryChanged("")
+                                }
+                            ) {
+                                Text("清空搜索框")
+                            }
+                        }
                     }
                 }
 
@@ -293,22 +331,12 @@ private fun SearchTextField(
     )
 }
 
-@Preview
+@Preview(name = "SearchContent - Load Failed State")
 @Composable
-fun PreviewContent() {
-//    SearchContent(
-//        "haha",
-//        SearchResultUiState.Success(
-//            aid = 0,
-//            bvid = "",
-//            desc = "",
-//            cover = "",
-//            title = "title",
-//            ownerId = 0,
-//            ownerFace = "",
-//            ownerName = "name"
-//        ),
-//        onSearchQueryChanged = {},
-//        onDownloadItemClick = { _, _, _ -> }
-//    )
+fun SearchContentLoadFailedPreview() {
+    SearchContent(
+        searchQuery = "a very long search query that might cause issues",
+        searchResultUiState = SearchResultUiState.LoadFailed("Unable to connect to the server. Please check your internet connection."),
+        selfInfoUiState = SelfInfoUiState.Loading,
+    )
 }
