@@ -90,9 +90,11 @@ class SearchViewModel(
     fun onSearchQueryChanged(query: String) {
         savedStateHandle[SEARCH_QUERY] = query
     }
+
     fun restartSearch() {
         restarter.restart()
     }
+
     fun onLogout() {
         applicationScope.launch {
             api.exit()
@@ -139,7 +141,11 @@ class SearchViewModel(
         }
     }
 
-    private fun getSampleSearchQueries() = listOf("BV1qW4y1k7yh")
+    private fun getSampleSearchQueries() = listOf(
+        "BV1qW4y1k7yh",
+        "【ASMR冥想练习｜近耳环绕｜温柔女声｜432Hz钵音-哔哩哔哩】 https://b23.tv/hKIgi5E",
+        "【《牧神记》 第1话 天黑别出门-哔哩哔哩国创】https://b23.tv/ep836727"
+    )
 }
 
 internal expect val SEARCH_QUERY: String
