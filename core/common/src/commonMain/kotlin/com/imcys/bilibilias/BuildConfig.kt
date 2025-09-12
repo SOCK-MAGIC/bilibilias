@@ -12,7 +12,7 @@ object BuildConfig {
 
     val DEBUG: Boolean = BuildKonfig.debugBuild
 
-    val LOG_DIR: Path = PlatformFile(FileKit.filesDir, "log").toKotlinxIoPath()
+    val LOG_DIR: Path = PlatformFile(FileKit.filesDir, "logs").toKotlinxIoPath()
     val DATASTORE_DIR: Path = PlatformFile(FileKit.filesDir, "datastore").toKotlinxIoPath()
     val MEDIA_DOWNLOAD: Path = PlatformFile(FileKit.filesDir, "media-download").toKotlinxIoPath()
 }
