@@ -15,7 +15,7 @@ data class VideoPlaybackInfo(
     @SerialName("dash")
     val dash: Dash? = null,
     @SerialName("durl")
-    val durl: List<Durl>?,
+    val durl: List<Durl>? = null,
     @SerialName("format")
     val format: String,
     @SerialName("from")
