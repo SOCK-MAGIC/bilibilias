@@ -30,6 +30,7 @@ import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,7 +39,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.imcys.bilibilias.core.domain.model.CacheEpisodeState
 import com.imcys.bilibilias.core.model.DataUnit
 import com.imcys.bilibilias.logic.cache.CacheViewModel
@@ -48,7 +48,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun CacheScreen(
     cacheViewModel: CacheViewModel = koinViewModel()
 ) {
-    val state by cacheViewModel.stateFlow.collectAsStateWithLifecycle()
+    val state by cacheViewModel.stateFlow.collectAsState()
 
 //    val canMux by cacheViewModel.canProcess.collectAsStateWithLifecycle()
 
