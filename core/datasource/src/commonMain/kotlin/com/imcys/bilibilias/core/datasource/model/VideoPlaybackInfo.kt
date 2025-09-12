@@ -13,7 +13,9 @@ data class VideoPlaybackInfo(
     @SerialName("accept_quality")
     val acceptQuality: List<Int>,
     @SerialName("dash")
-    val dash: Dash,
+    val dash: Dash? = null,
+    @SerialName("durl")
+    val durl: List<Durl>?,
     @SerialName("format")
     val format: String,
     @SerialName("from")
@@ -57,6 +59,7 @@ data class VideoPlaybackInfo(
             flac?.audio?.let { add(it) }
             dolby.audio?.let { addAll(it) }
         }
+
         @Serializable
         data class Dolby(
             @SerialName("audio")
@@ -72,7 +75,7 @@ data class VideoPlaybackInfo(
         @Serializable
         data class SupportFormat(
             @SerialName("codecs")
-            val codecs: List<String>,
+            val codecs: List<String>?,
             @SerialName("display_desc")
             val displayDesc: String,
             @SerialName("format")
@@ -85,6 +88,20 @@ data class VideoPlaybackInfo(
             val superscript: String,
         )
     }
+
+    @Serializable
+    data class Durl(
+        @SerialName("backup_url")
+        val backupUrl: List<String>,
+        @SerialName("length")
+        val length: Int,
+        @SerialName("order")
+        val order: Int,
+        @SerialName("size")
+        val size: Int,
+        @SerialName("url")
+        val url: String,
+    )
 
     @Serializable
     data class AudioOrVideo(

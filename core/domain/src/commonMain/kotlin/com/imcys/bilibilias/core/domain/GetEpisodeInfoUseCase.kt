@@ -75,36 +75,46 @@ class GetEpisodeInfoUseCase(
         bvid: String,
         cid: Long
     ): Pair<List<MediaStream>, List<MediaStream>> {
-        val playUrl = api.getPlayUrl(bvid, cid)
+        val playUrlResponse = api.getPlayUrl(bvid, cid)
         // 后端发送过来的所有画质选项
         val backendQualityDescriptions =
-            playUrl.acceptQuality.zip(playUrl.acceptDescription).toMap()
+            playUrlResponse.acceptQuality.zip(playUrlResponse.acceptDescription).toMap()
 
         // 可以播放的画质选项
-        val dash = playUrl.dash
-        dash.video.map { it.id }.toSet()
-        val videoStreams = dash.video.mapNotNull { video ->
-            val qualityDescription = backendQualityDescriptions[video.id]
-            if (qualityDescription == null) {
-                logger.warn { "Missing description for video quality ID: ${video.id}" }
-                null
-            } else {
-                MediaStream(
-                    id = video.id,
-                    description = qualityDescription
-                )
+        val dash = playUrlResponse.dash
+        if (dash != null) {
+            val videoStreams = dash.video.mapNotNull { video ->
+                val qualityDescription = backendQualityDescriptions[video.id]
+                if (qualityDescription == null) {
+                    logger.warn { "Missing description for video quality ID: ${video.id}" }
+                    null
+                } else {
+                    MediaStream(
+                        id = video.id,
+                        description = qualityDescription
+                    )
+                }
             }
-        }
-        val audioStreams = dash.combinedAudioSources.mapNotNull { audioQuality ->
-            val quality = AudioQuality.fromCode(audioQuality.id)
-            quality?.let {
+            val audioStreams = dash.combinedAudioSources.mapNotNull { audioQuality ->
+                val quality = AudioQuality.fromCode(audioQuality.id)
+                quality?.let {
+                    MediaStream(
+                        id = it.code,
+                        description = it.description
+                    )
+                }
+            }.sortedByDescending { it.id }
+            return videoStreams to audioStreams
+        } else if (playUrlResponse.durl != null) {
+            val stream = listOf(
                 MediaStream(
-                    id = it.code,
-                    description = it.description
+                    id = Int.MAX_VALUE,
+                    description = "Default Quality"
                 )
-            }
-        }.sortedByDescending { it.id }
-        return videoStreams to audioStreams
+            )
+
+            return stream to stream
+        } else throw MissingMediaStreamException("No DASH or DURL streams found for bvid: $bvid, cid: $cid")
     }
 
     private fun BiliVideoData.toEpisodeInfo(): EpisodeInfo2 {
@@ -115,3 +125,5 @@ class GetEpisodeInfoUseCase(
         )
     }
 }
+
+class MissingMediaStreamException(override val message: String?) : Exception()
