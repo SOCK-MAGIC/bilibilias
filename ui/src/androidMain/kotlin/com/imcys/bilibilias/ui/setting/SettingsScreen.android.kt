@@ -27,7 +27,7 @@ internal actual fun ShareLogFile() {
             Intent.EXTRA_STREAM,
             FileProvider.getUriForFile(
                 context,
-                "${context.applicationInfo.packageName}.fileprovider",
+                "${BuildConfig.APPLICATION_ID}.fileprovider",
                 getCurrentLogFile().toFile(),
             ),
         )
