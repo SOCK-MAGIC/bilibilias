@@ -26,7 +26,46 @@ class GetEpisodeInfoUseCase(
             is TextExtraction.MatchResult.Bv -> bv(result.id)
             is TextExtraction.MatchResult.Av -> TODO()
             is TextExtraction.MatchResult.Http -> fetchEpisodesViaRedirect(result.text)
+            is TextExtraction.MatchResult.Ep -> ep(result.id)
             TextExtraction.MatchResult.Empty -> flowOf(null)
+        }
+    }
+
+    private fun ep(id: String): Flow<EpisodeCacheListState?> {
+        val seasonDetails = flowFromSuspend { api.getSeasonDetailsByEpisodeId(id) }
+
+        return seasonDetails.combine(mediaCacheStorage.listFlow) { detail, cachedItemsList ->
+            val episodeBvids = detail.episodes.map { it.bvid }.toSet()
+
+            val cachedItemsByCid = mediaCacheStorage.listFlow.first()
+                .filter { cachedItem -> cachedItem.origin.bvid in episodeBvids }
+                .associateBy { it.origin.cid }
+
+            val states = detail.episodes.mapIndexed { index, episode ->
+                val cid = episode.cid
+                val cacheStatus = if (cachedItemsByCid.containsKey(cid)) {
+                    EpisodeCacheStatus.Cached
+                } else {
+                    EpisodeCacheStatus.NotCached
+                }
+                EpisodeCacheState(
+                    episodeId = episode.bvid,
+                    episodeSubId = cid,
+                    index = episode.title.toIntOrNull() ?: (index + 1),
+                    title = episode.showTitle,
+                    cacheStatus = cacheStatus,
+                )
+            }
+            EpisodeCacheListState(
+                episodeInfo = EpisodeInfo2(
+                    title = detail.seasonTitle,
+                    desc = detail.evaluate,
+                    cover = detail.cover
+                ),
+                episodes = states,
+                videoStreams = listOf(MediaStream.Default),
+                audioStreams = listOf(MediaStream.Default),
+            )
         }
     }
 
@@ -106,12 +145,7 @@ class GetEpisodeInfoUseCase(
             }.sortedByDescending { it.id }
             return videoStreams to audioStreams
         } else if (playUrlResponse.durl != null) {
-            val stream = listOf(
-                MediaStream(
-                    id = Int.MAX_VALUE,
-                    description = "Default Quality"
-                )
-            )
+            val stream = listOf(MediaStream.Default)
 
             return stream to stream
         } else throw MissingMediaStreamException("No DASH or DURL streams found for bvid: $bvid, cid: $cid")

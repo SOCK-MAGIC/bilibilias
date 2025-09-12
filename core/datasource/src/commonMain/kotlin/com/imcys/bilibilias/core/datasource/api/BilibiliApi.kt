@@ -2,6 +2,7 @@ package com.imcys.bilibilias.core.datasource.api
 
 import com.imcys.bilibilias.core.datasource.model.BiliVideoData
 import com.imcys.bilibilias.core.datasource.model.BilibiliNavigationData
+import com.imcys.bilibilias.core.datasource.model.Season
 import com.imcys.bilibilias.core.datasource.model.UserProfile
 import com.imcys.bilibilias.core.datasource.model.VideoPlaybackInfo
 import com.imcys.bilibilias.core.datasource.utils.WbiSign
@@ -64,6 +65,12 @@ class BilibiliApi(
                 encodedParameters.appendAll(parseQueryString(signedQuery))
             }
         }.body<VideoPlaybackInfo>()
+    }
+
+    suspend fun getSeasonDetailsByEpisodeId(ep: String): Season {
+        return client.get("pgc/view/web/season") {
+            parameter("ep_id", ep)
+        }.body()
     }
 
     suspend fun getUserProfile(cookieText: String? = null): UserProfile {

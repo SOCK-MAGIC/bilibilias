@@ -24,7 +24,11 @@ data class EpisodeCacheState(
 data class MediaStream(
     val id: Int,
     val description: String,
-)
+) {
+    companion object {
+        val Default = MediaStream(Int.MAX_VALUE, "Default")
+    }
+}
 
 sealed interface EpisodeCacheStatus {
 
