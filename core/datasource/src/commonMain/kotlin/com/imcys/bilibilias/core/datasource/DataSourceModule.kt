@@ -16,6 +16,7 @@ import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.header
 import io.ktor.http.HttpHeaders
 import io.ktor.serialization.kotlinx.json.json
+import io.ktor.serialization.kotlinx.protobuf.protobuf
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -57,6 +58,7 @@ val DataSourceModule = module {
                 install(ApiResponseUnwrapper)
                 install(ContentNegotiation) {
                     json(HttpClientJson)
+                    protobuf()
                 }
                 BrowserUserAgent()
                 HttpLogging()
