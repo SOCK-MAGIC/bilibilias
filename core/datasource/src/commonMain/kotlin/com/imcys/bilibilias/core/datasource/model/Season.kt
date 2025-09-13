@@ -44,7 +44,7 @@ data class Season(
     @SerialName("payment")
     val payment: Payment,
     @SerialName("play_strategy")
-    val playStrategy: PlayStrategy,
+    val playStrategy: PlayStrategy? = null,
     @SerialName("positive")
     val positive: Positive,
     @SerialName("publish")
