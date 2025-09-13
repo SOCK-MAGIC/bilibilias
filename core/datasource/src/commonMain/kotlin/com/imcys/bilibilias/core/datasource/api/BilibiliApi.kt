@@ -67,6 +67,12 @@ class BilibiliApi(
         }.body<VideoPlaybackInfo>()
     }
 
+    suspend fun getSeasonDetailsBySeasonId(ss: String): Season {
+        return client.get("pgc/view/web/season") {
+            parameter("season_id", ss)
+        }.body()
+    }
+
     suspend fun getSeasonDetailsByEpisodeId(ep: String): Season {
         return client.get("pgc/view/web/season") {
             parameter("ep_id", ep)
