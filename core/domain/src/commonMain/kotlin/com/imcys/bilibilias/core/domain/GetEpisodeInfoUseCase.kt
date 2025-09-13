@@ -63,6 +63,7 @@ class GetEpisodeInfoUseCase(
                 EpisodeCacheState(
                     episodeId = episode.bvid,
                     episodeSubId = cid,
+                    episodeAliasId = episode.aid,
                     index = episode.title.toIntOrNull() ?: (index + 1),
                     title = episode.showTitle,
                     cacheStatus = cacheStatus,
@@ -108,6 +109,7 @@ class GetEpisodeInfoUseCase(
                 EpisodeCacheState(
                     episodeId = detail.bvid,
                     episodeSubId = cid,
+                    episodeAliasId = detail.aid,
                     index = page.page,
                     title = page.part,
                     cacheStatus = cacheStatus,

@@ -16,6 +16,7 @@ data class EpisodeInfo2(
 data class EpisodeCacheState(
     val episodeId: String,
     val episodeSubId: Long,
+    val episodeAliasId: Long,
     val title: String,
     val index: Int,
     val cacheStatus: EpisodeCacheStatus,
