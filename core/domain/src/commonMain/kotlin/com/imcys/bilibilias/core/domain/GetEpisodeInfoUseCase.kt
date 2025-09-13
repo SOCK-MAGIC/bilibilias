@@ -18,21 +18,33 @@ import kotlinx.coroutines.flow.flowOf
 
 class GetEpisodeInfoUseCase(
     private val mediaCacheStorage: MediaCacheDataSource,
+    private val getIdFromTextUseCase: GetIdFromTextUseCase,
     private val api: BilibiliApi,
 ) {
     private val logger = logger<GetEpisodeInfoUseCase>()
+
+    // curl 'https://api.bilibili.com/pgc/player/web/v2/playurl?avid=40452040&cid=29608643908&qn=127&fnver=0&fnval=4048&fourk=1'
+    //-b 'xxx'
+    //-H 'referer: https://www.bilibili.com'
     suspend operator fun invoke(query: String): Flow<EpisodeCacheListState?> {
-        return when (val result = TextExtraction.textExtract(query)) {
-            is TextExtraction.MatchResult.Bv -> bv(result.id)
-            is TextExtraction.MatchResult.Av -> TODO()
-            is TextExtraction.MatchResult.Http -> fetchEpisodesViaRedirect(result.text)
-            is TextExtraction.MatchResult.Ep -> ep(result.id)
-            TextExtraction.MatchResult.Empty -> flowOf(null)
+        return when (val result = getIdFromTextUseCase(query)) {
+            is GetIdFromTextUseCase.MatchResult.Bv -> bv(result.id)
+            is GetIdFromTextUseCase.MatchResult.Av -> TODO()
+            is GetIdFromTextUseCase.MatchResult.Http -> fetchEpisodesViaRedirect(result.text)
+            is GetIdFromTextUseCase.MatchResult.Ep -> ep(result.id, true)
+            is GetIdFromTextUseCase.MatchResult.Ss -> ep(result.id, false)
+            GetIdFromTextUseCase.MatchResult.Empty -> flowOf(null)
         }
     }
 
-    private fun ep(id: String): Flow<EpisodeCacheListState?> {
-        val seasonDetails = flowFromSuspend { api.getSeasonDetailsByEpisodeId(id) }
+    private fun ep(id: String, isEp: Boolean): Flow<EpisodeCacheListState?> {
+        val seasonDetails = flowFromSuspend {
+            if (isEp) {
+                api.getSeasonDetailsByEpisodeId(id)
+            } else {
+                api.getSeasonDetailsBySeasonId(id)
+            }
+        }
 
         return seasonDetails.combine(mediaCacheStorage.listFlow) { detail, cachedItemsList ->
             val episodeBvids = detail.episodes.map { it.bvid }.toSet()
