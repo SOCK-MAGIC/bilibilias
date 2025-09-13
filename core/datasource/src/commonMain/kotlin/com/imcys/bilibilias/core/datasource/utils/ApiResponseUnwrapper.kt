@@ -1,7 +1,7 @@
 package com.imcys.bilibilias.core.datasource.utils
 
+import com.imcys.bilibilias.core.datasource.json.HttpClientJson
 import com.imcys.bilibilias.core.datasource.model.Box
-import com.imcys.bilibilias.core.json.HttpClientJson
 import io.ktor.client.plugins.api.ClientPlugin
 import io.ktor.client.plugins.api.createClientPlugin
 import io.ktor.utils.io.jvm.javaio.toInputStream

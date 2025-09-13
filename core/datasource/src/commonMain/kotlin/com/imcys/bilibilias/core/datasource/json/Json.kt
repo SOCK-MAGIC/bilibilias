@@ -1,4 +1,4 @@
-package com.imcys.bilibilias.core.json
+package com.imcys.bilibilias.core.datasource.json
 
 import kotlinx.serialization.json.Json
 
