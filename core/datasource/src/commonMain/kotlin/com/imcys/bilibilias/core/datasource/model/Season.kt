@@ -171,7 +171,7 @@ data class Season(
         @SerialName("show_title")
         val showTitle: String,
         @SerialName("skip")
-        val skip: Skip,
+        val skip: Skip? = null,
         @SerialName("status")
         val status: Int,
         @SerialName("subtitle")
