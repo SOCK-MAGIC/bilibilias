@@ -3,7 +3,6 @@ import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 
 plugins {
     alias(libs.plugins.bilibilias.kmp.library)
-    alias(libs.plugins.bilibilias.compose)
     alias(libs.plugins.buildkonfig)
 }
 
@@ -14,15 +13,11 @@ kotlin {
             implementation(libs.androidx.core)
         }
         commonMain.dependencies {
-            api(compose.runtime)
-
             api(libs.androidx.datastore)
 
             api(libs.kotlinx.datetime)
             api(libs.kotlinx.io)
             api(libs.kotlinx.coroutines.core)
-
-            api(libs.kotlinx.serialization.json)
 
             api(libs.uri.kmp)
 
