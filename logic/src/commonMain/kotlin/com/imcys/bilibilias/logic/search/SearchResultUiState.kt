@@ -2,7 +2,7 @@ package com.imcys.bilibilias.logic.search
 
 import com.imcys.bilibilias.core.domain.model.EpisodeCacheListState
 import com.imcys.bilibilias.core.domain.model.EpisodeCacheState
-import com.imcys.bilibilias.core.domain.model.EpisodeInfo2
+import com.imcys.bilibilias.core.domain.model.EpisodeInfo
 
 sealed interface SearchResultUiState {
     data object Loading : SearchResultUiState
@@ -17,7 +17,7 @@ sealed interface SearchResultUiState {
     data class LoadFailed(val message: String) : SearchResultUiState
 
     data class Success(
-        val episodeInfo: EpisodeInfo2,
+        val episodeInfo: EpisodeInfo,
         val episodes: List<EpisodeCacheState>,
         val episodeCacheListState: EpisodeCacheListState,
     ) : SearchResultUiState
