@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.imcys.bilibilias.core.datastore.AsPreferencesDataSource
 import com.imcys.bilibilias.core.datastore.model.Codecs
+import com.imcys.bilibilias.core.datastore.model.Resolution
 import com.imcys.bilibilias.core.datastore.model.UserPreferences
 import com.imcys.bilibilias.logic.stateInViewModelScope
 import kotlinx.coroutines.launch
@@ -23,6 +24,17 @@ class SettingsViewModel(
     fun setDecoderCodecPriorityList(newCodecs: List<Codecs>) {
         viewModelScope.launch {
             asPreferencesDataSource.setDecoderCodecPriorityList(newCodecs)
+        }
+    }
+    fun setVideoResolutions(newResolutions: List<Resolution>) {
+        viewModelScope.launch {
+            asPreferencesDataSource.setVideoResolutions(newResolutions)
+        }
+    }
+
+    fun setAudioResolutions(newResolutions: List<Resolution>) {
+        viewModelScope.launch {
+            asPreferencesDataSource.setAudioResolutions(newResolutions)
         }
     }
 }

@@ -2,6 +2,7 @@ package com.imcys.bilibilias.core.datastore
 
 import androidx.datastore.core.DataStore
 import com.imcys.bilibilias.core.datastore.model.Codecs
+import com.imcys.bilibilias.core.datastore.model.Resolution
 import com.imcys.bilibilias.core.datastore.model.SelfInfo
 import com.imcys.bilibilias.core.datastore.model.UserPreferences
 import kotlin.uuid.ExperimentalUuidApi
@@ -24,6 +25,17 @@ class AsPreferencesDataSource(
     suspend fun setDecoderCodecPriorityList(newCodecs: List<Codecs>) {
         userPreferences.updateData {
             it.copy(codecPriorityList = newCodecs)
+        }
+    }
+    suspend fun setVideoResolutions(newResolutions: List<Resolution>) {
+        userPreferences.updateData {
+            it.copy(videoResolutions = newResolutions)
+        }
+    }
+
+    suspend fun setAudioResolutions(newResolutions: List<Resolution>) {
+        userPreferences.updateData {
+            it.copy(audioResolutions = newResolutions)
         }
     }
 }
