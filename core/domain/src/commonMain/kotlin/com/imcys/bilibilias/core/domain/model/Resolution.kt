@@ -19,12 +19,8 @@ class Resolution(val id: Int, val displayName: String) {
         val R720P = Resolution(64, "720P 准高清")
         val R480P = Resolution(32, "480P 标清")
         val R360P = Resolution(16, "360P 流畅")
-        fun values() = listOf(
-            R60A,
-            R132A,
-            R192A,
-            DolbyA,
-            HiRes,
+
+        val videoResolutions = listOf(
             R4320P,
             DolbyV,
             HDR,
@@ -37,6 +33,13 @@ class Resolution(val id: Int, val displayName: String) {
             R720P,
             R480P,
             R360P,
+        )
+        val audioResolutions = listOf(
+            R60A,
+            R132A,
+            R192A,
+            DolbyA,
+            HiRes,
         )
     }
 }
