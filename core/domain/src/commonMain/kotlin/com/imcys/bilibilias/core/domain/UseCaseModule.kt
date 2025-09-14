@@ -7,4 +7,6 @@ val UseCaseModule = module {
     singleOf(::GetCachedEpisodeStateUseCase)
     singleOf(::GetEpisodeInfoUseCase)
     singleOf(::MediaSourceSelectedUseCase)
+    singleOf(::GetIdFromTextUseCase)
+    singleOf(::GetDmUseCase)
 }
