@@ -11,13 +11,17 @@ import kotlinx.serialization.Serializable
 data class UserPreferences(
     val selfInfo: SelfInfo?,
     val enableTryLook: Boolean,
-    val codecPriorityList: List<Codecs>
+    val codecPriorityList: List<Codecs>,
+    val videoResolutions: List<Resolution>,
+    val audioResolutions: List<Resolution>,
 ) {
     companion object {
         val DEFAULT = UserPreferences(
             selfInfo = null,
             enableTryLook = false,
-            codecPriorityList = Codecs.entries
+            codecPriorityList = Codecs.entries,
+            videoResolutions = emptyList(),
+            audioResolutions = emptyList(),
         )
     }
 }
