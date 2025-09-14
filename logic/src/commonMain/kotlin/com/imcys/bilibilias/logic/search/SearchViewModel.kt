@@ -12,7 +12,6 @@ import com.imcys.bilibilias.core.datastore.model.MediaCachePartMetadata
 import com.imcys.bilibilias.core.domain.GetEpisodeInfoUseCase
 import com.imcys.bilibilias.core.domain.MediaSourceSelectedUseCase
 import com.imcys.bilibilias.core.domain.model.EpisodeCacheRequest
-import com.imcys.bilibilias.core.domain.model.EpisodeInfo
 import com.imcys.bilibilias.core.flow.FlowRestarter
 import com.imcys.bilibilias.core.flow.restartable
 import com.imcys.bilibilias.core.http.downloader.HttpDownloader
@@ -23,8 +22,6 @@ import com.imcys.bilibilias.core.result.Result.Success
 import com.imcys.bilibilias.core.result.asResult
 import com.imcys.bilibilias.logic.stateInViewModelScope
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -104,17 +101,18 @@ class SearchViewModel(
     }
 
     fun requestCache(request: EpisodeCacheRequest) {
+//        request.cacheState.episodeSubId
         applicationScope.launch {
-            val episodeInfo = mediaSourceSelectedUseCase(request)
-            val metadata = episodeInfo.asEpisodeMetadata()
-
-            mediaCacheStorage.cacheEpisodeMetadata(metadata)
-            episodeInfo.urls.map {
-                async {
-                    val downloadId = httpDownloader.download(it.backupUrl.random().url)
-                    cachePartMetadata(metadata, downloadId)
-                }
-            }.awaitAll()
+//            val episodeInfo = mediaSourceSelectedUseCase(request)
+//            val metadata = episodeInfo.asEpisodeMetadata()
+//
+//            mediaCacheStorage.cacheEpisodeMetadata(metadata)
+//            episodeInfo.urls.map {
+//                async {
+//                    val downloadId = httpDownloader.download(it.backupUrl.random().url)
+//                    cachePartMetadata(metadata, downloadId)
+//                }
+//            }.awaitAll()
         }
     }
 
@@ -125,13 +123,13 @@ class SearchViewModel(
         )
     }
 
-    fun EpisodeInfo.asEpisodeMetadata(): EpisodeMetadata {
-        return EpisodeMetadata(
-            bvid = bvid,
-            cid = cid,
-            title = title
-        )
-    }
+//    fun EpisodeInfo.asEpisodeMetadata(): EpisodeMetadata {
+//        return EpisodeMetadata(
+//            bvid = bvid,
+//            cid = cid,
+//            title = title
+//        )
+//    }
 
     private fun getDefaultSearchQuery(): String {
         return if (BuildConfig.DEBUG) {
