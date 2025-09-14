@@ -1,6 +1,5 @@
 package com.imcys.bilibilias.core.model
 
-
 data class FileStats(
     val totalSize: DataSize,
     /**
