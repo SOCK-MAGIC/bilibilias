@@ -2,13 +2,12 @@ package com.imcys.bilibilias.core.domain
 
 import com.imcys.bilibilias.core.datasource.api.BilibiliApi
 import com.imcys.bilibilias.core.datasource.model.BiliVideoData
+import com.imcys.bilibilias.core.datasource.model.Season
 import com.imcys.bilibilias.core.datastore.MediaCacheDataSource
-import com.imcys.bilibilias.core.datastore.model.AudioQuality
 import com.imcys.bilibilias.core.domain.model.EpisodeCacheListState
 import com.imcys.bilibilias.core.domain.model.EpisodeCacheState
 import com.imcys.bilibilias.core.domain.model.EpisodeCacheStatus
-import com.imcys.bilibilias.core.domain.model.EpisodeInfo2
-import com.imcys.bilibilias.core.domain.model.MediaStream
+import com.imcys.bilibilias.core.domain.model.EpisodeInfo
 import com.imcys.bilibilias.core.flow.flowFromSuspend
 import com.imcys.bilibilias.core.logging.logger
 import kotlinx.coroutines.flow.Flow
@@ -70,14 +69,8 @@ class GetEpisodeInfoUseCase(
                 )
             }
             EpisodeCacheListState(
-                episodeInfo = EpisodeInfo2(
-                    title = detail.seasonTitle,
-                    desc = detail.evaluate,
-                    cover = detail.cover
-                ),
+                episodeInfo = detail.toEpisodeInfo(),
                 episodes = states,
-                videoStreams = listOf(MediaStream.Default),
-                audioStreams = listOf(MediaStream.Default),
             )
         }
     }
@@ -88,12 +81,9 @@ class GetEpisodeInfoUseCase(
     }
 
     private fun bv(id: String): Flow<EpisodeCacheListState> {
-        val detailFlow = flowFromSuspend {
-            api.getVideoInfoDetail(id)
-        }
+        val detailFlow = flowFromSuspend { api.getVideoInfoDetail(id) }
 
         return detailFlow.combine(mediaCacheStorage.listFlow) { detail, cachedItemsList ->
-            val (videoStream, audioStream) = fetchMediaStreams(detail.bvid, detail.cid)
 
             val cachedItemsByCid = mediaCacheStorage.listFlow.first()
                 .filter { it.origin.bvid == detail.bvid }
@@ -118,60 +108,23 @@ class GetEpisodeInfoUseCase(
             EpisodeCacheListState(
                 episodeInfo = detail.toEpisodeInfo(),
                 episodes = states,
-                videoStreams = videoStream,
-                audioStreams = audioStream
             )
         }
     }
 
-    private suspend fun fetchMediaStreams(
-        bvid: String,
-        cid: Long
-    ): Pair<List<MediaStream>, List<MediaStream>> {
-        val playUrlResponse = api.getPlayUrl(bvid, cid)
-        // 后端发送过来的所有画质选项
-        val backendQualityDescriptions =
-            playUrlResponse.acceptQuality.zip(playUrlResponse.acceptDescription).toMap()
-
-        // 可以播放的画质选项
-        val dash = playUrlResponse.dash
-        if (dash != null) {
-            val videoStreams = dash.video.mapNotNull { video ->
-                val qualityDescription = backendQualityDescriptions[video.id]
-                if (qualityDescription == null) {
-                    logger.warn { "Missing description for video quality ID: ${video.id}" }
-                    null
-                } else {
-                    MediaStream(
-                        id = video.id,
-                        description = qualityDescription
-                    )
-                }
-            }
-            val audioStreams = dash.combinedAudioSources.mapNotNull { audioQuality ->
-                val quality = AudioQuality.fromCode(audioQuality.id)
-                quality?.let {
-                    MediaStream(
-                        id = it.code,
-                        description = it.description
-                    )
-                }
-            }.sortedByDescending { it.id }
-            return videoStreams to audioStreams
-        } else if (playUrlResponse.durl != null) {
-            val stream = listOf(MediaStream.Default)
-
-            return stream to stream
-        } else throw MissingMediaStreamException("No DASH or DURL streams found for bvid: $bvid, cid: $cid")
-    }
-
-    private fun BiliVideoData.toEpisodeInfo(): EpisodeInfo2 {
-        return EpisodeInfo2(
+    private fun BiliVideoData.toEpisodeInfo(): EpisodeInfo {
+        return EpisodeInfo(
             title = title,
             desc = desc,
             cover = pic
         )
     }
-}
 
-class MissingMediaStreamException(override val message: String?) : Exception()
+    private fun Season.toEpisodeInfo(): EpisodeInfo {
+        return EpisodeInfo(
+            title = seasonTitle,
+            desc = evaluate,
+            cover = cover
+        )
+    }
+}
