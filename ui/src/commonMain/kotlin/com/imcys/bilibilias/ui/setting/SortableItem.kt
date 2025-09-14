@@ -85,7 +85,7 @@ fun <T> SortableItem(
                     ) {
                         itemsIndexed(sortingData, key = { _, it -> key(it) }) { index, item ->
                             ReorderableItem(state, key = key(item)) { isDragging ->
-                                val elevation = animateDpAsState(if (isDragging) 32.dp else 0.dp)
+                                val elevation = animateDpAsState(if (isDragging) 16.dp else 0.dp)
                                 Row(
                                     modifier = Modifier
                                         .longPressDraggableHandle {
