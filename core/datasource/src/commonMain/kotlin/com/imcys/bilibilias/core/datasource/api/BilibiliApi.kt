@@ -30,6 +30,18 @@ class BilibiliApi(
     private val preferencesDataSource: AsPreferencesDataSource,
 ) {
     private val logger: Logger = logger<BilibiliApi>()
+
+    val FNVAL_FLAGS = listOf(
+//        1,    // MP4 格式，仅 H.264 编码（与 FLV、DASH 格式互斥）
+        16,     // DASH 格式	，与 MP4、FLV 格式互斥
+        64,     // 是否需求 HDR 视频，需求 DASH 格式，仅 H.265 编码，需要qn=125，大会员认证
+        128,    // 是否需求 4K 分辨率，该值与fourk字段协同作用，需要qn=120，大会员认证
+        256,    // 是否需求杜比音频，是否需求杜比音频，需求 DASH 格式，大会员认证
+        512,    // 是否需求杜比视界，需求 DASH 格式，大会员认证
+        1024,   // 是否需求 8K 分辨率，需求 DASH 格式，需要qn=127，大会员认证
+        2048    // 是否需求 AV1 编码，需求 DASH 格式
+    ).reduce { acc, flag -> acc or flag }
+
     suspend fun getVideoInfoDetail(bvid: String): BiliVideoData {
         return client.get("/x/web-interface/view") {
             parameter("bvid", bvid)
@@ -48,7 +60,7 @@ class BilibiliApi(
         val preferences = preferencesDataSource.userData.first()
         val queryParams = buildMap {
             put("fnver", 0)
-            put("fnval", 4048)
+            put("fnval", FNVAL_FLAGS)
             put("fourk", 1)
             put("bvid", bvid)
             put("cid", cid)
