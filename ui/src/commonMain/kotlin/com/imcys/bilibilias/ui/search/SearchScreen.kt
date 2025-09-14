@@ -32,9 +32,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -174,30 +171,11 @@ internal fun SearchContent(
                     }
 
                     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                        val resolutionOptions =
-                            searchResultUiState.episodeCacheListState.videoStreams.distinctBy { it.id }
-                        var selectedVideoOption by remember { mutableStateOf(searchResultUiState.episodeCacheListState.videoStreams[0]) }
-
-                        val soundQualityOptions =
-                            searchResultUiState.episodeCacheListState.audioStreams
-                        var selectedAudioOption by remember { mutableStateOf(soundQualityOptions[0]) }
                         val requestCache: (episode: EpisodeCacheState) -> Unit =
                             { episodeCacheState ->
-                                val request = EpisodeCacheRequest(
-                                    episodeCacheState,
-                                    videoQuality = selectedVideoOption.id,
-                                    audioQuality = selectedAudioOption.id,
-                                )
+                                val request = EpisodeCacheRequest(episodeCacheState)
                                 onCacheRequest(request)
                             }
-                        QualitySelection(
-                            videoStreams = resolutionOptions,
-                            selectedVideoOption = selectedVideoOption,
-                            onVideoOptionSelected = { selectedVideoOption = it },
-                            audioStreams = soundQualityOptions,
-                            selectedAudioOption = selectedAudioOption,
-                            onAudioOptionSelected = { selectedAudioOption = it },
-                        )
                         Text(
                             "分集(${searchResultUiState.episodes.size})",
                             modifier = Modifier.padding(vertical = 8.dp)
@@ -216,10 +194,10 @@ internal fun SearchContent(
 fun QualitySelection(
     videoStreams: List<MediaStream>,
     audioStreams: List<MediaStream>,
-    selectedVideoOption: MediaStream,
-    onVideoOptionSelected: (MediaStream) -> Unit,
-    selectedAudioOption: MediaStream,
-    onAudioOptionSelected: (MediaStream) -> Unit,
+    selectedVideoOption: MediaStream?,
+    onVideoOptionSelected: (MediaStream?) -> Unit,
+    selectedAudioOption: MediaStream?,
+    onAudioOptionSelected: (MediaStream?) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -232,8 +210,8 @@ fun QualitySelection(
                 options = videoStreams,
                 selectedOption = selectedVideoOption,
                 onOptionSelected = onVideoOptionSelected,
-                menuItemContent = { stream -> Text(stream.description) },
-                optionToText = { stream -> stream.description },
+                menuItemContent = { stream -> Text(stream!!.description) },
+                optionToText = { stream -> stream!!.description },
                 modifier = Modifier.weight(1f)
             )
         } else {
@@ -247,8 +225,8 @@ fun QualitySelection(
                 options = audioStreams,
                 selectedOption = selectedAudioOption,
                 onOptionSelected = onAudioOptionSelected,
-                menuItemContent = { stream -> Text(stream.description) },
-                optionToText = { stream -> stream.description },
+                menuItemContent = { stream -> Text(stream!!.description) },
+                optionToText = { stream -> stream!!.description },
                 modifier = Modifier.weight(1f)
             )
         } else {
