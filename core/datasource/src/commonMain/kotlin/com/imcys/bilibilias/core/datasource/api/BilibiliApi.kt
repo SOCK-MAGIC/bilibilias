@@ -2,6 +2,7 @@ package com.imcys.bilibilias.core.datasource.api
 
 import com.imcys.bilibilias.core.datasource.model.BiliVideoData
 import com.imcys.bilibilias.core.datasource.model.BilibiliNavigationData
+import com.imcys.bilibilias.core.datasource.model.DmSegMobileReply
 import com.imcys.bilibilias.core.datasource.model.Season
 import com.imcys.bilibilias.core.datasource.model.UserProfile
 import com.imcys.bilibilias.core.datasource.model.VideoPlaybackInfo
@@ -9,6 +10,7 @@ import com.imcys.bilibilias.core.datasource.utils.WbiSign
 import com.imcys.bilibilias.core.datastore.AsPreferencesDataSource
 import com.imcys.bilibilias.core.datastore.CookieJarDataSource
 import com.imcys.bilibilias.core.logging.Logger
+import com.imcys.bilibilias.core.logging.logger
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -26,8 +28,8 @@ class BilibiliApi(
     private val client: HttpClient,
     private val cookieJarDataSource: CookieJarDataSource,
     private val preferencesDataSource: AsPreferencesDataSource,
-    private val logger: Logger
 ) {
+    private val logger: Logger = logger<BilibiliApi>()
     suspend fun getVideoInfoDetail(bvid: String): BiliVideoData {
         return client.get("/x/web-interface/view") {
             parameter("bvid", bvid)
@@ -76,6 +78,22 @@ class BilibiliApi(
     suspend fun getSeasonDetailsByEpisodeId(ep: String): Season {
         return client.get("pgc/view/web/season") {
             parameter("ep_id", ep)
+        }.body()
+    }
+
+    suspend fun dmSegMobile(aid: Long, cid: Long, duration: Int): DmSegMobileReply {
+        val map = buildMap {
+            put("type", 1)
+            put("oid", cid)
+            put("segment_index", 1)
+            put("pid", aid)
+            put("duration", duration)
+        }
+        val signedQuery = WbiSign.enc(map)
+        return client.get("x/v2/dm/wbi/web/seg.so") {
+            url {
+                encodedParameters.appendAll(parseQueryString(signedQuery))
+            }
         }.body()
     }
 
