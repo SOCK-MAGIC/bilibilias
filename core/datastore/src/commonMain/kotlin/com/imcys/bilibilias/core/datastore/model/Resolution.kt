@@ -38,11 +38,11 @@ class Resolution(val id: Int, val displayName: String) {
             R360P,
         )
         val audioResolutions = listOf(
-            R60A,
-            R132A,
-            R192A,
-            DolbyA,
             HiRes,
+            DolbyA,
+            R192A,
+            R132A,
+            R60A,
         )
     }
 }
