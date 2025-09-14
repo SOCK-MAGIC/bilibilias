@@ -1,4 +1,4 @@
-package com.imcys.bilibilias.core.model
+package com.imcys.bilibilias.core.datastore.model
 
 import kotlinx.serialization.Serializable
 
