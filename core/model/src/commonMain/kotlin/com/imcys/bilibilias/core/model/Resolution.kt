@@ -1,5 +1,8 @@
-package com.imcys.bilibilias.core.domain.model
+package com.imcys.bilibilias.core.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 class Resolution(val id: Int, val displayName: String) {
     companion object {
         val R60A = Resolution(30216, "64K")
