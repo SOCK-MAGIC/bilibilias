@@ -5,12 +5,4 @@ enum class Codecs {
     AV1,
     HEVC,
     AVC;
-
-    companion object {
-        fun tryParse(value: String): Codecs {
-            return Codecs.entries.firstOrNull {
-                value.startsWith(it.name, true)
-            } ?: AVC
-        }
-    }
 }
