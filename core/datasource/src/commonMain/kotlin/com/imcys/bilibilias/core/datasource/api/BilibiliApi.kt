@@ -3,9 +3,10 @@ package com.imcys.bilibilias.core.datasource.api
 import com.imcys.bilibilias.core.datasource.model.BiliVideoData
 import com.imcys.bilibilias.core.datasource.model.BilibiliNavigationData
 import com.imcys.bilibilias.core.datasource.model.DmSegMobileReply
+import com.imcys.bilibilias.core.datasource.model.PgcPlayUrl
 import com.imcys.bilibilias.core.datasource.model.Season
+import com.imcys.bilibilias.core.datasource.model.UgcPlayUrl
 import com.imcys.bilibilias.core.datasource.model.UserProfile
-import com.imcys.bilibilias.core.datasource.model.VideoPlaybackInfo
 import com.imcys.bilibilias.core.datasource.utils.WbiSign
 import com.imcys.bilibilias.core.datastore.AsPreferencesDataSource
 import com.imcys.bilibilias.core.datastore.CookieJarDataSource
@@ -56,7 +57,25 @@ class BilibiliApi(
         return client.get(url).request.url.toString()
     }
 
-    suspend fun getPlayUrl(bvid: String, cid: Long): VideoPlaybackInfo {
+    suspend fun getUgcPlayUrl(bvid: String, cid: Long): UgcPlayUrl {
+        val signedQuery = buildAndSignPlayUrlParams(bvid, cid)
+        return client.get("/x/player/wbi/playurl") {
+            url {
+                encodedParameters.appendAll(parseQueryString(signedQuery))
+            }
+        }.body<UgcPlayUrl>()
+    }
+
+    suspend fun getPgcPlayUrl(bvid: String, cid: Long): PgcPlayUrl {
+        val signedQuery = buildAndSignPlayUrlParams(bvid, cid)
+        return client.get("/pgc/player/web/v2/playurl") {
+            url {
+                encodedParameters.appendAll(parseQueryString(signedQuery))
+            }
+        }.body()
+    }
+
+    private suspend fun buildAndSignPlayUrlParams(bvid: String, cid: Long): String {
         val preferences = preferencesDataSource.userData.first()
         val queryParams = buildMap {
             put("fnver", 0)
@@ -73,12 +92,7 @@ class BilibiliApi(
                 put("try_look", 1)
             }
         }
-        val signedQuery = WbiSign.enc(queryParams)
-        return client.get("/x/player/wbi/playurl") {
-            url {
-                encodedParameters.appendAll(parseQueryString(signedQuery))
-            }
-        }.body<VideoPlaybackInfo>()
+        return WbiSign.enc(queryParams)
     }
 
     suspend fun getSeasonDetailsBySeasonId(ss: String): Season {
