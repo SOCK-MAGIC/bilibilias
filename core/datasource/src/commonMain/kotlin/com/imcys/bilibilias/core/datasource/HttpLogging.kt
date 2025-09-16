@@ -10,7 +10,7 @@ import io.ktor.http.encodedPath
 internal fun HttpClientConfig<*>.HttpLogging() {
     val httpLogger = logger("BilibiliApi")
     Logging {
-        level = LogLevel.INFO
+        level = LogLevel.BODY
         logger = object : Logger {
             override fun log(message: String) {
                 httpLogger.info { message }
