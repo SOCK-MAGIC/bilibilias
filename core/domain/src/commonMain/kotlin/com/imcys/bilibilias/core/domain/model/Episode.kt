@@ -1,6 +1,7 @@
 package com.imcys.bilibilias.core.domain.model
 
 import com.imcys.bilibilias.core.datasource.CdnResource
+import com.imcys.bilibilias.core.model.VideoType
 
 data class EpisodeCacheListState(
     val episodeInfo: EpisodeInfo,
@@ -11,6 +12,7 @@ data class EpisodeInfo(
     val title: String,
     val desc: String,
     val cover: String,
+    val videoType: VideoType,
 )
 
 data class EpisodeCacheState(

@@ -10,6 +10,7 @@ import com.imcys.bilibilias.core.domain.model.EpisodeCacheStatus
 import com.imcys.bilibilias.core.domain.model.EpisodeInfo
 import com.imcys.bilibilias.core.flow.flowFromSuspend
 import com.imcys.bilibilias.core.logging.logger
+import com.imcys.bilibilias.core.model.VideoType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
@@ -116,7 +117,8 @@ class GetEpisodeInfoUseCase(
         return EpisodeInfo(
             title = title,
             desc = desc,
-            cover = pic
+            cover = pic,
+            videoType = if (redirectUrl == null) VideoType.UGC else VideoType.PGC,
         )
     }
 
@@ -124,7 +126,8 @@ class GetEpisodeInfoUseCase(
         return EpisodeInfo(
             title = seasonTitle,
             desc = evaluate,
-            cover = cover
+            cover = cover,
+            videoType = VideoType.PGC
         )
     }
 }
