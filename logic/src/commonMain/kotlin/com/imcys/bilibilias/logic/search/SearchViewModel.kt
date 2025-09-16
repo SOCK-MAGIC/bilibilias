@@ -10,8 +10,9 @@ import com.imcys.bilibilias.core.datastore.MediaCacheDataSource
 import com.imcys.bilibilias.core.datastore.model.EpisodeMetadata
 import com.imcys.bilibilias.core.datastore.model.MediaCachePartMetadata
 import com.imcys.bilibilias.core.domain.GetEpisodeInfoUseCase
-import com.imcys.bilibilias.core.domain.MediaSourceSelectedUseCase
+import com.imcys.bilibilias.core.domain.MediaSourceUseCase
 import com.imcys.bilibilias.core.domain.model.EpisodeCacheRequest
+import com.imcys.bilibilias.core.domain.model.TrackInfo
 import com.imcys.bilibilias.core.flow.FlowRestarter
 import com.imcys.bilibilias.core.flow.restartable
 import com.imcys.bilibilias.core.http.downloader.HttpDownloader
@@ -22,7 +23,9 @@ import com.imcys.bilibilias.core.result.Result.Success
 import com.imcys.bilibilias.core.result.asResult
 import com.imcys.bilibilias.logic.stateInViewModelScope
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -34,7 +37,7 @@ class SearchViewModel(
     private val httpDownloader: HttpDownloader,
     private val mediaCacheStorage: MediaCacheDataSource,
     private val getEpisodeInfoUseCase: GetEpisodeInfoUseCase,
-    private val mediaSourceSelectedUseCase: MediaSourceSelectedUseCase,
+    private val mediaSourceUseCase: MediaSourceUseCase,
     private val preferences: AsPreferencesDataSource,
     private val api: BilibiliLoginApi,
     private val cookieJar: CookieJarDataSource,
@@ -82,6 +85,29 @@ class SearchViewModel(
             .restartable(restarter)
             .stateInViewModelScope(SearchResultUiState.Loading)
 
+    private val currentSelectEpisode = MutableStateFlow<EpisodeCacheRequest?>(null)
+    val mediaSourceSelectedUiState: StateFlow<MediaSourceSelectedUiState> =
+        currentSelectEpisode.filterNotNull()
+            .map { request ->
+                mediaSourceUseCase(request)
+            }
+            .asResult()
+            .map { result ->
+                when (result) {
+                    is Success -> MediaSourceSelectedUiState.Success(result.data)
+                    is Error -> MediaSourceSelectedUiState.LoadFailed(result.exception.message)
+                    is Loading -> MediaSourceSelectedUiState.Loading
+                }
+            }.stateInViewModelScope(MediaSourceSelectedUiState.Loading)
+
+    fun requestCache(v: TrackInfo?, a: TrackInfo?) {
+
+    }
+
+    fun onEpisodeSelected(request: EpisodeCacheRequest) {
+        currentSelectEpisode.value = request
+    }
+
     fun onSearchTriggered(query: String) {}
 
     fun onSearchQueryChanged(query: String) {
@@ -101,12 +127,16 @@ class SearchViewModel(
     }
 
     fun requestCache(request: EpisodeCacheRequest) {
-//        request.cacheState.episodeSubId
         applicationScope.launch {
-//            val episodeInfo = mediaSourceSelectedUseCase(request)
-//            val metadata = episodeInfo.asEpisodeMetadata()
-//
-//            mediaCacheStorage.cacheEpisodeMetadata(metadata)
+            mediaSourceUseCase(request)
+            val metadata = EpisodeMetadata(
+                request.cacheState.episodeId,
+                request.cacheState.episodeSubId,
+                request.cacheState.title
+            )
+
+
+            mediaCacheStorage.cacheEpisodeMetadata(metadata)
 //            episodeInfo.urls.map {
 //                async {
 //                    val downloadId = httpDownloader.download(it.backupUrl.random().url)
@@ -123,14 +153,6 @@ class SearchViewModel(
         )
     }
 
-//    fun EpisodeInfo.asEpisodeMetadata(): EpisodeMetadata {
-//        return EpisodeMetadata(
-//            bvid = bvid,
-//            cid = cid,
-//            title = title
-//        )
-//    }
-
     private fun getDefaultSearchQuery(): String {
         return if (BuildConfig.DEBUG) {
             getSampleSearchQueries().random()
@@ -141,7 +163,6 @@ class SearchViewModel(
 
     private fun getSampleSearchQueries() = listOf(
         "BV1qW4y1k7yh",
-        "【ASMR冥想练习｜近耳环绕｜温柔女声｜432Hz钵音-哔哩哔哩】 https://b23.tv/hKIgi5E",
         "【《牧神记》 第1话 天黑别出门-哔哩哔哩国创】https://b23.tv/ep836727",
         "https://www.bilibili.com/bangumi/play/ss48415",
     )

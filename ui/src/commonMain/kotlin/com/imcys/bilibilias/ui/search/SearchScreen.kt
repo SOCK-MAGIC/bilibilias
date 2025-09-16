@@ -9,22 +9,30 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
@@ -32,6 +40,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,12 +52,16 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastForEach
 import com.imcys.bilibilias.core.domain.model.EpisodeCacheRequest
 import com.imcys.bilibilias.core.domain.model.EpisodeCacheState
 import com.imcys.bilibilias.core.domain.model.MediaStream
+import com.imcys.bilibilias.core.domain.model.TrackInfo
+import com.imcys.bilibilias.logic.search.MediaSourceSelectedUiState
 import com.imcys.bilibilias.logic.search.SearchResultUiState
 import com.imcys.bilibilias.logic.search.SearchViewModel
 import com.imcys.bilibilias.logic.search.SelfInfoUiState
@@ -62,6 +78,7 @@ fun SearchScreen(
     val searchQuery by searchViewModel.searchQuery.collectAsState()
     val searchResultUiState by searchViewModel.searchResultUiState.collectAsState()
     val selfInfoUiState by searchViewModel.selfInfoUiState.collectAsState()
+    val mediaSourceSelectedUiState by searchViewModel.mediaSourceSelectedUiState.collectAsState()
     SearchContent(
         searchQuery = searchQuery,
         searchResultUiState = searchResultUiState,
@@ -69,6 +86,8 @@ fun SearchScreen(
         onSearchQueryChanged = searchViewModel::onSearchQueryChanged,
         onLogout = searchViewModel::onLogout,
         onCacheRequest = searchViewModel::requestCache,
+        mediaSourceSelectedUiState = mediaSourceSelectedUiState,
+        onEpisodeSelected = searchViewModel::onEpisodeSelected,
         navigationToLogin = navigationToLogin,
         navigationToPlayer = navigationToPlayer,
         navigationToSettings = navigationToSettings,
@@ -81,12 +100,14 @@ internal fun SearchContent(
     searchQuery: String,
     searchResultUiState: SearchResultUiState,
     selfInfoUiState: SelfInfoUiState,
+    mediaSourceSelectedUiState: MediaSourceSelectedUiState,
     onSearchQueryChanged: (String) -> Unit = {},
     onLogout: () -> Unit = {},
-    onCacheRequest: (request: EpisodeCacheRequest) -> Unit = {},
+    onCacheRequest: (TrackInfo?, TrackInfo?) -> Unit = { _, _ -> },
     navigationToLogin: () -> Unit = {},
     navigationToPlayer: () -> Unit = {},
     navigationToSettings: () -> Unit = {},
+    onEpisodeSelected: (EpisodeCacheRequest) -> Unit = {},
 ) {
     Scaffold(
         topBar = {
@@ -166,26 +187,145 @@ internal fun SearchContent(
 
                 is SearchResultUiState.Success -> {
                     val keyboardController = LocalSoftwareKeyboardController.current
+                    var showMediaSelector by rememberSaveable { mutableStateOf(false) }
+
+                    var selectedVideoTrack by remember { mutableStateOf<TrackInfo?>(null) }
+                    var selectedAudioTrack by remember { mutableStateOf<TrackInfo?>(null) }
+
                     LaunchedEffect(searchResultUiState) {
                         keyboardController?.hide()
                     }
 
                     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                        val requestCache: (episode: EpisodeCacheState) -> Unit =
+                        val onEpisodeCacheSelection: (episode: EpisodeCacheState) -> Unit =
                             { episodeCacheState ->
                                 val request = EpisodeCacheRequest(episodeCacheState)
-                                onCacheRequest(request)
+                                onEpisodeSelected(request)
                             }
                         Text(
                             "分集(${searchResultUiState.episodes.size})",
                             modifier = Modifier.padding(vertical = 8.dp)
                         )
                         EpisodeList(searchResultUiState.episodes) {
-                            requestCache(it)
+                            onEpisodeCacheSelection(it)
+                            showMediaSelector = true
+                        }
+                        MediaSelectionDialog(
+                            showMediaSelector = showMediaSelector,
+                            mediaSourceSelectedUiState = mediaSourceSelectedUiState,
+                            onVideoTrackSelected = { selectedVideoTrack = it },
+                            onAudioTrackSelected = { selectedAudioTrack = it },
+                            onConfirm = { onCacheRequest(selectedVideoTrack, selectedAudioTrack) },
+                            onDismiss = { showMediaSelector = false }
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun MediaSelectionDialog(
+    showMediaSelector: Boolean,
+    mediaSourceSelectedUiState: MediaSourceSelectedUiState,
+    onVideoTrackSelected: (TrackInfo?) -> Unit,
+    onAudioTrackSelected: (TrackInfo?) -> Unit,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    if (showMediaSelector) {
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            confirmButton = {
+                TextButton(onConfirm) {
+                    Text("下载")
+                }
+            },
+            dismissButton = {
+                TextButton(onDismiss) {
+                    Text("取消")
+                }
+            },
+            text = {
+                MediaSelectorDialogContent(
+                    mediaSourceSelectedUiState = mediaSourceSelectedUiState,
+                    onVideoTrackSelected = onVideoTrackSelected,
+                    onAudioTrackSelected = onAudioTrackSelected
+                )
+            },
+        )
+    }
+}
+
+@Composable
+fun MediaSelectorDialogContent(
+    mediaSourceSelectedUiState: MediaSourceSelectedUiState,
+    onVideoTrackSelected: (TrackInfo) -> Unit,
+    onAudioTrackSelected: (TrackInfo) -> Unit,
+) {
+    Column((Modifier.verticalScroll(rememberScrollState()))) {
+        when (mediaSourceSelectedUiState) {
+            is MediaSourceSelectedUiState.LoadFailed -> {
+                Text(mediaSourceSelectedUiState.message ?: "啥都木有")
+            }
+
+            MediaSourceSelectedUiState.Loading -> {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxWidth().height(200.dp)
+                ) {
+                    CircularProgressIndicator()
+                    Text("Loading...")
+                }
+            }
+
+            is MediaSourceSelectedUiState.Success -> {
+                mediaSourceSelectedUiState.asset.videoStreams.fastForEach { videoTrack ->
+                    MediaTrackItems(videoTrack, onVideoTrackSelected == videoTrack) {
+                        onVideoTrackSelected(it)
+                    }
+                }
+                if (mediaSourceSelectedUiState.asset.audioStreams.isNotEmpty()) {
+                    HorizontalDivider()
+                    mediaSourceSelectedUiState.asset.audioStreams.fastForEach { audioTrack ->
+                        MediaTrackItems(audioTrack, onAudioTrackSelected == audioTrack) {
+                            onAudioTrackSelected(it)
                         }
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun MediaTrackItems(
+    trackInfo: TrackInfo,
+    isSelected: Boolean,
+    modifier: Modifier = Modifier,
+    onTrackSelected: (TrackInfo) -> Unit = {}
+) {
+    OutlinedCard(
+        modifier = modifier
+            .fillMaxWidth().selectable(
+                selected = isSelected,
+                role = Role.RadioButton,
+                onClick = { onTrackSelected(trackInfo) },
+            ),
+    ) {
+        Row(
+            modifier = Modifier.padding(all = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            RadioButton(isSelected, onClick = null)
+            Text(trackInfo.trackLabel)
+
+            Text(
+                text = trackInfo.codecs ?: "",
+                modifier = Modifier.padding(start = 8.dp),
+                maxLines = 1,
+            )
         }
     }
 }
@@ -316,5 +456,6 @@ fun SearchContentLoadFailedPreview() {
         searchQuery = "a very long search query that might cause issues",
         searchResultUiState = SearchResultUiState.LoadFailed("Unable to connect to the server. Please check your internet connection."),
         selfInfoUiState = SelfInfoUiState.Loading,
+        mediaSourceSelectedUiState = MediaSourceSelectedUiState.Loading,
     )
 }
