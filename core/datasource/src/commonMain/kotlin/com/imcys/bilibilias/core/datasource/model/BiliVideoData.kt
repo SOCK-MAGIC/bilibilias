@@ -26,7 +26,8 @@ data class BiliVideoData(
     @SerialName("dimension") val dimension: BiliVideoDimension = BiliVideoDimension(),
     @SerialName("pages") val pages: List<BiliVideoPage> = emptyList(),
     @SerialName("subtitle") val subtitle: BiliVideoSubtitle = BiliVideoSubtitle(),
-    @SerialName("staff") val staff: List<BiliVideoStaff> = emptyList()
+    @SerialName("staff") val staff: List<BiliVideoStaff> = emptyList(),
+    @SerialName("redirect_url") val redirectUrl: String? = null
 )
 
 @Serializable
