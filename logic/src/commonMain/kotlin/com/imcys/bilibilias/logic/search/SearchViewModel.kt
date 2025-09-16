@@ -89,6 +89,7 @@ class SearchViewModel(
     val mediaSourceSelectedUiState: StateFlow<MediaSourceSelectedUiState> =
         currentSelectEpisode.filterNotNull()
             .map { request ->
+                (searchResultUiState.value as SearchResultUiState.Success).episodeInfo
                 mediaSourceUseCase(request)
             }
             .asResult()
