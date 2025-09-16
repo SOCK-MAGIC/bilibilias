@@ -1,6 +1,5 @@
 package com.imcys.bilibilias.core.domain.model
 
-import com.imcys.bilibilias.core.datasource.CdnResource
 import com.imcys.bilibilias.core.model.VideoType
 
 data class EpisodeCacheListState(
@@ -45,13 +44,3 @@ sealed interface EpisodeCacheStatus {
 
     data object NotCached : EpisodeCacheStatus
 }
-
-/**
- * [codecId] audio always 0, video include 7/avc 12/hevc 13/av1
- */
-data class MediaStreamMetadata(
-    val id: Int,
-    val backupUrl: List<CdnResource>,
-    val codecId: Int = 0,
-    val description: String = ""
-)
