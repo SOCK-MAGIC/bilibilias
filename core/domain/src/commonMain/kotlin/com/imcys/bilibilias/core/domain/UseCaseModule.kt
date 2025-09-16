@@ -6,7 +6,7 @@ import org.koin.dsl.module
 val UseCaseModule = module {
     singleOf(::GetCachedEpisodeStateUseCase)
     singleOf(::GetEpisodeInfoUseCase)
-    singleOf(::MediaSourceSelectedUseCase)
+    singleOf(::MediaSourceUseCase)
     singleOf(::GetIdFromTextUseCase)
 //    singleOf(::GetDmUseCase)
 }
