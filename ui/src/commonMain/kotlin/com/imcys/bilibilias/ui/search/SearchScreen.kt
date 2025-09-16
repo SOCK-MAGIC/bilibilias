@@ -199,7 +199,10 @@ internal fun SearchContent(
                     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                         val onEpisodeCacheSelection: (episode: EpisodeCacheState) -> Unit =
                             { episodeCacheState ->
-                                val request = EpisodeCacheRequest(episodeCacheState)
+                                val request = EpisodeCacheRequest(
+                                    episodeCacheState,
+                                    searchResultUiState.episodeInfo.videoType
+                                )
                                 onEpisodeSelected(request)
                             }
                         Text(
