@@ -223,9 +223,9 @@ data class PgcPlayUrl(
             @SerialName("has_preview")
             val hasPreview: Boolean,
             @SerialName("need_login")
-            val needLogin: Boolean?,
+            val needLogin: Boolean = false,
             @SerialName("need_vip")
-            val needVip: Boolean?,
+            val needVip: Boolean = false,
             @SerialName("new_description")
             val newDescription: String,
             @SerialName("quality")
