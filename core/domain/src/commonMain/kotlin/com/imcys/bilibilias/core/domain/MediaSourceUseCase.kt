@@ -62,6 +62,7 @@ class MediaSourceUseCase(
                     MediaAsset(
                         videoStreams = dash.video.mapToTrackInfoWithQuality(VideoQualities.all),
                         audioStreams = dash.audio.mapToTrackInfoWithQuality(AudioQualities.all)
+                            .sortedByDescending { it.streamId }
                     )
                 }
 
