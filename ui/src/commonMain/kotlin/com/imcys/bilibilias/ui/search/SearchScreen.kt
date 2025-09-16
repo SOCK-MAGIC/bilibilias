@@ -290,7 +290,7 @@ fun MediaSelectorDialogContent(
                     }
                 }
                 if (mediaSourceSelectedUiState.asset.audioStreams.isNotEmpty()) {
-                    HorizontalDivider()
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                     mediaSourceSelectedUiState.asset.audioStreams.fastForEach { audioTrack ->
                         MediaTrackItems(audioTrack, onAudioTrackSelected == audioTrack) {
                             onAudioTrackSelected(it)
