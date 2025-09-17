@@ -42,11 +42,5 @@ internal fun Project.configureKotlinMultiplatform() {
             freeCompilerArgs.add("-opt-in=kotlin.time.ExperimentalTime")
             freeCompilerArgs.add("-opt-in=kotlin.uuid.ExperimentalUuidApi")
         }
-
-        // Fixes Cannot locate tasks that match ':core:model:testClasses' as task 'testClasses'
-        // not found in project ':core:model'. Some candidates are: 'jsTestClasses', 'jvmTestClasses'.
-        project.tasks.create("testClasses") {
-            dependsOn("allTests")
-        }
     }
 }
