@@ -40,6 +40,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -60,6 +61,7 @@ import androidx.compose.ui.util.fastForEach
 import com.imcys.bilibilias.core.domain.model.EpisodeCacheRequest
 import com.imcys.bilibilias.core.domain.model.EpisodeCacheState
 import com.imcys.bilibilias.core.domain.model.MediaStream
+import com.imcys.bilibilias.core.domain.model.SelectedEpisodeContext
 import com.imcys.bilibilias.core.domain.model.TrackInfo
 import com.imcys.bilibilias.logic.search.MediaSourceSelectedUiState
 import com.imcys.bilibilias.logic.search.SearchResultUiState
@@ -87,7 +89,7 @@ fun SearchScreen(
         onLogout = searchViewModel::onLogout,
         onCacheRequest = searchViewModel::requestCache,
         mediaSourceSelectedUiState = mediaSourceSelectedUiState,
-        onEpisodeSelected = searchViewModel::onEpisodeSelected,
+        onEpisodeSelected = searchViewModel::setSelectedEpisode,
         navigationToLogin = navigationToLogin,
         navigationToPlayer = navigationToPlayer,
         navigationToSettings = navigationToSettings,
@@ -103,11 +105,11 @@ internal fun SearchContent(
     mediaSourceSelectedUiState: MediaSourceSelectedUiState,
     onSearchQueryChanged: (String) -> Unit = {},
     onLogout: () -> Unit = {},
-    onCacheRequest: (TrackInfo?, TrackInfo?) -> Unit = { _, _ -> },
+    onCacheRequest: (EpisodeCacheRequest) -> Unit = { },
     navigationToLogin: () -> Unit = {},
     navigationToPlayer: () -> Unit = {},
     navigationToSettings: () -> Unit = {},
-    onEpisodeSelected: (EpisodeCacheRequest) -> Unit = {},
+    onEpisodeSelected: (SelectedEpisodeContext) -> Unit = {},
 ) {
     Scaffold(
         topBar = {
@@ -191,26 +193,28 @@ internal fun SearchContent(
 
                     var selectedVideoTrack by remember { mutableStateOf<TrackInfo?>(null) }
                     var selectedAudioTrack by remember { mutableStateOf<TrackInfo?>(null) }
+                    var currentEpisodeIndex by remember { mutableIntStateOf(0) }
 
                     LaunchedEffect(searchResultUiState) {
                         keyboardController?.hide()
                     }
 
                     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                        val onEpisodeCacheSelection: (episode: EpisodeCacheState) -> Unit =
-                            { episodeCacheState ->
-                                val request = EpisodeCacheRequest(
+                        val onEpisodeCacheSelection: (episode: EpisodeCacheState, index: Int) -> Unit =
+                            { episodeCacheState, index ->
+                                val request = SelectedEpisodeContext(
                                     episodeCacheState,
                                     searchResultUiState.episodeInfo.videoType
                                 )
+                                currentEpisodeIndex = index
                                 onEpisodeSelected(request)
                             }
                         Text(
                             "分集(${searchResultUiState.episodes.size})",
                             modifier = Modifier.padding(vertical = 8.dp)
                         )
-                        EpisodeList(searchResultUiState.episodes) {
-                            onEpisodeCacheSelection(it)
+                        EpisodeList(searchResultUiState.episodes) { state, i ->
+                            onEpisodeCacheSelection(state, i)
                             showMediaSelector = true
                         }
                         MediaSelectionDialog(
@@ -218,7 +222,14 @@ internal fun SearchContent(
                             mediaSourceSelectedUiState = mediaSourceSelectedUiState,
                             onVideoTrackSelected = { selectedVideoTrack = it },
                             onAudioTrackSelected = { selectedAudioTrack = it },
-                            onConfirm = { onCacheRequest(selectedVideoTrack, selectedAudioTrack) },
+                            onConfirm = {
+                                val episodeCacheRequest = EpisodeCacheRequest(
+                                    currentEpisodeIndex,
+                                    selectedVideoTrack,
+                                    selectedAudioTrack
+                                )
+                                onCacheRequest(episodeCacheRequest)
+                            },
                             onDismiss = { showMediaSelector = false }
                         )
                     }

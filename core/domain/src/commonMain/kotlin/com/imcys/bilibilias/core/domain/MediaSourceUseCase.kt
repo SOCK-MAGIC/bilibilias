@@ -5,8 +5,8 @@ import com.imcys.bilibilias.core.datasource.model.MediaTrack
 import com.imcys.bilibilias.core.datastore.model.AudioQualities
 import com.imcys.bilibilias.core.datastore.model.Quality
 import com.imcys.bilibilias.core.datastore.model.VideoQualities
-import com.imcys.bilibilias.core.domain.model.EpisodeCacheRequest
 import com.imcys.bilibilias.core.domain.model.MediaAsset
+import com.imcys.bilibilias.core.domain.model.SelectedEpisodeContext
 import com.imcys.bilibilias.core.domain.model.TrackInfo
 import com.imcys.bilibilias.core.model.VideoType.PGC
 import com.imcys.bilibilias.core.model.VideoType.PUGV
@@ -18,7 +18,7 @@ class MediaSourceUseCase(
     private val api: BilibiliApi
 ) {
     suspend operator fun invoke(
-        request: EpisodeCacheRequest
+        request: SelectedEpisodeContext
     ): MediaAsset {
         return withContext(Dispatchers.IO) {
             val episodeCacheState = request.cacheState

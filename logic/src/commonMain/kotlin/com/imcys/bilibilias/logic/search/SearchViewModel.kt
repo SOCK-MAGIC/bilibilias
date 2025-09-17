@@ -12,7 +12,7 @@ import com.imcys.bilibilias.core.datastore.model.MediaCachePartMetadata
 import com.imcys.bilibilias.core.domain.GetEpisodeInfoUseCase
 import com.imcys.bilibilias.core.domain.MediaSourceUseCase
 import com.imcys.bilibilias.core.domain.model.EpisodeCacheRequest
-import com.imcys.bilibilias.core.domain.model.TrackInfo
+import com.imcys.bilibilias.core.domain.model.SelectedEpisodeContext
 import com.imcys.bilibilias.core.flow.FlowRestarter
 import com.imcys.bilibilias.core.flow.restartable
 import com.imcys.bilibilias.core.http.downloader.HttpDownloader
@@ -85,7 +85,7 @@ class SearchViewModel(
             .restartable(restarter)
             .stateInViewModelScope(SearchResultUiState.Loading)
 
-    private val currentSelectEpisode = MutableStateFlow<EpisodeCacheRequest?>(null)
+    private val currentSelectEpisode = MutableStateFlow<SelectedEpisodeContext?>(null)
     val mediaSourceSelectedUiState: StateFlow<MediaSourceSelectedUiState> =
         currentSelectEpisode.filterNotNull()
             .map { request ->
@@ -101,11 +101,30 @@ class SearchViewModel(
                 }
             }.stateInViewModelScope(MediaSourceSelectedUiState.Loading)
 
-    fun requestCache(v: TrackInfo?, a: TrackInfo?) {
-
+    fun requestCache(request: EpisodeCacheRequest) {
+        applicationScope.launch {
+            val state = searchResultUiState.value
+            if (state is SearchResultUiState.Success) {
+                val episodeCacheState = state.episodes[request.index]
+                val metadata = EpisodeMetadata(
+                    episodeCacheState.episodeId,
+                    episodeCacheState.episodeSubId,
+                    episodeCacheState.title
+                )
+                mediaCacheStorage.cacheEpisodeMetadata(metadata)
+                request.videoTrack?.let {
+                    val downloadId = httpDownloader.download(it.urls.random())
+                    cachePartMetadata(metadata, downloadId)
+                }
+                request.audioTrack?.let {
+                    val downloadId = httpDownloader.download(it.urls.random())
+                    cachePartMetadata(metadata, downloadId)
+                }
+            }
+        }
     }
 
-    fun onEpisodeSelected(request: EpisodeCacheRequest) {
+    fun setSelectedEpisode(request: SelectedEpisodeContext) {
         currentSelectEpisode.value = request
     }
 
@@ -127,26 +146,6 @@ class SearchViewModel(
         }
     }
 
-    fun requestCache(request: EpisodeCacheRequest) {
-        applicationScope.launch {
-            mediaSourceUseCase(request)
-            val metadata = EpisodeMetadata(
-                request.cacheState.episodeId,
-                request.cacheState.episodeSubId,
-                request.cacheState.title
-            )
-
-
-            mediaCacheStorage.cacheEpisodeMetadata(metadata)
-//            episodeInfo.urls.map {
-//                async {
-//                    val downloadId = httpDownloader.download(it.backupUrl.random().url)
-//                    cachePartMetadata(metadata, downloadId)
-//                }
-//            }.awaitAll()
-        }
-    }
-
     suspend fun cachePartMetadata(metadata: EpisodeMetadata, downloadId: DownloadId) {
         mediaCacheStorage.updateMediaCacheMetadata(
             metadata,
@@ -163,9 +162,10 @@ class SearchViewModel(
     }
 
     private fun getSampleSearchQueries() = listOf(
-        "BV1qW4y1k7yh",
-        "【《牧神记》 第1话 天黑别出门-哔哩哔哩国创】https://b23.tv/ep836727",
-        "https://www.bilibili.com/bangumi/play/ss48415",
+//        "BV1qW4y1k7yh",
+//        "【《牧神记》 第1话 天黑别出门-哔哩哔哩国创】https://b23.tv/ep836727",
+//        "https://www.bilibili.com/bangumi/play/ss48415",
+        "https://www.bilibili.com/video/BV1fnYczYEsi/"
     )
 }
 

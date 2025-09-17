@@ -29,13 +29,13 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun EpisodeList(
     episodes: List<EpisodeCacheState>,
     modifier: Modifier = Modifier,
-    onSelectedEpisode: (EpisodeCacheState) -> Unit
+    onSelectedEpisode: (EpisodeCacheState, Int) -> Unit
 ) {
     val listState = rememberLazyListState()
     LazyColumn(state = listState, modifier = modifier) {
         items(episodes, key = { it.episodeSubId }) { item ->
             EpisodeItem(item) {
-                onSelectedEpisode(item)
+                onSelectedEpisode(item, item.index)
             }
         }
     }
