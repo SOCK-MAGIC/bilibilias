@@ -1,22 +1,23 @@
 package com.imcys.bilibilias.ui.search
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Audiotrack
 import androidx.compose.material.icons.filled.ErrorOutline
+import androidx.compose.material.icons.filled.Videocam
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Settings
@@ -27,8 +28,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -41,9 +43,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,14 +53,13 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import com.imcys.bilibilias.core.domain.model.EpisodeCacheRequest
 import com.imcys.bilibilias.core.domain.model.EpisodeCacheState
-import com.imcys.bilibilias.core.domain.model.MediaStream
 import com.imcys.bilibilias.core.domain.model.SelectedEpisodeContext
 import com.imcys.bilibilias.core.domain.model.TrackInfo
 import com.imcys.bilibilias.logic.search.MediaSourceSelectedUiState
@@ -189,10 +188,7 @@ internal fun SearchContent(
 
                 is SearchResultUiState.Success -> {
                     val keyboardController = LocalSoftwareKeyboardController.current
-                    var showMediaSelector by rememberSaveable { mutableStateOf(false) }
 
-                    var selectedVideoTrack by remember { mutableStateOf<TrackInfo?>(null) }
-                    var selectedAudioTrack by remember { mutableStateOf<TrackInfo?>(null) }
                     var currentEpisodeIndex by remember { mutableIntStateOf(0) }
 
                     LaunchedEffect(searchResultUiState) {
@@ -213,24 +209,17 @@ internal fun SearchContent(
                             "分集(${searchResultUiState.episodes.size})",
                             modifier = Modifier.padding(vertical = 8.dp)
                         )
+                        val mediaSelector =
+                            remember {
+                                EpisodeMediaSelector(currentEpisodeIndex, onCacheRequest)
+                            }
                         EpisodeList(searchResultUiState.episodes) { state, i ->
                             onEpisodeCacheSelection(state, i)
-                            showMediaSelector = true
+                            mediaSelector.openDialog(i)
                         }
                         MediaSelectionDialog(
-                            showMediaSelector = showMediaSelector,
+                            mediaSelector,
                             mediaSourceSelectedUiState = mediaSourceSelectedUiState,
-                            onVideoTrackSelected = { selectedVideoTrack = it },
-                            onAudioTrackSelected = { selectedAudioTrack = it },
-                            onConfirm = {
-                                val episodeCacheRequest = EpisodeCacheRequest(
-                                    currentEpisodeIndex,
-                                    selectedVideoTrack,
-                                    selectedAudioTrack
-                                )
-                                onCacheRequest(episodeCacheRequest)
-                            },
-                            onDismiss = { showMediaSelector = false }
                         )
                     }
                 }
@@ -241,31 +230,29 @@ internal fun SearchContent(
 
 @Composable
 fun MediaSelectionDialog(
-    showMediaSelector: Boolean,
-    mediaSourceSelectedUiState: MediaSourceSelectedUiState,
-    onVideoTrackSelected: (TrackInfo?) -> Unit,
-    onAudioTrackSelected: (TrackInfo?) -> Unit,
-    onConfirm: () -> Unit,
-    onDismiss: () -> Unit
+    mediaSelector: EpisodeMediaSelector,
+    mediaSourceSelectedUiState: MediaSourceSelectedUiState
 ) {
-    if (showMediaSelector) {
+    if (mediaSelector.showMediaSelector) {
         AlertDialog(
-            onDismissRequest = onDismiss,
+            onDismissRequest = mediaSelector::dismissDialog,
             confirmButton = {
-                TextButton(onConfirm) {
+                TextButton(mediaSelector::onConfirmSelection) {
                     Text("下载")
                 }
             },
             dismissButton = {
-                TextButton(onDismiss) {
+                TextButton(mediaSelector::dismissDialog) {
                     Text("取消")
                 }
             },
             text = {
                 MediaSelectorDialogContent(
                     mediaSourceSelectedUiState = mediaSourceSelectedUiState,
-                    onVideoTrackSelected = onVideoTrackSelected,
-                    onAudioTrackSelected = onAudioTrackSelected
+                    mediaSelector.selectedVideoTrack,
+                    mediaSelector.selectedAudioTrack,
+                    onVideoTrackSelected = mediaSelector::onVideoTrackSelected,
+                    onAudioTrackSelected = mediaSelector::onAudioTrackSelected
                 )
             },
         )
@@ -275,6 +262,8 @@ fun MediaSelectionDialog(
 @Composable
 fun MediaSelectorDialogContent(
     mediaSourceSelectedUiState: MediaSourceSelectedUiState,
+    selectedVideoTrack: TrackInfo?,
+    selectedAudioTrack: TrackInfo?,
     onVideoTrackSelected: (TrackInfo) -> Unit,
     onAudioTrackSelected: (TrackInfo) -> Unit,
 ) {
@@ -296,14 +285,14 @@ fun MediaSelectorDialogContent(
 
             is MediaSourceSelectedUiState.Success -> {
                 mediaSourceSelectedUiState.asset.videoStreams.fastForEach { videoTrack ->
-                    MediaTrackItems(videoTrack, onVideoTrackSelected == videoTrack) {
+                    MediaTrackItems(videoTrack, selectedVideoTrack == videoTrack, 1) {
                         onVideoTrackSelected(it)
                     }
                 }
                 if (mediaSourceSelectedUiState.asset.audioStreams.isNotEmpty()) {
                     HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                     mediaSourceSelectedUiState.asset.audioStreams.fastForEach { audioTrack ->
-                        MediaTrackItems(audioTrack, onAudioTrackSelected == audioTrack) {
+                        MediaTrackItems(audioTrack, selectedAudioTrack == audioTrack, 2) {
                             onAudioTrackSelected(it)
                         }
                     }
@@ -317,77 +306,58 @@ fun MediaSelectorDialogContent(
 fun MediaTrackItems(
     trackInfo: TrackInfo,
     isSelected: Boolean,
+    type: Int,
     modifier: Modifier = Modifier,
     onTrackSelected: (TrackInfo) -> Unit = {}
 ) {
-    OutlinedCard(
-        modifier = modifier
-            .fillMaxWidth().selectable(
-                selected = isSelected,
-                role = Role.RadioButton,
-                onClick = { onTrackSelected(trackInfo) },
-            ),
-    ) {
-        Row(
-            modifier = Modifier.padding(all = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            RadioButton(isSelected, onClick = null)
-            Text(trackInfo.trackLabel)
-
+    ListItem(
+        headlineContent = {
             Text(
-                text = trackInfo.codecs ?: "",
-                modifier = Modifier.padding(start = 8.dp),
+                text = trackInfo.trackLabel,
+                style = MaterialTheme.typography.bodyLarge,
                 maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
-        }
-    }
-}
-
-@Composable
-fun QualitySelection(
-    videoStreams: List<MediaStream>,
-    audioStreams: List<MediaStream>,
-    selectedVideoOption: MediaStream?,
-    onVideoOptionSelected: (MediaStream?) -> Unit,
-    selectedAudioOption: MediaStream?,
-    onAudioOptionSelected: (MediaStream?) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        if (videoStreams.isNotEmpty()) {
-            SelectField(
-                label = { Text("画质") }, // Consider R.string.video_quality
-                options = videoStreams,
-                selectedOption = selectedVideoOption,
-                onOptionSelected = onVideoOptionSelected,
-                menuItemContent = { stream -> Text(stream!!.description) },
-                optionToText = { stream -> stream!!.description },
-                modifier = Modifier.weight(1f)
+        },
+        supportingContent = {
+            trackInfo.codecs?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.bodyMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        },
+        leadingContent = {
+            val icon = if (type == 1) {
+                Icons.Filled.Videocam
+            } else {
+                Icons.Filled.Audiotrack
+            }
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
             )
-        } else {
-            // Optional: Show a placeholder or empty state if no video options
-            Spacer(modifier = Modifier.weight(1f)) // To maintain layout
-        }
-
-        if (audioStreams.isNotEmpty()) {
-            SelectField(
-                label = { Text("音质") }, // Consider R.string.audio_quality
-                options = audioStreams,
-                selectedOption = selectedAudioOption,
-                onOptionSelected = onAudioOptionSelected,
-                menuItemContent = { stream -> Text(stream!!.description) },
-                optionToText = { stream -> stream!!.description },
-                modifier = Modifier.weight(1f)
+        },
+        trailingContent = {
+            RadioButton(
+                selected = isSelected,
+                onClick = null
             )
-        } else {
-            // Optional: Show a placeholder or empty state if no audio options
-            Spacer(modifier = Modifier.weight(1f)) // To maintain layout
-        }
-    }
+        },
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable { onTrackSelected(trackInfo) },
+        colors = ListItemDefaults.colors(
+            containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface,
+            headlineColor = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface,
+            supportingColor = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
+            leadingIconColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+            trailingIconColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    )
 }
 
 @Composable
