@@ -105,7 +105,7 @@ class SearchViewModel(
         applicationScope.launch {
             val state = searchResultUiState.value
             if (state is SearchResultUiState.Success) {
-                val episodeCacheState = state.episodes[request.index]
+                val episodeCacheState = state.episodes[request.index - 1]
                 val metadata = EpisodeMetadata(
                     episodeCacheState.episodeId,
                     episodeCacheState.episodeSubId,
