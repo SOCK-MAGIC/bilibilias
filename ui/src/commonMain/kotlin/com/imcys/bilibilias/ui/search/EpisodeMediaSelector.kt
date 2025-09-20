@@ -7,13 +7,10 @@ import com.imcys.bilibilias.core.domain.model.EpisodeCacheRequest
 import com.imcys.bilibilias.core.domain.model.TrackInfo
 
 class EpisodeMediaSelector(
-    // Initial state or dependencies can be passed here if needed
-    // For example, if currentEpisodeIndex is fixed when the dialog is created:
-    initialEpisodeIndex: Int,
     private val onCacheRequestCallback: (EpisodeCacheRequest) -> Unit
 ) {
     var showMediaSelector by mutableStateOf(false)
-        private set // Only allow modification through methods
+        private set
 
     var selectedVideoTrack by mutableStateOf<TrackInfo?>(null)
         private set
@@ -21,14 +18,10 @@ class EpisodeMediaSelector(
     var selectedAudioTrack by mutableStateOf<TrackInfo?>(null)
         private set
 
-    // If currentEpisodeIndex is dynamic and set when an episode is clicked,
-    // you might pass it to openDialog() or have a separate setter.
-    // For simplicity, let's assume it's set when the dialog is "prepared".
-    private var currentEpisodeIndex: Int = initialEpisodeIndex
+    private var currentEpisodeIndex = 0
 
-    fun openDialog(episodeIndex: Int) { // Or pass relevant episode data
-        currentEpisodeIndex = episodeIndex // Update if it's dynamic
-        // Reset previous selections when opening the dialog
+    fun openDialog(episodeIndex: Int) {
+        currentEpisodeIndex = episodeIndex
         selectedVideoTrack = null
         selectedAudioTrack = null
         showMediaSelector = true
@@ -47,15 +40,16 @@ class EpisodeMediaSelector(
     }
 
     fun onConfirmSelection() {
-        // You can add validation here if needed
-        // e.g., if (selectedVideoTrack == null && selectedAudioTrack == null) { /* show error */ return }
-
+        if (selectedVideoTrack == null && selectedAudioTrack == null) {
+            dismissDialog()
+            return
+        }
         val episodeCacheRequest = EpisodeCacheRequest(
             currentEpisodeIndex,
             selectedVideoTrack,
             selectedAudioTrack
         )
         onCacheRequestCallback(episodeCacheRequest)
-        dismissDialog() // Dismiss after confirming
+        dismissDialog()
     }
 }

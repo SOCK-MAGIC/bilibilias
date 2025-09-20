@@ -209,10 +209,7 @@ internal fun SearchContent(
                             "分集(${searchResultUiState.episodes.size})",
                             modifier = Modifier.padding(vertical = 8.dp)
                         )
-                        val mediaSelector =
-                            remember {
-                                EpisodeMediaSelector(currentEpisodeIndex, onCacheRequest)
-                            }
+                        val mediaSelector = remember { EpisodeMediaSelector(onCacheRequest) }
                         EpisodeList(searchResultUiState.episodes) { state, i ->
                             onEpisodeCacheSelection(state, i)
                             mediaSelector.openDialog(i)
