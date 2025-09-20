@@ -81,35 +81,36 @@ class GetEpisodeInfoUseCase(
         return this(redirectUrl)
     }
 
-    private fun bv(id: String): Flow<EpisodeCacheListState> {
+    private fun bv(id: String): Flow<EpisodeCacheListState?> {
         val detailFlow = flowFromSuspend { api.getVideoInfoDetail(id) }
 
         return detailFlow.combine(mediaCacheStorage.listFlow) { detail, cachedItemsList ->
+            if (detail != null) {
+                val cachedItemsByCid = mediaCacheStorage.listFlow.first()
+                    .filter { it.origin.bvid == detail.bvid }
+                    .associateBy { it.origin.cid }
 
-            val cachedItemsByCid = mediaCacheStorage.listFlow.first()
-                .filter { it.origin.bvid == detail.bvid }
-                .associateBy { it.origin.cid }
-
-            val states = detail.pages.map { page ->
-                val cid = page.cid
-                val cacheStatus = if (cachedItemsByCid.containsKey(cid)) {
-                    EpisodeCacheStatus.Cached
-                } else {
-                    EpisodeCacheStatus.NotCached
+                val states = detail.pages.map { page ->
+                    val cid = page.cid
+                    val cacheStatus = if (cachedItemsByCid.containsKey(cid)) {
+                        EpisodeCacheStatus.Cached
+                    } else {
+                        EpisodeCacheStatus.NotCached
+                    }
+                    EpisodeCacheState(
+                        episodeId = detail.bvid,
+                        episodeSubId = cid,
+                        episodeAliasId = detail.aid,
+                        index = page.page,
+                        title = page.part,
+                        cacheStatus = cacheStatus,
+                    )
                 }
-                EpisodeCacheState(
-                    episodeId = detail.bvid,
-                    episodeSubId = cid,
-                    episodeAliasId = detail.aid,
-                    index = page.page,
-                    title = page.part,
-                    cacheStatus = cacheStatus,
+                EpisodeCacheListState(
+                    episodeInfo = detail.toEpisodeInfo(),
+                    episodes = states,
                 )
-            }
-            EpisodeCacheListState(
-                episodeInfo = detail.toEpisodeInfo(),
-                episodes = states,
-            )
+            } else null
         }
     }
 

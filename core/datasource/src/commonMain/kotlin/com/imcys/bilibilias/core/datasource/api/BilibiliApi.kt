@@ -43,10 +43,10 @@ class BilibiliApi(
         2048    // 是否需求 AV1 编码，需求 DASH 格式
     ).reduce { acc, flag -> acc or flag }
 
-    suspend fun getVideoInfoDetail(bvid: String): BiliVideoData {
+    suspend fun getVideoInfoDetail(bvid: String): BiliVideoData? {
         return client.get("/x/web-interface/view") {
             parameter("bvid", bvid)
-        }.body<BiliVideoData>()
+        }.body()
     }
 
     suspend fun getNavigationData(): BilibiliNavigationData {
