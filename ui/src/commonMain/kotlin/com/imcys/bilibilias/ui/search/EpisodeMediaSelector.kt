@@ -18,7 +18,7 @@ class EpisodeMediaSelector(
     var selectedAudioTrack by mutableStateOf<TrackInfo?>(null)
         private set
 
-    private var currentEpisodeIndex = 0
+    private var currentEpisodeIndex = 1
 
     fun openDialog(episodeIndex: Int) {
         currentEpisodeIndex = episodeIndex
