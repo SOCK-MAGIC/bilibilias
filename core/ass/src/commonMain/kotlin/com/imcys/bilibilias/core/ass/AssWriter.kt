@@ -77,8 +77,6 @@ fun CanvasConfig.toAssStyles(): List<String> {
 /**
  * 负责将 Drawable 对象写入任何 Writer，生成 ASS 字幕文件。
  *
- * @param W 泛型参数，代表任何实现了 java.io.Writer 的输出目标。
- * @property writer 目标 writer，内部使用 BufferedWriter 包装以提高性能。
  * @property title 字幕文件的标题。
  * @property canvasConfig 相关的画布配置。
  */
