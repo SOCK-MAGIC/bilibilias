@@ -66,6 +66,8 @@ class GetEpisodeInfoUseCase(
                         title = episode.showTitle,
                         cacheStatus = cacheStatus,
                         duration = episode.duration,
+                        width = episode.dimension.width,
+                        height = episode.dimension.height,
                     )
                 }
                 EpisodeCacheListState(
@@ -105,6 +107,8 @@ class GetEpisodeInfoUseCase(
                         title = page.part,
                         cacheStatus = cacheStatus,
                         duration = page.duration.toInt(),
+                        width = detail.dimension.width,
+                        height = detail.dimension.height,
                     )
                 }
                 EpisodeCacheListState(
