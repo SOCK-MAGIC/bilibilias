@@ -45,7 +45,9 @@ data class BiliVideoRights(
     @SerialName("ugc_pay_preview") val ugcPayPreview: Int = 0,
     @SerialName("no_background") val noBackground: Int = 0,
     @SerialName("clean_mode") val cleanMode: Int = 0,
-    @SerialName("is_stein_gate") val isSteinGate: Int = 0,
+    @SerialName("is_stein_gate")
+    @Serializable(IntAsBooleanSerializer::class)
+    val isSteinGate: Boolean = false,
     @SerialName("is_360") val is360: Int = 0,
     @SerialName("no_share") val noShare: Int = 0,
     @SerialName("arc_pay") val arcPay: Int = 0,
