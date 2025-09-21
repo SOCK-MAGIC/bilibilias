@@ -2,7 +2,6 @@ package com.imcys.bilibilias.core.datastore
 
 import androidx.datastore.core.DataStore
 import com.imcys.bilibilias.core.datastore.model.EpisodeMetadata
-import com.imcys.bilibilias.core.datastore.model.MediaCacheMetadata
 import com.imcys.bilibilias.core.datastore.model.MediaCachePartMetadata
 import com.imcys.bilibilias.core.datastore.model.MediaCacheSave
 import com.imcys.bilibilias.core.logging.logger
@@ -14,7 +13,7 @@ interface MediaCacheDataSource {
 
     suspend fun delete(episodeMetadata: EpisodeMetadata): Boolean
 
-    suspend fun cacheEpisodeMetadata(episodeMetadata: EpisodeMetadata)
+    suspend fun cacheEpisode(episodeData: MediaCacheSave)
 
     suspend fun updateMediaCacheMetadata(
         targetEpisodeKey: EpisodeMetadata,
@@ -22,7 +21,6 @@ interface MediaCacheDataSource {
     )
 }
 
-// TODO: 及时更新时间
 internal class DataStoreMediaCacheDataSource(
     private val store: DataStore<List<MediaCacheSave>>,
     private val clock: Clock = Clock.System,
@@ -30,9 +28,12 @@ internal class DataStoreMediaCacheDataSource(
 
     override val listFlow = store.data
 
-    override suspend fun cacheEpisodeMetadata(episodeMetadata: EpisodeMetadata) {
+    override suspend fun cacheEpisode(episodeData: MediaCacheSave) {
+        val itemWithTimestamp = episodeData.copy(
+            metadata = episodeData.metadata.copy(createdAt = clock.now())
+        )
         store.updateData { list ->
-            list + MediaCacheSave(episodeMetadata, MediaCacheMetadata(emptyList()))
+            list + itemWithTimestamp
         }
     }
 
@@ -45,8 +46,10 @@ internal class DataStoreMediaCacheDataSource(
                 if (isSameEpisode(episode, targetEpisodeKey)) {
                     // This is the episode we want to update
                     val updatedPartMetadataList = episode.metadata.metadata + newPartMetadata
-                    val updatedEpisodeMetadata =
-                        episode.metadata.copy(metadata = updatedPartMetadataList)
+                    val updatedEpisodeMetadata = episode.metadata.copy(
+                        metadata = updatedPartMetadataList,
+                        createdAt = clock.now()
+                    )
                     episode.copy(metadata = updatedEpisodeMetadata)
                 } else {
                     // This is not the episode we're looking for, return it as is

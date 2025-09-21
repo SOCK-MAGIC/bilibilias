@@ -21,6 +21,8 @@ data class EpisodeCacheState(
     val title: String,
     val index: Int,
     val duration: Int,
+    val width: Int,
+    val height: Int,
     val cacheStatus: EpisodeCacheStatus,
 )
 

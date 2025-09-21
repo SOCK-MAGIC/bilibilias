@@ -42,9 +42,8 @@ data class EpisodeMetadata(
     }
 }
 
-@ConsistentCopyVisibility
 @Serializable
-data class MediaCacheMetadata internal constructor(
+data class MediaCacheMetadata(
     val metadata: List<MediaCachePartMetadata>,
     val createdAt: Instant = Clock.System.now(),
     val extra: Map<MetadataKey, String> = emptyMap(),
@@ -90,4 +89,8 @@ data class MediaCachePartMetadata(
 
 @Serializable
 @JvmInline
-value class MetadataKey(val value: String)
+value class MetadataKey(val value: String) {
+    companion object {
+        val ASS_FILE = MetadataKey("ass_file")
+    }
+}
