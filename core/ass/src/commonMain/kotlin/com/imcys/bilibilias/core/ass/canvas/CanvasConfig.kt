@@ -160,7 +160,7 @@ class Canvas(
         floatLanes[laneIndex] = Lane.draw(danmu, config)
 
         val y = laneIndex * config.laneSize
-        val length = danmu.getLength(config)
+        val length = danmu.calculateRenderedWidth(config)
 
         return Drawable(
             danmu = danmu,

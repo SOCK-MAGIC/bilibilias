@@ -3,21 +3,13 @@ package com.imcys.bilibilias.core.ass
 import com.imcys.bilibilias.core.ass.canvas.CanvasConfig
 import com.imcys.bilibilias.core.ass.canvas.DrawEffect
 import com.imcys.bilibilias.core.ass.canvas.Drawable
-import java.io.BufferedWriter
+import kotlinx.io.buffered
+import kotlinx.io.files.Path
+import kotlinx.io.files.SystemFileSystem
+import kotlinx.io.writeString
 import java.io.Closeable
 import java.io.IOException
-import java.io.Writer
 import kotlin.time.Duration.Companion.seconds
-
-// 假设之前的 DrawEffect, Drawable, CanvasConfig, Rgb 等类已定义
-// data class Point(val x: Int, val y: Int)
-// sealed class DrawEffect {
-//     data class Move(val start: Point, val end: Point) : DrawEffect()
-//     object Fixed : DrawEffect()
-// }
-// data class Danmu(val timelineS: Double, val content: String, val rgb: Rgb, ...)
-// data class Drawable(val danmu: Danmu, val duration: Double, val styleName: String, val effect: DrawEffect)
-// data class CanvasConfig(val font: String, val fontSize: Int, val opacity: Int, val bold: Boolean, val outline: Double, ...)
 
 /**
  * 包装一个时间戳（秒），并提供 ASS 格式的字符串表示 (H:MM:SS.ss)。
@@ -91,18 +83,14 @@ fun CanvasConfig.toAssStyles(): List<String> {
  * @property title 字幕文件的标题。
  * @property canvasConfig 相关的画布配置。
  */
-class AssWriter<W : Writer>(
-    writer: W,
+class AssWriter(
+    path: Path,
     private val title: String,
     private val canvasConfig: CanvasConfig
 ) : Closeable {
-
-    // 使用 BufferedWriter 对应 Rust 的 BufWriter，并设置大容量缓存。
-    // 10 shl 20 (10 << 20) in Rust is 10 * 2^20 = 10,485,760 bytes (10 MiB)
-    private val bufferedWriter: BufferedWriter = BufferedWriter(writer, 10 * 1024 * 1024)
+    private val sink = SystemFileSystem.sink(path).buffered()
 
     init {
-        // 在构造时直接写入文件头，对应 Rust 的 new() + init() 模式
         writeHeader()
     }
 
@@ -131,9 +119,8 @@ class AssWriter<W : Writer>(
             [Events]
             Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
         """.trimIndent()
-
-        bufferedWriter.write(header)
-        bufferedWriter.newLine()
+        sink.writeString(header)
+        sink.writeString("\n")
     }
 
     /**
@@ -156,15 +143,15 @@ class AssWriter<W : Writer>(
         val dialogueLine =
             "Dialogue: 2,$start,$end,${drawable.styleName},,0,0,0,,{$effect$colorTag}$text"
 
-        bufferedWriter.write(dialogueLine)
-        bufferedWriter.newLine()
+        sink.writeString(dialogueLine)
+        sink.writeString("\n")
     }
 
     /**
      * 实现了 Closeable 接口，可以方便地使用 .use { ... } 语法来自动关闭 writer。
      */
     override fun close() {
-        bufferedWriter.close()
+        sink.close()
     }
 
     private fun escapeAssText(text: String): String {

@@ -22,7 +22,7 @@ data class Danmu(
     /**
      * 规则：汉字算一个全宽（计为3），ASCII字符算2/3宽（计为2）
      */
-    fun getLength(config: CanvasConfig): Double {
+    fun calculateRenderedWidth(config: CanvasConfig): Double {
         val basePoints = content.sumOf { ch ->
             if (ch.code < 128) 2 else 3
         }
@@ -40,7 +40,22 @@ enum class DanmuType {
     FLOAT,
     TOP,
     BOTTOM,
-    REVERSE,
+    REVERSE;
+
+    companion object {
+        fun valueOf(num: Int): DanmuType {
+            return when (num) {
+                1 -> FLOAT
+                4 -> BOTTOM
+                5 -> TOP
+                6 -> REVERSE
+                // 对于无效的输入，Kotlin 的惯用做法是抛出异常。
+                // IllegalArgumentException 是最适合这种情况的异常类型。
+                // 这完美地对应了 Rust 中 bail! 宏返回一个 Err 的行为。
+                else -> throw IllegalArgumentException("未知的弹幕类型：$num")
+            }
+        }
+    }
 }
 
 /**

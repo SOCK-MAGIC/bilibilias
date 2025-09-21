@@ -1,8 +1,8 @@
 package com.imcys.bilibilias.core.ass
 
 import com.imcys.bilibilias.core.ass.canvas.CanvasConfig
-import java.io.IOException
-import java.io.Writer
+import kotlinx.io.IOException
+import kotlinx.io.files.Path
 import kotlin.system.measureTimeMillis
 
 /**
@@ -20,10 +20,10 @@ import kotlin.system.measureTimeMillis
  * @return 成功写入的弹幕数量。
  * @throws IOException 如果在写入输出时发生 I/O 错误。
  */
-fun <O : Writer> convert(
-    dataProvider: Iterable<Danmu>,
+fun convert(
+    dataProvider: List<Danmu>,
     title: String,
-    output: O,
+    output: Path,
     canvasConfig: CanvasConfig,
     denylist: Set<String>? = null
 ): Int {

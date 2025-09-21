@@ -43,7 +43,7 @@ data class Lane(
 
         // 准备发射的新弹幕
         val t2 = other.timelineS
-        val l2 = other.getLength(config)
+        val l2 = other.calculateRenderedWidth(config)
 
         // 计算两条弹幕的速度
         val v1 = (width + l1) / duration
@@ -92,7 +92,7 @@ data class Lane(
         fun draw(danmu: Danmu, config: CanvasConfig): Lane {
             return Lane(
                 lastShootTime = danmu.timelineS,
-                lastLength = danmu.getLength(config)
+                lastLength = danmu.calculateRenderedWidth(config)
             )
         }
 
