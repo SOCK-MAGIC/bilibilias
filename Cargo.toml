@@ -1,0 +1,5 @@
+[workspace]
+members = [
+    "core/ass",
+]
+resolver = "2"

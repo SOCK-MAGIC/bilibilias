@@ -24,6 +24,7 @@ coil = "3.3.0"
 ffmpegKit = "1.1.0"
 filekitCore = "0.11.0"
 flowredux = "2.0.0-alpha4"
+gobley = "0.3.5"
 kermit = "2.0.8"
 koin = "4.1.1"
 kotlin = "2.2.20"
@@ -118,9 +119,12 @@ composeHotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "com
 composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "composeMultiplatform" }
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlinAtomicfu = { id = "org.jetbrains.kotlin.plugin.atomicfu", version.ref = "kotlin" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 room = { id = "androidx.room", version.ref = "androidx-room" }
+gobley-cargo = { id = "dev.gobley.cargo", version.ref = "gobley" }
+gobley-uniffi = { id = "dev.gobley.uniffi", version.ref = "gobley" }
 
 bilibilias-android-room = { id = "bilibilias.android.room" }
 bilibilias-compose = { id = "bilibilias.compose" }
