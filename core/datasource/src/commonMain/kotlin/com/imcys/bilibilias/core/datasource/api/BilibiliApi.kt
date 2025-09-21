@@ -107,20 +107,22 @@ class BilibiliApi(
         }.body()
     }
 
-    suspend fun dmSegMobile(aid: Long, cid: Long, duration: Int): DmSegMobileReply {
-        val map = buildMap {
-            put("type", 1)
-            put("oid", cid)
-            put("segment_index", 1)
-            put("pid", aid)
-            put("duration", duration)
-        }
-        val signedQuery = WbiSign.enc(map)
-        return client.get("x/v2/dm/wbi/web/seg.so") {
-            url {
-                encodedParameters.appendAll(parseQueryString(signedQuery))
+    suspend fun dmSegMobile(aid: Long, cid: Long, duration: Int): List<DmSegMobileReply> {
+        val repetitionCount = (duration / 3600) + 1
+        return List(repetitionCount) {
+            val map = buildMap {
+                put("type", 1)
+                put("oid", cid)
+                put("segment_index", it)
+                put("pid", aid)
             }
-        }.body()
+            val signedQuery = WbiSign.enc(map)
+            client.get("x/v2/dm/wbi/web/seg.so") {
+                url {
+                    encodedParameters.appendAll(parseQueryString(signedQuery))
+                }
+            }.body<DmSegMobileReply>()
+        }
     }
 
     suspend fun getUserProfile(cookieText: String? = null): UserProfile {

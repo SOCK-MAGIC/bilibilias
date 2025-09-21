@@ -108,7 +108,11 @@ class SearchViewModel(
             val state = searchResultUiState.value
             if (state is SearchResultUiState.Success) {
                 val episodeCacheState = state.episodes[request.index - 1]
-                getDmUseCase(episodeCacheState.episodeAliasId, episodeCacheState.episodeSubId)
+                getDmUseCase(
+                    episodeCacheState.episodeAliasId,
+                    episodeCacheState.episodeSubId,
+                    episodeCacheState.duration
+                )
 //                val metadata = EpisodeMetadata(
 //                    episodeCacheState.episodeId,
 //                    episodeCacheState.episodeSubId,

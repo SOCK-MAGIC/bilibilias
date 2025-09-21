@@ -41,13 +41,15 @@ class EpisodeMediaSelector(
 
     fun onConfirmSelection() {
         if (selectedVideoTrack == null && selectedAudioTrack == null) {
-            val episodeCacheRequest = EpisodeCacheRequest(
-                currentEpisodeIndex,
-                selectedVideoTrack,
-                selectedAudioTrack
-            )
-            onCacheRequestCallback(episodeCacheRequest)
+            dismissDialog()
+            return
         }
+        val episodeCacheRequest = EpisodeCacheRequest(
+            currentEpisodeIndex,
+            selectedVideoTrack,
+            selectedAudioTrack
+        )
+        onCacheRequestCallback(episodeCacheRequest)
         dismissDialog()
     }
 }

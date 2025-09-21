@@ -45,11 +45,7 @@ data class CanvasConfig private constructor(
             bottomPercentage: Double?,
             alpha: Double
         ): CanvasConfig {
-            if (alpha !in 0.0..1.0) {
-                throw IllegalArgumentException("alpha must be between 0.0 and 1.0")
-            }
-            // 执行从 alpha (0-1) 到 opacity (0-255) 的转换
-            val opacity = 255 - (alpha * 255.0).roundToInt()
+            val opacity = (255 - alpha).roundToInt()
             return CanvasConfig(
                 duration = duration,
                 width = width,

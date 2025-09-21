@@ -11,14 +11,14 @@ import com.imcys.bilibilias.core.datasource.model.DanmakuElem
 import com.imcys.bilibilias.core.io.resolve
 
 class GetDmUseCase(private val api: BilibiliApi) {
-    suspend operator fun invoke(aid: Long, cid: Long) {
-        val dmSeg = api.dmSegMobile(aid, cid, 0)
-        val danmus = dmSeg.elems.map { it.toDanmu() }
+    suspend operator fun invoke(aid: Long, cid: Long, duration: Int) {
+        val dmSeg = api.dmSegMobile(aid, cid, duration).flatMap { it.elems }
+        val danmus = dmSeg.map { it.toDanmu() }
 
         convert(
             dataProvider = danmus,
             title = "title",
-            output = BuildConfig.LOG_DIR.resolve("test.dm"),
+            output = BuildConfig.LOG_DIR.resolve("test.ass"),
             canvasConfig = canvasConfig(),
             denylist = null
         )
