@@ -95,13 +95,13 @@ class BilibiliApi(
         return WbiSign.enc(queryParams)
     }
 
-    suspend fun getSeasonDetailsBySeasonId(ss: String): Season {
+    suspend fun getSeasonDetailsBySeasonId(ss: String): Season? {
         return client.get("pgc/view/web/season") {
             parameter("season_id", ss)
         }.body()
     }
 
-    suspend fun getSeasonDetailsByEpisodeId(ep: String): Season {
+    suspend fun getSeasonDetailsByEpisodeId(ep: String): Season? {
         return client.get("pgc/view/web/season") {
             parameter("ep_id", ep)
         }.body()

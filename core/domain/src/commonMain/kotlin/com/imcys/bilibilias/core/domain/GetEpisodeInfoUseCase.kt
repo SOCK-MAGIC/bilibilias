@@ -23,9 +23,6 @@ class GetEpisodeInfoUseCase(
 ) {
     private val logger = logger<GetEpisodeInfoUseCase>()
 
-    // curl 'https://api.bilibili.com/pgc/player/web/v2/playurl?avid=40452040&cid=29608643908&qn=127&fnver=0&fnval=4048&fourk=1'
-    //-b 'xxx'
-    //-H 'referer: https://www.bilibili.com'
     suspend operator fun invoke(query: String): Flow<EpisodeCacheListState?> {
         return when (val result = getIdFromTextUseCase(query)) {
             is GetIdFromTextUseCase.MatchResult.Bv -> bv(result.id)
@@ -47,33 +44,35 @@ class GetEpisodeInfoUseCase(
         }
 
         return seasonDetails.combine(mediaCacheStorage.listFlow) { detail, cachedItemsList ->
-            val episodeBvids = detail.episodes.map { it.bvid }.toSet()
+            if (detail != null) {
+                val episodeBvids = detail.episodes.map { it.bvid }.toSet()
 
-            val cachedItemsByCid = mediaCacheStorage.listFlow.first()
-                .filter { cachedItem -> cachedItem.origin.bvid in episodeBvids }
-                .associateBy { it.origin.cid }
+                val cachedItemsByCid = mediaCacheStorage.listFlow.first()
+                    .filter { cachedItem -> cachedItem.origin.bvid in episodeBvids }
+                    .associateBy { it.origin.cid }
 
-            val states = detail.episodes.mapIndexed { index, episode ->
-                val cid = episode.cid
-                val cacheStatus = if (cachedItemsByCid.containsKey(cid)) {
-                    EpisodeCacheStatus.Cached
-                } else {
-                    EpisodeCacheStatus.NotCached
+                val states = detail.episodes.mapIndexed { index, episode ->
+                    val cid = episode.cid
+                    val cacheStatus = if (cachedItemsByCid.containsKey(cid)) {
+                        EpisodeCacheStatus.Cached
+                    } else {
+                        EpisodeCacheStatus.NotCached
+                    }
+                    EpisodeCacheState(
+                        episodeId = episode.bvid,
+                        episodeSubId = cid,
+                        episodeAliasId = episode.aid,
+                        index = episode.title.toIntOrNull() ?: (index + 1),
+                        title = episode.showTitle,
+                        cacheStatus = cacheStatus,
+                        duration = episode.duration,
+                    )
                 }
-                EpisodeCacheState(
-                    episodeId = episode.bvid,
-                    episodeSubId = cid,
-                    episodeAliasId = episode.aid,
-                    index = episode.title.toIntOrNull() ?: (index + 1),
-                    title = episode.showTitle,
-                    cacheStatus = cacheStatus,
-                    duration = episode.duration,
+                EpisodeCacheListState(
+                    episodeInfo = detail.toEpisodeInfo(),
+                    episodes = states,
                 )
-            }
-            EpisodeCacheListState(
-                episodeInfo = detail.toEpisodeInfo(),
-                episodes = states,
-            )
+            } else null
         }
     }
 
