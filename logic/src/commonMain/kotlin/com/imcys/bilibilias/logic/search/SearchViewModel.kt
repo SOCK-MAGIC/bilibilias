@@ -12,6 +12,7 @@ import com.imcys.bilibilias.core.datastore.model.MediaCachePartMetadata
 import com.imcys.bilibilias.core.domain.GetEpisodeInfoUseCase
 import com.imcys.bilibilias.core.domain.MediaSourceUseCase
 import com.imcys.bilibilias.core.domain.model.EpisodeCacheRequest
+import com.imcys.bilibilias.core.domain.model.GetDmUseCase
 import com.imcys.bilibilias.core.domain.model.SelectedEpisodeContext
 import com.imcys.bilibilias.core.flow.FlowRestarter
 import com.imcys.bilibilias.core.flow.restartable
@@ -38,6 +39,7 @@ class SearchViewModel(
     private val mediaCacheStorage: MediaCacheDataSource,
     private val getEpisodeInfoUseCase: GetEpisodeInfoUseCase,
     private val mediaSourceUseCase: MediaSourceUseCase,
+    private val getDmUseCase: GetDmUseCase,
     private val preferences: AsPreferencesDataSource,
     private val api: BilibiliLoginApi,
     private val cookieJar: CookieJarDataSource,
@@ -106,20 +108,21 @@ class SearchViewModel(
             val state = searchResultUiState.value
             if (state is SearchResultUiState.Success) {
                 val episodeCacheState = state.episodes[request.index - 1]
-                val metadata = EpisodeMetadata(
-                    episodeCacheState.episodeId,
-                    episodeCacheState.episodeSubId,
-                    episodeCacheState.title
-                )
-                mediaCacheStorage.cacheEpisodeMetadata(metadata)
-                request.videoTrack?.let {
-                    val downloadId = httpDownloader.download(it.urls.random())
-                    cachePartMetadata(metadata, downloadId)
-                }
-                request.audioTrack?.let {
-                    val downloadId = httpDownloader.download(it.urls.random())
-                    cachePartMetadata(metadata, downloadId)
-                }
+                getDmUseCase(episodeCacheState.episodeAliasId, episodeCacheState.episodeSubId)
+//                val metadata = EpisodeMetadata(
+//                    episodeCacheState.episodeId,
+//                    episodeCacheState.episodeSubId,
+//                    episodeCacheState.title
+//                )
+//                mediaCacheStorage.cacheEpisodeMetadata(metadata)
+//                request.videoTrack?.let {
+//                    val downloadId = httpDownloader.download(it.urls.random())
+//                    cachePartMetadata(metadata, downloadId)
+//                }
+//                request.audioTrack?.let {
+//                    val downloadId = httpDownloader.download(it.urls.random())
+//                    cachePartMetadata(metadata, downloadId)
+//                }
             }
         }
     }
