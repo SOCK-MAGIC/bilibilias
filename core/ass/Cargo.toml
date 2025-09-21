@@ -1,0 +1,13 @@
+[package]
+name = "danmu2ass"
+version = "1.0.1"
+edition = "2024"
+
+[dependencies]
+uniffi = "0.29.4"
+clap = "4.5.48"
+
+[lib]
+crate-type = ["cdylib", "staticlib"]
+# Put this only if you moved lib.rs.
+path = "src/commonMain/rust/lib.rs"
