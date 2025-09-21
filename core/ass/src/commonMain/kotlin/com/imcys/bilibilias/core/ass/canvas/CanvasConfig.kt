@@ -2,10 +2,8 @@ package com.imcys.bilibilias.core.ass.canvas
 
 import com.imcys.bilibilias.core.ass.Danmu
 import com.imcys.bilibilias.core.ass.DanmuType
-import java.util.logging.Logger
+import com.imcys.bilibilias.core.ass.logger
 import kotlin.math.roundToInt
-
-internal val logger: Logger = Logger.getLogger("CanvasLogger")
 
 /**
  * 弹幕画布的配置项。
@@ -147,13 +145,13 @@ class Canvas(
 
             // 只允许延迟 1 秒以内的弹幕
             if (timeNeeded < 1.0) {
-                logger.info("Delaying danmaku by ${String.format("%.2f", timeNeeded)}s")
+                logger.info { "Delaying danmaku by ${String.format("%.2f", timeNeeded)}s" }
                 danmu.timelineS += timeNeeded + 0.01 // 增加一个微小间隔
                 return drawFloatInLane(danmu, laneIndex)
             }
         }
 
-        logger.info("Skipping danmaku: ${danmu.content}")
+        logger.info { "Skipping danmaku: ${danmu.content}" }
         return null
     }
 

@@ -50,7 +50,7 @@ data class AssEffect(val effect: DrawEffect) {
             }
 
             is DrawEffect.Fixed -> {
-//                logger.severe("Fixed danmaku should not appear here; they cannot be converted to ASS effects.")
+                logger.error { "Fixed danmaku should not appear here; they cannot be converted to ASS effects." }
                 throw IllegalStateException("Cannot format a Fixed DrawEffect for ASS.")
             }
         }
