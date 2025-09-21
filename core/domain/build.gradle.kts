@@ -10,6 +10,7 @@ kotlin {
                 api(projects.core.data)
                 api(projects.core.model)
 
+                implementation(projects.core.ass)
                 implementation(projects.core.httpDownloader)
             }
         }
