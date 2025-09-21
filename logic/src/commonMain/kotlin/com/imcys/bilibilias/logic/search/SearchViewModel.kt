@@ -8,12 +8,18 @@ import com.imcys.bilibilias.core.datastore.AsPreferencesDataSource
 import com.imcys.bilibilias.core.datastore.CookieJarDataSource
 import com.imcys.bilibilias.core.datastore.MediaCacheDataSource
 import com.imcys.bilibilias.core.datastore.model.EpisodeMetadata
+import com.imcys.bilibilias.core.datastore.model.MediaCacheMetadata
 import com.imcys.bilibilias.core.datastore.model.MediaCachePartMetadata
+import com.imcys.bilibilias.core.datastore.model.MediaCacheSave
+import com.imcys.bilibilias.core.datastore.model.MetadataKey
+import com.imcys.bilibilias.core.domain.GetDmUseCase
 import com.imcys.bilibilias.core.domain.GetEpisodeInfoUseCase
 import com.imcys.bilibilias.core.domain.MediaSourceUseCase
+import com.imcys.bilibilias.core.domain.model.DanmuRequest
 import com.imcys.bilibilias.core.domain.model.EpisodeCacheRequest
-import com.imcys.bilibilias.core.domain.model.GetDmUseCase
+import com.imcys.bilibilias.core.domain.model.EpisodeCacheState
 import com.imcys.bilibilias.core.domain.model.SelectedEpisodeContext
+import com.imcys.bilibilias.core.domain.model.TrackInfo
 import com.imcys.bilibilias.core.flow.FlowRestarter
 import com.imcys.bilibilias.core.flow.restartable
 import com.imcys.bilibilias.core.http.downloader.HttpDownloader
@@ -108,25 +114,26 @@ class SearchViewModel(
             val state = searchResultUiState.value
             if (state is SearchResultUiState.Success) {
                 val episodeCacheState = state.episodes[request.index - 1]
-                getDmUseCase(
-                    episodeCacheState.episodeAliasId,
-                    episodeCacheState.episodeSubId,
-                    episodeCacheState.duration
+                episodeCacheState.episodeAliasId
+                val bvid = episodeCacheState.episodeId
+                val cid = episodeCacheState.episodeSubId
+                val title = episodeCacheState.title
+
+                val id = cacheDanmu(episodeCacheState)
+
+                val metadata = EpisodeMetadata(
+                    bvid,
+                    cid,
+                    title
                 )
-//                val metadata = EpisodeMetadata(
-//                    episodeCacheState.episodeId,
-//                    episodeCacheState.episodeSubId,
-//                    episodeCacheState.title
-//                )
-//                mediaCacheStorage.cacheEpisodeMetadata(metadata)
-//                request.videoTrack?.let {
-//                    val downloadId = httpDownloader.download(it.urls.random())
-//                    cachePartMetadata(metadata, downloadId)
-//                }
-//                request.audioTrack?.let {
-//                    val downloadId = httpDownloader.download(it.urls.random())
-//                    cachePartMetadata(metadata, downloadId)
-//                }
+                val mediaCacheSave = MediaCacheSave(
+                    metadata,
+                    MediaCacheMetadata(emptyList(), extra = mapOf(MetadataKey.ASS_FILE to id))
+                )
+                mediaCacheStorage.cacheEpisode(mediaCacheSave)
+
+                cacheTrack(request.videoTrack, metadata)
+                cacheTrack(request.audioTrack, metadata)
             }
         }
     }
@@ -158,6 +165,25 @@ class SearchViewModel(
             metadata,
             MediaCachePartMetadata(downloadId.value)
         )
+    }
+
+    private suspend fun cacheTrack(track: TrackInfo?, metadata: EpisodeMetadata) {
+        track?.let {
+            val downloadId = httpDownloader.download(it.urls.random())
+            cachePartMetadata(metadata, downloadId)
+        }
+    }
+
+    private suspend fun cacheDanmu(episode: EpisodeCacheState): String {
+        val danmuRequest = DanmuRequest(
+            episode.episodeAliasId,
+            episode.episodeSubId,
+            episode.duration,
+            episode.title,
+            episode.width,
+            episode.height
+        )
+        return getDmUseCase(danmuRequest)
     }
 
     private fun getDefaultSearchQuery(): String {

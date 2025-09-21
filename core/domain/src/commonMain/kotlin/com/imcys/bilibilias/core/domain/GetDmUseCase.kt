@@ -1,4 +1,4 @@
-package com.imcys.bilibilias.core.domain.model
+package com.imcys.bilibilias.core.domain
 
 import com.imcys.bilibilias.BuildConfig
 import com.imcys.bilibilias.core.ass.Danmu
@@ -8,28 +8,35 @@ import com.imcys.bilibilias.core.ass.canvas.CanvasConfig
 import com.imcys.bilibilias.core.ass.convert
 import com.imcys.bilibilias.core.datasource.api.BilibiliApi
 import com.imcys.bilibilias.core.datasource.model.DanmakuElem
+import com.imcys.bilibilias.core.domain.model.DanmuRequest
 import com.imcys.bilibilias.core.io.resolve
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlin.math.roundToInt
+import kotlin.uuid.Uuid
 
 class GetDmUseCase(private val api: BilibiliApi) {
-    suspend operator fun invoke(aid: Long, cid: Long, duration: Int) {
-        val dmSeg = api.dmSegMobile(aid, cid, duration).flatMap { it.elems }
+    suspend operator fun invoke(request: DanmuRequest) = withContext(Dispatchers.IO) {
+        val dmSeg = api.dmSegMobile(request.aid, request.cid, request.duration).flatMap { it.elems }
         val danmus = dmSeg.map { it.toDanmu() }
+        val filename = Uuid.Companion.random().toString()
 
         convert(
             dataProvider = danmus,
-            title = "title",
-            output = BuildConfig.LOG_DIR.resolve("test.ass"),
-            canvasConfig = canvasConfig(),
+            title = request.title,
+            output = BuildConfig.MEDIA_DOWNLOAD.resolve(filename),
+            canvasConfig = canvasConfig(request.width, request.height),
             denylist = null
         )
+        filename
     }
 
 
-    fun canvasConfig(): CanvasConfig {
-        return CanvasConfig.create(
-            duration = 0.0,
-            width = 1920,
-            height = 1080,
+    fun canvasConfig(width: Int, height: Int): CanvasConfig {
+        return CanvasConfig(
+            duration = 15.0,
+            width = width,
+            height = height,
             font = "黑体",
             fontSize = 25,
             widthRatio = 1.2,
@@ -40,7 +47,7 @@ class GetDmUseCase(private val api: BilibiliApi) {
             outline = 0.8,
             timeOffset = 0.0,
             bottomPercentage = 0.3,
-            alpha = (1.0 - 0.7) * 255.0
+            alpha = (0.3 * 255.0).roundToInt()
         )
     }
 
@@ -54,7 +61,7 @@ class GetDmUseCase(private val api: BilibiliApi) {
                 g = (color shr 8) and 0xFF,
                 b = color and 0xFF
             ),
-            type = DanmuType.valueOf(mode)
+            type = DanmuType.Companion.valueOf(mode)
         )
     }
 }
