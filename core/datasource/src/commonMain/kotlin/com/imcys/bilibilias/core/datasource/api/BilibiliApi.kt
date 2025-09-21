@@ -4,7 +4,9 @@ import com.imcys.bilibilias.core.datasource.model.BiliVideoData
 import com.imcys.bilibilias.core.datasource.model.BilibiliNavigationData
 import com.imcys.bilibilias.core.datasource.model.DmSegMobileReply
 import com.imcys.bilibilias.core.datasource.model.PgcPlayUrl
+import com.imcys.bilibilias.core.datasource.model.PlayerInfo
 import com.imcys.bilibilias.core.datasource.model.Season
+import com.imcys.bilibilias.core.datasource.model.SteinEdgeInfo
 import com.imcys.bilibilias.core.datasource.model.UgcPlayUrl
 import com.imcys.bilibilias.core.datasource.model.UserProfile
 import com.imcys.bilibilias.core.datasource.utils.WbiSign
@@ -153,5 +155,25 @@ class BilibiliApi(
                     decodeCookieValue(encodedValue, CookieEncoding.URI_ENCODING),
                 )
             }
+    }
+
+    suspend fun getPlayerInfo(aid: Long, cid: Long): PlayerInfo {
+        val map = buildMap {
+            put("aid", aid)
+            put("cid", cid)
+        }
+        val signedQuery = WbiSign.enc(map)
+        return client.get("x/player/wbi/v2") {
+            url {
+                encodedParameters.appendAll(parseQueryString(signedQuery))
+            }
+        }.body()
+    }
+
+    suspend fun getSteinEdgeInfo(aid: Long, graphVersion: Int): SteinEdgeInfo {
+        return client.get("x/stein/edgeinfo_v2") {
+            parameter("aid", aid)
+            parameter("graph_version", graphVersion)
+        }.body()
     }
 }
