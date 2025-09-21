@@ -41,6 +41,7 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 rootProject.name = "bilibilias"
 
 include(":app")
+include(":core:ass")
 include(":core:common")
 include(":core:data")
 include(":core:datasource")
