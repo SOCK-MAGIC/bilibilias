@@ -3,16 +3,11 @@ package com.imcys.bilibilias.core.ass.canvas
 import com.imcys.bilibilias.core.ass.Danmu
 import com.imcys.bilibilias.core.ass.DanmuType
 import com.imcys.bilibilias.core.ass.logger
-import kotlin.math.roundToInt
 
 /**
  * 弹幕画布的配置项。
- *
- * 使用 @JsonProperty 等注解来映射 JSON 序列化/反序列化，
- * 替代 Rust 的 Serde 框架。
  */
-@ConsistentCopyVisibility
-data class CanvasConfig private constructor(
+data class CanvasConfig(
     val duration: Double,
     val width: Int,
     val height: Int,
@@ -25,46 +20,9 @@ data class CanvasConfig private constructor(
     val bold: Boolean,
     val outline: Double,
     val timeOffset: Double,
-    val opacity: Int,
+    val alpha: Int,
     val bottomPercentage: Double = 0.25,
 ) {
-    companion object {
-        fun create(
-            duration: Double,
-            width: Int,
-            height: Int,
-            font: String,
-            fontSize: Int,
-            widthRatio: Double,
-            horizontalGap: Double,
-            laneSize: Int,
-            floatPercentage: Double,
-            bold: Boolean,
-            outline: Double,
-            timeOffset: Double,
-            bottomPercentage: Double?,
-            alpha: Double
-        ): CanvasConfig {
-            val opacity = (255 - alpha).roundToInt()
-            return CanvasConfig(
-                duration = duration,
-                width = width,
-                height = height,
-                font = font,
-                fontSize = fontSize,
-                widthRatio = widthRatio,
-                horizontalGap = horizontalGap,
-                laneSize = laneSize,
-                floatPercentage = floatPercentage,
-                bold = bold,
-                outline = outline,
-                timeOffset = timeOffset,
-                opacity = opacity,
-                bottomPercentage = bottomPercentage ?: 0.25,
-            )
-        }
-    }
-
     /**
      * 根据当前配置创建一个 Canvas 实例。
      * 替代 Rust 的 `impl Config { fn canvas(self) -> Canvas }`

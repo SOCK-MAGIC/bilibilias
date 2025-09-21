@@ -60,7 +60,7 @@ fun CanvasConfig.toAssStyles(): List<String> {
     val boldValue = if (bold) 1 else 0
     // ASS 的颜色格式是 AABBGGRR，而我们的 opacity (不透明度) 是 255-alpha
     // ASS 的 PrimaryColour alpha 是反的，&H00 是不透明，&HFF 是全透明
-    val assAlpha = (255 - opacity).toHexString(HexFormat.UpperCase)
+    val assAlpha = (255 - alpha).toHexString(HexFormat.UpperCase)
 
     val baseStyle =
         "${font},${fontSize},&H${assAlpha}FFFFFF,&H00FFFFFF,&H${assAlpha}000000,&H00000000," +
