@@ -91,7 +91,11 @@ class GetEpisodeInfoUseCase(
                 val cachedItemsByCid = mediaCacheStorage.listFlow.first()
                     .filter { it.origin.bvid == detail.bvid }
                     .associateBy { it.origin.cid }
-
+                if (detail.rights.isSteinGate) {
+//                    val playerInfo = api.getPlayerInfo(detail.aid, detail.cid)
+//                    val graphVersion = playerInfo.interaction.graphVersion
+//                    GetInteractVideoUseCase(detail.aid, graphVersion,detail.cid, api).initGraph()
+                }
                 val states = detail.pages.map { page ->
                     val cid = page.cid
                     val cacheStatus = if (cachedItemsByCid.containsKey(cid)) {
