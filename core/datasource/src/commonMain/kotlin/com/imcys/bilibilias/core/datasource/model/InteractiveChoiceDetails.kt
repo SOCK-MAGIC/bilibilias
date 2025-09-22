@@ -5,9 +5,9 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class SteinEdgeInfo(
+data class InteractiveChoiceDetails(
     @SerialName("buvid")
-    val buvid: String,
+    val buvid: String? = null,
     @SerialName("edge_id")
     val edgeId: Int,
     @SerialName("edges")
@@ -66,9 +66,9 @@ data class SteinEdgeInfo(
                 @SerialName("condition")
                 val condition: String,
                 @SerialName("id")
-                val id: Int,
+                val id: Long,
                 @SerialName("is_default")
-                val isDefault: Int?,
+                val isDefault: Int? = null,
                 @SerialName("native_action")
                 val nativeAction: String,
                 @SerialName("option")
@@ -122,7 +122,7 @@ data class SteinEdgeInfo(
         @SerialName("edge_id")
         val edgeId: Int,
         @SerialName("is_current")
-        val isCurrent: Int?,
+        val isCurrent: Int? = null,
         @SerialName("node_id")
         val nodeId: Int,
         @SerialName("start_pos")

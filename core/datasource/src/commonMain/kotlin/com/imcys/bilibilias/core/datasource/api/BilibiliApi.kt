@@ -3,10 +3,10 @@ package com.imcys.bilibilias.core.datasource.api
 import com.imcys.bilibilias.core.datasource.model.BiliVideoData
 import com.imcys.bilibilias.core.datasource.model.BilibiliNavigationData
 import com.imcys.bilibilias.core.datasource.model.DmSegMobileReply
+import com.imcys.bilibilias.core.datasource.model.InteractiveChoiceDetails
 import com.imcys.bilibilias.core.datasource.model.PgcPlayUrl
 import com.imcys.bilibilias.core.datasource.model.PlayerInfo
 import com.imcys.bilibilias.core.datasource.model.Season
-import com.imcys.bilibilias.core.datasource.model.SteinEdgeInfo
 import com.imcys.bilibilias.core.datasource.model.UgcPlayUrl
 import com.imcys.bilibilias.core.datasource.model.UserProfile
 import com.imcys.bilibilias.core.datasource.utils.WbiSign
@@ -170,10 +170,23 @@ class BilibiliApi(
         }.body()
     }
 
-    suspend fun getSteinEdgeInfo(aid: Long, graphVersion: Int): SteinEdgeInfo {
+    /**
+     * 获取互动视频特定选择分支的详细信息。
+     *
+     * @param aid 视频的稿件ID。
+     * @param interactionGraphVersion 互动图的版本号。
+     * @param choiceId 用户做出的选择或要跳转到的特定分支的ID (原edgeId)。如果为null，则获取初始信息。
+     * @return 成功时返回 [InteractiveChoiceDetails]，失败时返回 null。
+     */
+    suspend fun getInteractiveChoiceOutcome(
+        aid: Long,
+        interactionGraphVersion: Int,
+        choiceId: Long?
+    ): InteractiveChoiceDetails? {
         return client.get("x/stein/edgeinfo_v2") {
             parameter("aid", aid)
-            parameter("graph_version", graphVersion)
+            parameter("graph_version", interactionGraphVersion)
+            parameter("edge_id", choiceId)
         }.body()
     }
 }
