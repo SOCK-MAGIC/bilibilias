@@ -37,4 +37,9 @@ class SettingsViewModel(
             asPreferencesDataSource.setAudioResolutions(newResolutions)
         }
     }
+    fun setSubtitles(enable: Boolean) {
+        viewModelScope.launch {
+            asPreferencesDataSource.setSubtitles(enable)
+        }
+    }
 }

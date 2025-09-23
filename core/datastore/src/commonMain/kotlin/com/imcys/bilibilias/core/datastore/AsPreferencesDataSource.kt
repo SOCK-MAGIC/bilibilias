@@ -38,4 +38,10 @@ class AsPreferencesDataSource(
             it.copy(audioResolutions = newResolutions)
         }
     }
+
+    suspend fun setSubtitles(enable: Boolean) {
+        userPreferences.updateData {
+            it.copy(setSubtitle = enable)
+        }
+    }
 }

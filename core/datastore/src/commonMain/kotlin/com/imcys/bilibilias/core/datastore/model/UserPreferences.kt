@@ -14,6 +14,7 @@ data class UserPreferences(
     val codecPriorityList: List<Codecs>,
     val videoResolutions: List<Resolution>,
     val audioResolutions: List<Resolution>,
+    val setSubtitle: Boolean,
 ) {
     companion object {
         val DEFAULT = UserPreferences(
@@ -22,6 +23,7 @@ data class UserPreferences(
             codecPriorityList = Codecs.entries,
             videoResolutions = emptyList(),
             audioResolutions = emptyList(),
+            setSubtitle = true,
         )
     }
 }

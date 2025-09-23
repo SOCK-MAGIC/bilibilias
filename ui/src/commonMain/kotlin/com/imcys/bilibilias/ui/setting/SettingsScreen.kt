@@ -40,7 +40,8 @@ fun SettingsScreen(
         updateTryLook = settingsViewModel::setTryLook,
         updateDecoderCodec = settingsViewModel::setDecoderCodecPriorityList,
         updateVideoResolutions = settingsViewModel::setVideoResolutions,
-        updateAudioResolutions = settingsViewModel::setAudioResolutions
+        updateAudioResolutions = settingsViewModel::setAudioResolutions,
+        updateSubtitles = settingsViewModel::setSubtitles
     )
 }
 
@@ -53,6 +54,7 @@ fun SettingsContent(
     updateDecoderCodec: (List<Codecs>) -> Unit = {},
     updateVideoResolutions: (List<Resolution>) -> Unit = {},
     updateAudioResolutions: (List<Resolution>) -> Unit = {},
+    updateSubtitles: (Boolean) -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -111,6 +113,15 @@ fun SettingsContent(
                 dialogDescription = { Text("长按排序，优先选择顺序较高的项目。") },
                 icon = { Icon(Icons.Outlined.Hd, null) },
             )
+
+            SettingsSwitch(
+                state.setSubtitle,
+                title = { Text("添加字幕") },
+                subtitle = { Text("合并视频时添加字幕到视频") },
+            ) {
+                updateSubtitles(it)
+            }
+
             SettingsSwitch(
                 state = state.enableTryLook,
                 icon = {
