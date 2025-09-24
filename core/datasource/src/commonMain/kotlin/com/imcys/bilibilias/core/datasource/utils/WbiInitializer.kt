@@ -5,6 +5,7 @@ import com.imcys.bilibilias.core.logging.logger
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 
+// TODO: 添加一个记录方法，只在每天更新，避免重复请求
 class WbiInitializer(
     private val api: BilibiliApi,
 ) {
