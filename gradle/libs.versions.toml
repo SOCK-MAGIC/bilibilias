@@ -18,6 +18,7 @@ androidx-sqlite = "2.6.0"
 androidx-startup = "1.2.0"
 androidx-work = "2.10.4"
 buildkonfig = "0.17.1"
+androidx-collection = "1.5.0"
 composeHotReload = "1.0.0-beta06"
 composeMultiplatform = "1.9.0"
 coil = "3.3.0"
@@ -44,6 +45,7 @@ uriKmp = "0.0.20"
 [libraries]
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidx-activity" }
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
+androidx-collection = { module = "androidx.collection:collection", version.ref = "androidx-collection" }
 androidx-compose-adaptive-navigation3 = { module = "androidx.compose.material3.adaptive:adaptive-navigation3", version.ref = "androidxAdaptiveNavigation3" }
 androidx-compose-material3-adaptive = { module = "org.jetbrains.compose.material3.adaptive:adaptive", version.ref = "androidx-material3-adaptive" }
 androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "composeMultiplatform" }
