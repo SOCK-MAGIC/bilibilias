@@ -9,5 +9,4 @@ val UseCaseModule = module {
     factoryOf(::MediaSourceUseCase)
     factoryOf(::GetIdFromTextUseCase)
     factoryOf(::GetDmUseCase)
-    factoryOf(::GetInteractVideoUseCase)
 }
