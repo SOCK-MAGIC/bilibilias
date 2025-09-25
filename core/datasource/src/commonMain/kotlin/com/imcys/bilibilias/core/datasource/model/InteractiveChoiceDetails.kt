@@ -13,7 +13,8 @@ data class InteractiveChoiceDetails(
     @SerialName("edges")
     val edges: Edges,
     @SerialName("is_leaf")
-    val isLeaf: Int,
+    @Serializable(with = IntAsBooleanSerializer::class)
+    val isLeaf: Boolean,
     @SerialName("preload")
     val preload: Preload,
     @SerialName("story_list")
@@ -27,8 +28,6 @@ data class InteractiveChoiceDetails(
         val dimension: Dimension,
         @SerialName("questions")
         val questions: List<Question>,
-        @SerialName("skin")
-        val skin: Skin
     ) {
         @Serializable
         data class Dimension(
@@ -77,24 +76,6 @@ data class InteractiveChoiceDetails(
                 val platformAction: String
             )
         }
-
-        @Serializable
-        data class Skin(
-            @SerialName("choice_image")
-            val choiceImage: String,
-            @SerialName("progressbar_color")
-            val progressbarColor: String,
-            @SerialName("progressbar_shadow_color")
-            val progressbarShadowColor: String,
-            @SerialName("title_shadow_color")
-            val titleShadowColor: String,
-            @SerialName("title_shadow_offset_y")
-            val titleShadowOffsetY: Int,
-            @SerialName("title_shadow_radius")
-            val titleShadowRadius: Int,
-            @SerialName("title_text_color")
-            val titleTextColor: String
-        )
     }
 
     @Serializable
