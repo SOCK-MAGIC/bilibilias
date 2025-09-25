@@ -1,6 +1,7 @@
 package com.imcys.bilibilias.core.domain
 
 import androidx.collection.mutableLongObjectMapOf
+import androidx.collection.mutableScatterMapOf
 import com.imcys.bilibilias.core.datasource.api.BilibiliApi
 import com.imcys.bilibilias.core.datasource.model.InteractiveChoiceDetails
 import com.imcys.bilibilias.core.logging.logger
@@ -11,15 +12,15 @@ class GetInteractVideoUseCase(
     /**
      * 模块id映射到node，模块id是不会重复的，但是模块内的cid是会与其他模块内的cid重复的，为了防止重复下载
      */
-    val edgeIdToNodeMap = mutableLongObjectMapOf<Node>()
+    private val edgeIdToNodeMap = mutableLongObjectMapOf<Node>()
 
     /**
      * cid映射到node
      */
-    private val cidToNodeMap = mutableLongObjectMapOf<Node>()
+    val cidToNodeMap = mutableScatterMapOf<Long, Node>()
 
     private val logger = logger<GetInteractVideoUseCase>()
-    suspend operator fun invoke(aid: Long, rootCid: Long) {
+    suspend fun invoke(aid: Long, rootCid: Long) {
         val graphVersion = getGraphVersion(aid, rootCid)
 
         val processingQueue: ArrayDeque<TraversalItem> = ArrayDeque()
@@ -45,13 +46,14 @@ class GetInteractVideoUseCase(
             }
 
             edgeInfo ?: continue
-
             val node = Node(
                 cid = cid,
                 edgeId = edgeId,
                 title = edgeInfo.title,
                 level = currentLevel,
-                isLeafNode = edgeInfo.isLeaf
+                isLeafNode = edgeInfo.isLeaf,
+                width = edgeInfo.edges.dimension.width,
+                height = edgeInfo.edges.dimension.height
             )
 
             edgeIdToNodeMap[edgeId] = node
@@ -114,4 +116,6 @@ data class Node(
     val title: String,
     val level: Int,
     val isLeafNode: Boolean,
+    val width: Int,
+    val height: Int,
 )
