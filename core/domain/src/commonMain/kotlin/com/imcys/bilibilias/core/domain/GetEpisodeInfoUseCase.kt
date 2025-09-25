@@ -13,7 +13,6 @@ import com.imcys.bilibilias.core.logging.logger
 import com.imcys.bilibilias.core.model.VideoType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 
 class GetEpisodeInfoUseCase(
@@ -47,7 +46,7 @@ class GetEpisodeInfoUseCase(
             if (detail != null) {
                 val episodeBvids = detail.episodes.map { it.bvid }.toSet()
 
-                val cachedItemsByCid = mediaCacheStorage.listFlow.first()
+                val cachedItemsByCid = cachedItemsList
                     .filter { cachedItem -> cachedItem.origin.bvid in episodeBvids }
                     .associateBy { it.origin.cid }
 
@@ -88,37 +87,61 @@ class GetEpisodeInfoUseCase(
 
         return detailFlow.combine(mediaCacheStorage.listFlow) { detail, cachedItemsList ->
             if (detail != null) {
-                val cachedItemsByCid = mediaCacheStorage.listFlow.first()
+                val cachedItemsByCid = cachedItemsList
                     .filter { it.origin.bvid == detail.bvid }
                     .associateBy { it.origin.cid }
                 if (detail.rights.isSteinGate) {
-//                    val playerInfo = api.getPlayerInfo(detail.aid, detail.cid)
-//                    val graphVersion = playerInfo.interaction.graphVersion
-//                    GetInteractVideoUseCase(detail.aid, graphVersion,detail.cid, api).initGraph()
-                }
-                val states = detail.pages.map { page ->
-                    val cid = page.cid
-                    val cacheStatus = if (cachedItemsByCid.containsKey(cid)) {
-                        EpisodeCacheStatus.Cached
-                    } else {
-                        EpisodeCacheStatus.NotCached
+                    val case = GetInteractVideoUseCase(api)
+                    case.invoke(detail.aid, detail.cid)
+
+                    var index = 1
+                    val states = case.cidToNodeMap.asMap().map { (cid, node) ->
+                        val cacheStatus = if (cachedItemsByCid.containsKey(cid)) {
+                            EpisodeCacheStatus.Cached
+                        } else {
+                            EpisodeCacheStatus.NotCached
+                        }
+                        EpisodeCacheState(
+                            episodeId = detail.bvid,
+                            episodeSubId = node.cid,
+                            episodeAliasId = detail.aid,
+                            index = index++,
+                            title = node.title,
+                            cacheStatus = cacheStatus,
+                            duration = 0,
+                            width = node.width,
+                            height = node.height,
+                        )
                     }
-                    EpisodeCacheState(
-                        episodeId = detail.bvid,
-                        episodeSubId = cid,
-                        episodeAliasId = detail.aid,
-                        index = page.page,
-                        title = page.part,
-                        cacheStatus = cacheStatus,
-                        duration = page.duration.toInt(),
-                        width = detail.dimension.width,
-                        height = detail.dimension.height,
+                    EpisodeCacheListState(
+                        episodeInfo = detail.toEpisodeInfo(),
+                        episodes = states,
+                    )
+                } else {
+                    val states = detail.pages.map { page ->
+                        val cid = page.cid
+                        val cacheStatus = if (cachedItemsByCid.containsKey(cid)) {
+                            EpisodeCacheStatus.Cached
+                        } else {
+                            EpisodeCacheStatus.NotCached
+                        }
+                        EpisodeCacheState(
+                            episodeId = detail.bvid,
+                            episodeSubId = cid,
+                            episodeAliasId = detail.aid,
+                            index = page.page,
+                            title = page.part,
+                            cacheStatus = cacheStatus,
+                            duration = page.duration.toInt(),
+                            width = detail.dimension.width,
+                            height = detail.dimension.height,
+                        )
+                    }
+                    EpisodeCacheListState(
+                        episodeInfo = detail.toEpisodeInfo(),
+                        episodes = states,
                     )
                 }
-                EpisodeCacheListState(
-                    episodeInfo = detail.toEpisodeInfo(),
-                    episodes = states,
-                )
             } else null
         }
     }
