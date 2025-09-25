@@ -115,7 +115,7 @@ class BilibiliApi(
             val map = buildMap {
                 put("type", 1)
                 put("oid", cid)
-                put("segment_index", it)
+                put("segment_index", it + 1)
                 put("pid", aid)
             }
             val signedQuery = WbiSign.enc(map)
