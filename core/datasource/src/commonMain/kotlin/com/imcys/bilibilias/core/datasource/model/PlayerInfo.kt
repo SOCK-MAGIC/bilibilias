@@ -41,7 +41,7 @@ data class PlayerInfo(
     @SerialName("is_upower_play")
     val isUpowerPlay: Boolean,
     @SerialName("last_play_cid")
-    val lastPlayCid: Int,
+    val lastPlayCid: Long,
     @SerialName("last_play_time")
     val lastPlayTime: Int,
     @SerialName("level_info")
