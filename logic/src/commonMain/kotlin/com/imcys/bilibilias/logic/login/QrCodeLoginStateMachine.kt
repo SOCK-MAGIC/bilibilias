@@ -3,24 +3,33 @@ package com.imcys.bilibilias.logic.login
 import com.freeletics.flowredux2.FlowReduxStateMachineFactory
 import com.freeletics.flowredux2.initializeWith
 import com.imcys.bilibilias.core.data.util.ErrorMonitor
+import com.imcys.bilibilias.core.datasource.api.BilibiliApi
 import com.imcys.bilibilias.core.datasource.api.BilibiliLoginApi
 import com.imcys.bilibilias.core.datasource.model.OauthCode.Companion.Expired
 import com.imcys.bilibilias.core.datasource.model.OauthCode.Companion.Success
 import com.imcys.bilibilias.core.datasource.model.OauthCode.Companion.WaitingConfirmation
 import com.imcys.bilibilias.core.datasource.model.OauthCode.Companion.WaitingScanned
 import com.imcys.bilibilias.core.datasource.model.PollResponse
+import com.imcys.bilibilias.core.datastore.AsPreferencesDataSource
 import com.imcys.bilibilias.core.datastore.TokenRepository
+import com.imcys.bilibilias.core.datastore.model.SelfInfo
 import com.imcys.bilibilias.core.logging.logger
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.saveImageToGallery
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
+import kotlin.uuid.Uuid
 
 class QrCodeLoginStateMachine(
     private val loginApi: BilibiliLoginApi,
     private val tokenRepository: TokenRepository,
-    private val errorMonitor: ErrorMonitor
+    private val errorMonitor: ErrorMonitor,
+    private val api: BilibiliApi,
+    private val preferences: AsPreferencesDataSource,
+    private val applicationScope: CoroutineScope,
 ) : FlowReduxStateMachineFactory<QrCodeLoginState, QrCodeLoginAction>() {
     private val logger = logger<QrCodeLoginStateMachine>()
     private var shouldContinuePolling = true
@@ -82,9 +91,27 @@ class QrCodeLoginStateMachine(
                     override { QrCodeLoginState.GeneratingQRCode }
                 }
             }
+            inState<QrCodeLoginState.LoginSuccess> {
+                onEnterEffect {
+                    tryLogin()
+                }
+            }
         }
     }
 
+    private fun tryLogin() {
+        applicationScope.launch {
+            val data = api.getNavigationData()
+            preferences.setSelfInfo(
+                SelfInfo(
+                    Uuid.random(),
+                    data.mid!!,
+                    data.uname!!,
+                    data.face!!
+                )
+            )
+        }
+    }
     private fun tickerFlow(start: Long, end: Long = 0L) = flow {
         for (i in start downTo end) {
             emit(i)

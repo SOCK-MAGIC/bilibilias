@@ -3,10 +3,17 @@ package com.imcys.bilibilias.logic.login
 import com.freeletics.flowredux2.FlowReduxStateMachineFactory
 import com.freeletics.flowredux2.initializeWith
 import com.imcys.bilibilias.core.datasource.api.BilibiliApi
+import com.imcys.bilibilias.core.datastore.AsPreferencesDataSource
+import com.imcys.bilibilias.core.datastore.model.SelfInfo
 import com.imcys.bilibilias.core.logging.logger
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import kotlin.uuid.Uuid
 
 class CookieStateMachine(
-    private val api: BilibiliApi
+    private val api: BilibiliApi,
+    private val preferences: AsPreferencesDataSource,
+    private val applicationScope: CoroutineScope,
 ) : FlowReduxStateMachineFactory<CookieLoginState, CookieAction>() {
     private val logger = logger<CookieStateMachine>()
 
@@ -22,6 +29,7 @@ class CookieStateMachine(
                         val profile = api.getUserProfile(snapshot.text)
                         if (profile.mid != 0L) {
                             api.setCookieFromSetCookieHeader(snapshot.text)
+                            tryLogin()
                             mutate { copy(success = true) }
                         } else {
                             mutate {
@@ -42,6 +50,20 @@ class CookieStateMachine(
                     }
                 }
             }
+        }
+    }
+
+    private fun tryLogin() {
+        applicationScope.launch {
+            val data = api.getNavigationData()
+            preferences.setSelfInfo(
+                SelfInfo(
+                    Uuid.random(),
+                    data.mid!!,
+                    data.uname!!,
+                    data.face!!
+                )
+            )
         }
     }
 }
