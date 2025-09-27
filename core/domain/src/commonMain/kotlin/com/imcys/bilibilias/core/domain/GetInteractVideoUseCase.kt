@@ -1,7 +1,6 @@
 package com.imcys.bilibilias.core.domain
 
 import androidx.collection.mutableLongObjectMapOf
-import androidx.collection.mutableScatterMapOf
 import com.imcys.bilibilias.core.datasource.api.BilibiliApi
 import com.imcys.bilibilias.core.datasource.model.InteractiveChoiceDetails
 import com.imcys.bilibilias.core.logging.logger
@@ -14,10 +13,15 @@ class GetInteractVideoUseCase(
      */
     private val edgeIdToNodeMap = mutableLongObjectMapOf<Node>()
 
-    /**
-     * cid映射到node
-     */
-    val cidToNodeMap = mutableScatterMapOf<Long, Node>()
+    fun getSortedNodes(): List<Node> {
+        return buildSet {
+            edgeIdToNodeMap.forEachValue {
+                add(it)
+            }
+        }
+            .distinctBy { it.cid }
+            .sortedBy { it.edgeId }
+    }
 
     private val logger = logger<GetInteractVideoUseCase>()
     suspend fun invoke(aid: Long, rootCid: Long) {
@@ -53,16 +57,10 @@ class GetInteractVideoUseCase(
                 level = currentLevel,
                 isLeafNode = edgeInfo.isLeaf,
                 width = edgeInfo.edges.dimension.width,
-                height = edgeInfo.edges.dimension.height
+                height = edgeInfo.edges.dimension.height,
             )
-
+            edgeInfo.storyList.first().cursor
             edgeIdToNodeMap[edgeId] = node
-            // Only add to cidToNodeMap if it's not already pointing to a different node instance
-            // or if the policy is to overwrite/update.
-            // If CIDs are truly reusable and should point to THE SAME node instance,
-            // you might need to check cidToNodeMap first.
-            // For now, assume a new Node instance per unique edgeId.
-            cidToNodeMap[cid] = node
 
             val questions = edgeInfo.edges.questions
             val childNodeLevel = currentLevel + 1

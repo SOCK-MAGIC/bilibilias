@@ -95,7 +95,8 @@ class GetEpisodeInfoUseCase(
                     case.invoke(detail.aid, detail.cid)
 
                     var index = 1
-                    val states = case.cidToNodeMap.asMap().map { (cid, node) ->
+                    val states = case.getSortedNodes().map { node ->
+                        val cid = node.cid
                         val cacheStatus = if (cachedItemsByCid.containsKey(cid)) {
                             EpisodeCacheStatus.Cached
                         } else {
@@ -103,7 +104,7 @@ class GetEpisodeInfoUseCase(
                         }
                         EpisodeCacheState(
                             episodeId = detail.bvid,
-                            episodeSubId = node.cid,
+                            episodeSubId = cid,
                             episodeAliasId = detail.aid,
                             index = index++,
                             title = node.title,

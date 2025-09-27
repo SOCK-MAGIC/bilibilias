@@ -27,7 +27,7 @@ data class InteractiveChoiceDetails(
         @SerialName("dimension")
         val dimension: Dimension,
         @SerialName("questions")
-        val questions: List<Question>,
+        val questions: List<Question> = emptyList(),
     ) {
         @Serializable
         data class Dimension(
@@ -52,7 +52,7 @@ data class InteractiveChoiceDetails(
             @SerialName("pause_video")
             val pauseVideo: Int,
             @SerialName("start_time_r")
-            val startTimeR: Int,
+            val startTimeR: Int? = null,
             @SerialName("title")
             val title: String,
             @SerialName("type")
