@@ -137,9 +137,10 @@ internal fun SearchContent(
                 SearchResultUiState.EmptyQuery -> {}
 
                 SearchResultUiState.Loading -> {
-                    Box(
+                    Column(
                         modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
                     ) {
                         CircularProgressIndicator()
                         Spacer(Modifier.height(8.dp))
