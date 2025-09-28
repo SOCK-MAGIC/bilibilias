@@ -1,10 +1,15 @@
 package com.imcys.bilibilias.logic.cache
 
 import androidx.lifecycle.ViewModel
+import com.eygraber.uri.toKmpUri
 import com.imcys.bilibilias.core.datastore.MediaCacheDataSource
+import com.imcys.bilibilias.core.datastore.model.MetadataKey
 import com.imcys.bilibilias.core.domain.GetCachedEpisodeStateUseCase
 import com.imcys.bilibilias.core.domain.model.CacheEpisodeState
-import com.imcys.bilibilias.core.ffmpeg.MediaMultiplexer
+import com.imcys.bilibilias.core.ffmpeg.MediaProcessor
+import com.imcys.bilibilias.core.ffmpeg.ProcessRequest
+import com.imcys.bilibilias.core.ffmpeg.SubtitleMode
+import com.imcys.bilibilias.core.ffmpeg.SubtitleTrack
 import com.imcys.bilibilias.core.logging.logger
 import com.imcys.bilibilias.core.storage.MediaStoreAccess
 import com.imcys.bilibilias.logic.stateInViewModelScope
@@ -18,7 +23,7 @@ import kotlinx.coroutines.launch
 import kotlin.time.Clock
 
 class CacheViewModel(
-    private val multiplexer: MediaMultiplexer,
+    private val multiplexer: MediaProcessor,
     private val mediaStoreAccess: MediaStoreAccess,
     private val getCachedEpisodeStateUseCase: GetCachedEpisodeStateUseCase,
     private val mediaCacheStorage: MediaCacheDataSource,
@@ -43,16 +48,38 @@ class CacheViewModel(
         lock.update { true }
         try {
             logger.info { "Attempting to combine media cache for episode: ${state.episodeMetadata}" }
-            state.mediaCacheMetadata.metadata.map { it.filePath.toString() }
+            val assFile = state.mediaCacheMetadata.extra[MetadataKey.ASS_FILE]
+
             val filename = Clock.System.now().toEpochMilliseconds()
-            mediaStoreAccess.createVideo(filename.toString(), "video/mp4", "BilibiliAs")
-                ?: run {
-                    logger.warn { "Failed to create video file for episode: ${state.episodeMetadata}" }
-                    lock.update { false }
-                    return
-                }
+            val videoUri =
+                mediaStoreAccess.createVideo(filename.toString(), "video/mp4", "BilibiliAs")
+                    ?: run {
+                        logger.warn { "Failed to create video file for episode: ${state.episodeMetadata}" }
+                        lock.update { false }
+                        return
+                    }
+            val subtitle = if (assFile != null) {
+                listOf(
+                    SubtitleTrack(
+                        assFile.toKmpUri(),
+                        "ZH-cn",
+                        true
+                    )
+                )
+            } else {
+                emptyList()
+            }
+            val request = ProcessRequest(
+                inputUris = state.mediaCacheMetadata.metadata.map {
+                    it.filePath.toString().toKmpUri()
+                },
+                outputUri = videoUri,
+                subtitleTracks = subtitle,
+                subtitleMode = SubtitleMode.SOFT_SUB
+            )
+
             applicationScope.launch {
-//                multiplexer.muxMedia(uris, videoUri.toString())
+                multiplexer.process(request)
             }.invokeOnCompletion {
                 lock.update { false }
                 it?.let {

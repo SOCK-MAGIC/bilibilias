@@ -119,7 +119,7 @@ class SearchViewModel(
                 val cid = episodeCacheState.episodeSubId
                 val title = episodeCacheState.title
 
-                val id = cacheDanmu(episodeCacheState)
+                val path = cacheDanmu(episodeCacheState)
 
                 val metadata = EpisodeMetadata(
                     bvid,
@@ -128,7 +128,10 @@ class SearchViewModel(
                 )
                 val mediaCacheSave = MediaCacheSave(
                     metadata,
-                    MediaCacheMetadata(emptyList(), extra = mapOf(MetadataKey.ASS_FILE to id))
+                    MediaCacheMetadata(
+                        emptyList(),
+                        extra = mapOf(MetadataKey.ASS_FILE to path)
+                    )
                 )
                 mediaCacheStorage.cacheEpisode(mediaCacheSave)
 
