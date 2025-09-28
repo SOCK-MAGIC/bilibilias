@@ -7,10 +7,10 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
 actual val MediaMultiplexerModule: Module = module {
-    singleOf(::Media3MediaMultiplexer) {
-        named("default")
-        bind<MediaMultiplexer>()
-    }
+//    singleOf(::Media3MediaMultiplexer) {
+//        named("default")
+//        bind<MediaMultiplexer>()
+//    }
     singleOf(::FfmpegMediaMultiplexer) {
         named("ffmpeg")
         bind<MediaMultiplexer>()
