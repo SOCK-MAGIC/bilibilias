@@ -16,19 +16,19 @@ import kotlin.math.roundToInt
 import kotlin.uuid.Uuid
 
 class GetDmUseCase(private val api: BilibiliApi) {
-    suspend operator fun invoke(request: DanmuRequest) = withContext(Dispatchers.IO) {
+    suspend operator fun invoke(request: DanmuRequest): String = withContext(Dispatchers.IO) {
         val dmSeg = api.dmSegMobile(request.aid, request.cid, request.duration).flatMap { it.elems }
         val danmus = dmSeg.map { it.toDanmu() }
-        val filename = Uuid.Companion.random().toString()
 
+        val path = BuildConfig.MEDIA_DOWNLOAD.resolve(Uuid.random().toString())
         convert(
             dataProvider = danmus,
             title = request.title,
-            output = BuildConfig.MEDIA_DOWNLOAD.resolve(filename),
+            output = path,
             canvasConfig = canvasConfig(request.width, request.height),
             denylist = null
         )
-        filename
+        path.toString()
     }
 
 
@@ -61,7 +61,7 @@ class GetDmUseCase(private val api: BilibiliApi) {
                 g = (color shr 8) and 0xFF,
                 b = color and 0xFF
             ),
-            type = DanmuType.Companion.valueOf(mode)
+            type = DanmuType.valueOf(mode)
         )
     }
 }
