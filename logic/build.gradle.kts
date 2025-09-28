@@ -11,7 +11,6 @@ kotlin {
             implementation(projects.core.datastore)
             implementation(projects.core.httpDownloader)
 
-            // todo implementation
             api(libs.flowredux)
 
             implementation(libs.koin.compose.viewmodel)
