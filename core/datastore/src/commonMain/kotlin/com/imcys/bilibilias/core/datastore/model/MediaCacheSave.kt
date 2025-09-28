@@ -7,7 +7,6 @@ import kotlinx.io.IOException
 import kotlinx.io.files.Path
 import kotlinx.io.files.SystemFileSystem
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
 import kotlin.time.Clock
 import kotlin.time.Instant
 
@@ -48,8 +47,6 @@ data class MediaCacheMetadata(
     val createdAt: Instant = Clock.System.now(),
     val extra: Map<MetadataKey, String> = emptyMap(),
 ) {
-    @Transient
-    private val logger = logger<MediaCacheMetadata>()
     fun delete(): Boolean {
         var allDeleted = true
         metadata.forEach { partMetadata ->
@@ -72,6 +69,10 @@ data class MediaCacheMetadata(
         return copy(
             extra = extra + other,
         )
+    }
+
+    companion object {
+        private val logger by lazy { logger<MediaCacheMetadata>() }
     }
 }
 
