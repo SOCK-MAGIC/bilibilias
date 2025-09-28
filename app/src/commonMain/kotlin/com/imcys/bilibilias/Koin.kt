@@ -12,7 +12,7 @@ import com.imcys.bilibilias.core.datastore.resolveDataStoreFile
 import com.imcys.bilibilias.core.di.CommonModule
 import com.imcys.bilibilias.core.di.applicationScope
 import com.imcys.bilibilias.core.domain.UseCaseModule
-import com.imcys.bilibilias.core.ffmpeg.MediaMultiplexerModule
+import com.imcys.bilibilias.core.ffmpeg.MediaProcessorModule
 import com.imcys.bilibilias.core.http.downloader.HttpDownloader
 import com.imcys.bilibilias.core.http.downloader.KtorPersistentHttpDownloader
 import com.imcys.bilibilias.core.http.downloader.model.DownloadState
@@ -61,7 +61,7 @@ fun KoinApplication.commonModules() = module {
         DataSourceModule,
         DataStoreModule,
         LogicModule,
-        MediaMultiplexerModule,
+        MediaProcessorModule,
         UseCaseModule,
         otherModules()
     )

@@ -2,8 +2,9 @@ package com.imcys.bilibilias.core.ffmpeg
 
 import kotlinx.coroutines.flow.StateFlow
 
-interface MediaMultiplexer {
+interface MediaProcessor {
+
     val isRunning: StateFlow<Boolean>
     val progress: StateFlow<Int>
-    suspend fun muxMedia(inputPaths: List<String>, outputPath: String)
+    suspend fun process(request: ProcessRequest): ProcessResult
 }
