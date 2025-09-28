@@ -180,11 +180,13 @@ class BilibiliApi(
      */
     suspend fun getInteractiveChoiceOutcome(
         aid: Long,
+        bvid: String,
         interactionGraphVersion: Int,
         choiceId: Long?
     ): InteractiveChoiceDetails? {
         return client.get("x/stein/edgeinfo_v2") {
             parameter("aid", aid)
+            parameter("bvid", bvid)
             parameter("graph_version", interactionGraphVersion)
             parameter("edge_id", choiceId)
         }.body()

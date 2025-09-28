@@ -92,7 +92,7 @@ class GetEpisodeInfoUseCase(
                     .associateBy { it.origin.cid }
                 if (detail.rights.isSteinGate) {
                     val case = GetInteractVideoUseCase(api)
-                    case.invoke(detail.aid, detail.cid)
+                    case.invoke(detail.aid, detail.bvid, detail.cid)
 
                     var index = 1
                     val states = case.getSortedNodes().map { node ->

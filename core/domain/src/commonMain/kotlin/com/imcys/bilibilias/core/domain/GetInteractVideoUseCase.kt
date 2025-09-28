@@ -24,7 +24,7 @@ class GetInteractVideoUseCase(
     }
 
     private val logger = logger<GetInteractVideoUseCase>()
-    suspend fun invoke(aid: Long, rootCid: Long) {
+    suspend fun invoke(aid: Long, bvid: String, rootCid: Long) {
         val graphVersion = getGraphVersion(aid, rootCid)
 
         val processingQueue: ArrayDeque<TraversalItem> = ArrayDeque()
@@ -43,7 +43,7 @@ class GetInteractVideoUseCase(
 
             val edgeInfo: InteractiveChoiceDetails?
             try {
-                edgeInfo = getInteractiveChoiceOutcome(aid, graphVersion, edgeId)
+                edgeInfo = getInteractiveChoiceOutcome(aid, bvid, graphVersion, edgeId)
             } catch (e: Exception) {
                 logger.error(e) { "Error fetching data for edgeId $edgeId" }
                 continue
@@ -59,7 +59,7 @@ class GetInteractVideoUseCase(
                 width = edgeInfo.edges.dimension.width,
                 height = edgeInfo.edges.dimension.height,
             )
-            edgeInfo.storyList.first().cursor
+
             edgeIdToNodeMap[edgeId] = node
 
             val questions = edgeInfo.edges.questions
@@ -92,10 +92,11 @@ class GetInteractVideoUseCase(
 
     private suspend fun getInteractiveChoiceOutcome(
         aid: Long,
+        bvid: String,
         graphVersion: Int,
         edgeId: Long
     ): InteractiveChoiceDetails? {
-        return api.getInteractiveChoiceOutcome(aid, graphVersion, edgeId)
+        return api.getInteractiveChoiceOutcome(aid, bvid, graphVersion, edgeId)
     }
 
     private suspend fun getGraphVersion(aid: Long, cid: Long): Int {
