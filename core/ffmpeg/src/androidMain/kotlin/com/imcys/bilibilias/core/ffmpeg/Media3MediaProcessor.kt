@@ -23,14 +23,18 @@ import kotlinx.io.IOException
 import java.io.File
 
 @OptIn(UnstableApi::class)
-internal class Media3MediaMultiplexer(
+internal class Media3MediaProcessor(
     private val context: Context,
-) : MediaMultiplexer {
-    private val logger = logger<Media3MediaMultiplexer>()
+) : MediaProcessor {
+    private val logger = logger<Media3MediaProcessor>()
 
     override val progress = MutableStateFlow(0)
     override val isRunning = MutableStateFlow(false)
-    override suspend fun muxMedia(inputPaths: List<String>, outputPath: String) {
+    override suspend fun process(request: ProcessRequest): ProcessResult {
+        TODO("Not yet implemented")
+    }
+
+    suspend fun muxMedia(inputPaths: List<String>, outputPath: String) {
         val tempFile = File(context.filesDir, "output.mp4")
         val sequences = inputPaths.map {
             val editedMediaItem = EditedMediaItem.Builder(MediaItem.fromUri(it)).build()
