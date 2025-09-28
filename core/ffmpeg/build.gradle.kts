@@ -10,6 +10,8 @@ kotlin {
         }
         commonMain.dependencies {
             implementation(projects.core.common)
+            
+            implementation(libs.uri.kmp)
         }
     }
 }
