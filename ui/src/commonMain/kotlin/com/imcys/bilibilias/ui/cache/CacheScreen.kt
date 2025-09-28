@@ -1,5 +1,6 @@
 package com.imcys.bilibilias.ui.cache
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -17,12 +19,13 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Merge
 import androidx.compose.material.icons.outlined.ArrowOutward
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxState
@@ -39,10 +42,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.imcys.bilibilias.core.datastore.model.EpisodeMetadata
+import com.imcys.bilibilias.core.datastore.model.MediaCacheMetadata
 import com.imcys.bilibilias.core.domain.model.CacheEpisodeState
+import com.imcys.bilibilias.core.model.DataSize.Companion.mb
 import com.imcys.bilibilias.core.model.DataUnit
+import com.imcys.bilibilias.core.model.FileStats
 import com.imcys.bilibilias.logic.cache.CacheViewModel
+import com.imcys.bilibilias.ui.theme.AsTheme
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.time.Clock
 
 @Composable
 fun CacheScreen(
@@ -168,28 +178,101 @@ private fun SwipeToDismissBoxState.SwipeDismissBackground() {
 
 @Composable
 private fun CacheEpisodeItem(state: CacheEpisodeState) {
-    Card(modifier = Modifier.padding(8.dp)) {
+    OutlinedCard(
+        modifier = Modifier
+            .padding(horizontal = 8.dp, vertical = 8.dp)
+            .fillMaxWidth()
+    ) {
         Row(
-            modifier = Modifier.padding(8.dp).fillMaxWidth(),
+            modifier = Modifier.padding(16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    state.episodeMetadata.title,
+                    text = state.episodeMetadata.title,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
-                    style = MaterialTheme.typography.titleLarge
+                    style = MaterialTheme.typography.titleMedium
                 )
-                Text(state.fileStats.downloadedBytes.toString(DataUnit.MEGABYTES))
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = state.fileStats.downloadedBytes.toString(DataUnit.MEGABYTES),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                AnimatedVisibility(!state.fileStats.isDownloadFinished) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    LinearProgressIndicator(
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
             }
             Row {
-                IconButton({}) {
-                    Icon(Icons.Outlined.Info, contentDescription = null)
+                IconButton(onClick = { /* TODO: 处理点击事件 */ }) {
+                    Icon(
+                        imageVector = Icons.Outlined.Info,
+                        contentDescription = "更多信息"
+                    )
                 }
-                IconButton({}) {
-                    Icon(Icons.Outlined.ArrowOutward, contentDescription = null)
+                IconButton(onClick = { /* TODO: 处理点击事件 */ }) {
+                    Icon(
+                        imageVector = Icons.Outlined.ArrowOutward,
+                        contentDescription = "打开视频"
+                    )
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun CacheEpisodeItemPreview() {
+    AsTheme {
+        CacheEpisodeItem(
+            state = CacheEpisodeState(
+                episodeMetadata = EpisodeMetadata(
+                    bvid = "BV1fx411y7R2",
+                    cid = 123456L,
+                    title = "Sample Episode Title - A very long title to check how text overflow behaves in the UI design"
+                ),
+                mediaCacheMetadata = MediaCacheMetadata(
+                    metadata = emptyList(),
+                    createdAt = Clock.System.now(),
+                    extra = emptyMap()
+                ),
+                fileStats = FileStats.Unspecified,
+                canPlay = true,
+                canMux = true
+            )
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun CacheEpisodeItemDownloadingPreview() {
+    AsTheme {
+        CacheEpisodeItem(
+            state = CacheEpisodeState(
+                episodeMetadata = EpisodeMetadata(
+                    bvid = "BV1ZX411A7sC",
+                    cid = 789012L,
+                    title = "Sample Downloading Episode - Another long title to test UI elements during download"
+                ),
+                mediaCacheMetadata = MediaCacheMetadata(
+                    metadata = emptyList(),
+                    createdAt = Clock.System.now(),
+                    extra = emptyMap()
+                ),
+                fileStats = FileStats(
+                    totalSize = 100.0.mb,
+                    downloadedBytes = 50.0.mb
+                ),
+                canPlay = false,
+                canMux = false
+            )
+        )
     }
 }
