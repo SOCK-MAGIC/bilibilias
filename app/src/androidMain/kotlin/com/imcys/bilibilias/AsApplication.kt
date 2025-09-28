@@ -28,6 +28,7 @@ class AsApplication : Application(), SingletonImageLoader.Factory {
             workManagerFactory()
         }
         Sync.initialize(this)
+        BuildConfig.initDirectory()
     }
 
     override fun newImageLoader(context: PlatformContext): ImageLoader {
