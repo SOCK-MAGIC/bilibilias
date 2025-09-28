@@ -7,7 +7,6 @@ import com.imcys.bilibilias.core.navigation.AsBackStackViewModel
 import com.imcys.bilibilias.core.navigation.AsNavKey
 import com.imcys.bilibilias.navigation.CacheRoute
 import com.imcys.bilibilias.navigation.LoginRoute
-import com.imcys.bilibilias.navigation.PolymorphicModuleBuilders
 import com.imcys.bilibilias.navigation.SearchRoute
 import com.imcys.bilibilias.navigation.SettingRoute
 import com.imcys.bilibilias.navigation.TopLevelDestination
@@ -17,16 +16,20 @@ import com.imcys.bilibilias.ui.search.SearchScreen
 import com.imcys.bilibilias.ui.setting.SettingsScreen
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
+import kotlinx.serialization.modules.subclass
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 val NavigationModule = module {
     viewModelOf(::AsBackStackViewModel)
     single { AsBackStack(TopLevelDestination.SEARCH.key) }
-    single {
+    single<SerializersModule> {
         SerializersModule {
             polymorphic(AsNavKey::class) {
-                PolymorphicModuleBuilders.forEach { it }
+                subclass(SearchRoute::class)
+                subclass(CacheRoute::class)
+                subclass(LoginRoute::class)
+                subclass(SettingRoute::class)
             }
         }
     }

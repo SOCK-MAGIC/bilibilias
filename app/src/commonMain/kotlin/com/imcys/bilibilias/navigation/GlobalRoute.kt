@@ -26,5 +26,3 @@ data object SettingRoute : AsNavKey {
     override val isTopLevel: Boolean
         get() = false
 }
-
-internal val PolymorphicModuleBuilders = listOf(SearchRoute, CacheRoute, LoginRoute, SettingRoute)
