@@ -16,3 +16,8 @@ kotlin {
 android {
     namespace = "com.imcys.bilibilias.core.ass"
 }
+
+uniffi {
+//    bindgenFromPath(rootProject.layout.projectDirectory.dir("crates/gobley-uniffi-bindgen"))
+    generateFromLibrary()
+}

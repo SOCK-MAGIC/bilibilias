@@ -1,5 +1,6 @@
-use crate::element::Element;
-use crate::setting::Setting;
+use std::sync::atomic::Ordering;
+use crate::danmaku_elem::DanmuElement;
+use crate::danmu_setting::DanmuSetting;
 
 pub enum Collision {
     // 会越来越远
@@ -11,29 +12,29 @@ pub enum Collision {
 }
 
 /// 表示一个弹幕槽位
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, uniffi::Object)]
 pub struct Lane {
-    last_shoot_time: f64,
+    last_shoot_time: u32,
     last_length: f64,
 }
 
 impl Lane {
-    pub fn draw(element: &Element, setting: &Setting) -> Self {
+    pub fn draw(element: &DanmuElement, setting: &DanmuSetting) -> Self {
         Lane {
-            last_shoot_time: element.timeline_s,
-            last_length: element.estimated_width(setting),
+            last_shoot_time: element.timeline.load(Ordering::SeqCst),
+            last_length: element.length(setting),
         }
     }
     /// 如底部弹幕等不需要记录长度的
-    pub fn draw_fixed(element: &Element) -> Self {
+    pub fn draw_fixed(element: &DanmuElement) -> Self {
         Lane {
-            last_shoot_time: element.timeline_s,
+            last_shoot_time:element.timeline.load(Ordering::SeqCst),
             last_length: 0.0,
         }
     }
 
     /// 这个槽位是否可以发射另外一条弹幕，返回可能的情形
-    pub fn available_for(&self, other: &Element, setting: Setting) -> Collision {
+    pub fn available_for(&self, other: &DanmuElement, setting: &DanmuSetting) -> Collision {
         #[allow(non_snake_case)]
         let T = setting.duration;
         #[allow(non_snake_case)]
@@ -41,10 +42,10 @@ impl Lane {
         let gap = setting.horizontal_gap;
 
         // 先计算我的速度
-        let t1 = self.last_shoot_time;
-        let t2 = other.timeline_s;
+        let t1 = self.last_shoot_time as f64;
+        let t2 = other.timeline.load(Ordering::SeqCst) as f64;
         let l1 = self.last_length;
-        let l2 = other.estimated_width(&setting);
+        let l2 = other.length(setting);
 
         let v1 = (W + l1) / T;
         let v2 = (W + l2) / T;

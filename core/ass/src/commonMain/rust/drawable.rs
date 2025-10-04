@@ -1,26 +1,20 @@
-use crate::element::Element;
-/// 弹幕开始绘制的时间就是 danmu 的时间
+use std::sync::Arc;
+use crate::danmaku_elem::DanmuElement;
+
+/// 弹幕开始绘制的时间就是 DanmuElement 的时间
+#[derive(uniffi::Record)]
 pub struct Drawable {
-    pub element: Element,
-    /// 弹幕一共绘制的时间
+    pub element:  Arc<DanmuElement>,
+    /// 弹幕一共绘制的时间  
     pub duration: f64,
     /// 弹幕的绘制 style
-    pub style_name: &'static str,
+    pub style_name: String,
     /// 绘制的“特效”
     pub effect: DrawEffect,
 }
-impl Drawable {
-    pub fn new(element: Element, duration: f64, style_name: &'static str, effect: DrawEffect) -> Self {
-        Drawable {
-            element,
-            duration,
-            style_name,
-            effect,
-        }
-    }
-}
 
+#[derive(uniffi::Enum)]
 pub enum DrawEffect {
-    Move { start: (i32, i32), end: (i32, i32) },
+    Move { x1:i32, y1:i32, x2:i32, y2:i32 },
     Fixed {},
 }
