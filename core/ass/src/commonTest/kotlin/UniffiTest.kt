@@ -1,6 +1,10 @@
+import com.imcys.bilibilias.core.ass.Drawable
+import com.imcys.bilibilias.core.ass.createDanmu
+import kotlin.test.Test
+
 class UniffiTest {
 
-//    private val setting = DanmuSetting(
+    //    private val setting = DanmuSetting(
 //        duration = 15.0,
 //        width = 1920u,
 //        height = 1080u,
@@ -66,4 +70,10 @@ class UniffiTest {
 //            .map { allowedChars.random() }
 //            .joinToString("")
 //    }
+    @Test
+    fun test4() {
+        Drawable().danmu
+        val danmu = createDanmu()
+        danmu
+    }
 }
