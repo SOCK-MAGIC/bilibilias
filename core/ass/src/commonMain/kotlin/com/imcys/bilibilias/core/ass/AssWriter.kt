@@ -1,161 +1,91 @@
 package com.imcys.bilibilias.core.ass
 
-import com.imcys.bilibilias.core.ass.canvas.CanvasConfig
-import com.imcys.bilibilias.core.ass.canvas.DrawEffect
-import com.imcys.bilibilias.core.ass.canvas.Drawable
 import kotlinx.io.buffered
 import kotlinx.io.files.Path
 import kotlinx.io.files.SystemFileSystem
 import kotlinx.io.writeString
-import java.io.Closeable
-import java.io.IOException
-import kotlin.time.Duration.Companion.seconds
+import java.util.Locale
 
-/**
- * 包装一个时间戳（秒），并提供 ASS 格式的字符串表示 (H:MM:SS.ss)。
- *
- * Kotlin 的 `toString()` 方法完美替代了 Rust 的 `fmt::Display` trait。
- */
-data class TimePoint(val t: Double) {
-    override fun toString(): String {
-        return t.seconds.toComponents { hours, minutes, seconds, _ ->
-            val hoursStr = hours.toString()
-            val minutesStr = minutes.toString().padStart(2, '0')
-            val secondsStr = seconds.toString().padStart(2, '0')
-            "$hoursStr:$minutesStr:$secondsStr"
-        }
-    }
-}
-
-/**
- * 包装一个 DrawEffect，并提供 ASS 特效标签的字符串表示。
- *
- * 同样，使用 `toString()` 替代 `fmt::Display`。
- */
-data class AssEffect(val effect: DrawEffect) {
-    override fun toString(): String {
-        return when (effect) {
-            is DrawEffect.Move -> {
-                val (x0, y0) = effect.start
-                val (x1, y1) = effect.end
-                "\\move($x0, $y0, $x1, $y1)"
-            }
-
-            is DrawEffect.Fixed -> {
-                logger.error { "Fixed danmaku should not appear here; they cannot be converted to ASS effects." }
-                throw IllegalStateException("Cannot format a Fixed DrawEffect for ASS.")
-            }
-        }
-    }
-}
-
-/**
- * 为 CanvasConfig 添加一个扩展函数，用于生成 ASS 格式的样式定义。
- *
- * 扩展函数是在 Kotlin 中为现有类添加新功能的最佳方式，
- * 完美对应 Rust 的 `impl CanvasConfig { ... }` 块。
- */
-fun CanvasConfig.toAssStyles(): List<String> {
-    // 将布尔值转换为 ASS 使用的 1 或 0
-    val boldValue = if (bold) 1 else 0
-    // ASS 的颜色格式是 AABBGGRR，而我们的 opacity (不透明度) 是 255-alpha
-    // ASS 的 PrimaryColour alpha 是反的，&H00 是不透明，&HFF 是全透明
-    val assAlpha = (255 - alpha).toHexString(HexFormat.UpperCase)
-
-    val baseStyle =
-        "${font},${fontSize},&H${assAlpha}FFFFFF,&H00FFFFFF,&H${assAlpha}000000,&H00000000," +
-                "$boldValue,0,0,0,100,100,0.00,0.00,1," +
-                "${outline},0,7,0,0,0,1".trimStart()
-
-    return listOf(
-        "Style: Float,$baseStyle",
-        "Style: Bottom,$baseStyle",
-        "Style: Top,$baseStyle"
-    )
-}
-
-/**
- * 负责将 Drawable 对象写入任何 Writer，生成 ASS 字幕文件。
- *
- * @property title 字幕文件的标题。
- * @property canvasConfig 相关的画布配置。
- */
 class AssWriter(
-    path: Path,
-    private val title: String,
-    private val canvasConfig: CanvasConfig
-) : Closeable {
+    path: Path
+) : AutoCloseable {
     private val sink = SystemFileSystem.sink(path).buffered()
 
-    init {
-        writeHeader()
+    fun writerHeader(displayConfiguration: DisplayConfiguration) {
+        val width = displayConfiguration.layout.width
+        val height = displayConfiguration.layout.height
+        val alpha =
+            ((1 - displayConfiguration.layout.opacity) * 255).toInt().toString(16).padStart(2)
+        val fontName = displayConfiguration.font.fontName
+        val fontSize = displayConfiguration.font.fontSize
+        val scFontSize = displayConfiguration.font.secondaryFontSize
+        val primaryColor = "&H${alpha}FFFFFF"
+        val backColor = "&H${alpha}000000"
+        val bold = if (displayConfiguration.font.isBold) 1 else 0
+        val outline = displayConfiguration.font.outlineWidth
+        val shadow = displayConfiguration.font.shadowRadius
+        val head = """
+           |[Script Info]
+           
+           |ScriptType: v4.00+
+           |Collisions: Normal
+           |PlayResX: $width
+           |PlayResY: $height
+           |Timer: 100.0000
+           |WrapStyle: 2
+           |ScaledBorderAndShadow: yes
+           
+           |[V4+ Styles]
+           |Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+
+           |Style: R2L,${fontName},${fontSize},${primaryColor},&H00FFFFFF,&H00000000,${backColor},${bold},0,0,0,100.00,100.00,0.00,0.00,1,${outline},${shadow},7,0,0,0,1
+           |Style: L2R,${fontName},${fontSize},${primaryColor},&H00FFFFFF,&H00000000,${backColor},${bold},0,0,0,100.00,100.00,0.00,0.00,1,${outline},${shadow},9,0,0,0,1
+           |Style: TOP,${fontName},${fontSize},${primaryColor},&H00FFFFFF,&H00000000,${backColor},${bold},0,0,0,100.00,100.00,0.00,0.00,1,${outline},${shadow},8,0,0,0,1
+           |Style: BTM,${fontName},${fontSize},${primaryColor},&H00FFFFFF,&H00000000,${backColor},${bold},0,0,0,100.00,100.00,0.00,0.00,1,${outline},${shadow},2,0,0,0,1
+           |Style: SP,${fontName},${fontSize},&H00FFFFFF,&H00FFFFFF,&H00000000,${backColor},${bold},0,0,0,100.00,100.00,0.00,0.00,1,${outline},${shadow},7,0,0,0,1
+           |Style: message_box,${fontName},${scFontSize},&H00FFFFFF,&H00FFFFFF,&H00000000,${backColor},${bold},0,0,0,100.00,100.00,0.00,0.00,1,0.0,0.7,7,0,0,0,1
+           |Style: price,${fontName},${(scFontSize * 0.7).toInt()},&H00FFFFFF,&H00FFFFFF,&H00000000,${backColor},${bold},0,0,0,100.00,100.00,0.00,0.00,1,0.0,0.7,7,0,0,0,1
+           
+           |[Events]
+           |Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+       """.trimIndent()
+        sink.writeString(head)
     }
 
-    private fun writeHeader() {
-        // 使用多行字符串和字符串模板，代码非常清晰
-        val styles = canvasConfig.toAssStyles().joinToString("\n")
-        val header = """
-|[Script Info]
-|; Script generated by danmu2ass
-|Title: $title
-|Script Updated By: danmu2ass (Kotlin version)
-|ScriptType: v4.00+
-|PlayResX: ${canvasConfig.width}
-|PlayResY: ${canvasConfig.height}
-|Aspect Ratio: ${canvasConfig.width}:${canvasConfig.height}
-|Collisions: Normal
-|WrapStyle: 2
-|ScaledBorderAndShadow: yes
-|YCbCr Matrix: TV.601
+    fun writer(drawable: DanmakuDrawable) {
+        val start = timePoint(drawable.elem.progress)
+        val end = timePoint(drawable.elem.progress + drawable.duration)
+        val style = drawable.styleName
+        val effect = drawable.effect
+        val color = drawable.elem.color
+        val text = escapeText(drawable.elem.content)
+        // {\pos(280,50)\c&H02F1FE}x7
+        val dialogue = "Dialogue: 2,$start,$end,$style,,0,0,0,,{$effect$color}${text}"
 
-
-|[V4+ Styles]
-|Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-|$styles
-
-|[Events]
-|Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
-        """.trimMargin()
-        sink.writeString(header)
-        sink.writeString("\n")
+        sink.writeString(dialogue)
     }
 
-    /**
-     * 将一个 Drawable 对象写入为一行 ASS Dialogue。
-     * @throws IOException 如果发生 I/O 错误。
-     */
-    @Throws(IOException::class)
-    fun write(drawable: Drawable) {
-        val start = TimePoint(drawable.danmu.timelineS)
-        val end = TimePoint(drawable.danmu.timelineS + drawable.duration)
-        val effect = AssEffect(drawable.effect)
-        val (r, g, b) = drawable.danmu.rgb
-
-        // ASS 颜色是 BGR 格式
-        val colorTag = String.format("\\c&H%02X%02X%02X&", b, g, r)
-
-        // ASS 特殊字符需要转义
-        val text = escapeAssText(drawable.danmu.content)
-
-        val dialogueLine =
-            "Dialogue: 2,$start,$end,${drawable.styleName},,0,0,0,,{$effect$colorTag}$text"
-
-        sink.writeString(dialogueLine)
-        sink.writeString("\n")
-    }
-
-    /**
-     * 实现了 Closeable 接口，可以方便地使用 .use { ... } 语法来自动关闭 writer。
-     */
     override fun close() {
         sink.close()
     }
 
-    private fun escapeAssText(text: String): String {
-        // ASS 会将花括号内的内容作为标签解析，需要替换掉。
-        // 同时，换行符需要用 \N 替换。
-        return text.replace("{", "｛")
-            .replace("}", "｝")
-            .replace("\n", "\\N")
+    private fun timePoint(point: Int): String {
+        val second = point / 1000
+        val hour = second / 3600
+        val minutes = (second % 3600) / 60
+
+        val left = second - (hour * 3600) - (minutes * 60)
+
+        return String.format(Locale.CHINESE, "%d:%02d:%05.2f", hour, minutes, left)
+    }
+
+    private fun escapeText(text: String): String {
+        val trimmedText = text.trim()
+
+        return if (trimmedText.contains('\n')) {
+            trimmedText.replace("\n", "\\N")
+        } else {
+            trimmedText
+        }
     }
 }

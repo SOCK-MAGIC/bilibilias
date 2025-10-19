@@ -1,4 +1,4 @@
-import com.imcys.bilibilias.core.ass.Drawable
+import com.imcys.bilibilias.core.ass.DanmakuDrawable
 import com.imcys.bilibilias.core.ass.createDanmu
 import kotlin.test.Test
 
@@ -72,7 +72,7 @@ class UniffiTest {
 //    }
     @Test
     fun test4() {
-        Drawable().danmu
+        DanmakuDrawable().elem
         val danmu = createDanmu()
         danmu
     }

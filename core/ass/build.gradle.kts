@@ -1,8 +1,8 @@
 plugins {
     alias(libs.plugins.bilibilias.kmp.library)
     alias(libs.plugins.kotlinAtomicfu)
-    alias(libs.plugins.gobley.cargo)
-    alias(libs.plugins.gobley.uniffi)
+//    alias(libs.plugins.gobley.cargo)
+//    alias(libs.plugins.gobley.uniffi)
 }
 
 kotlin {
@@ -17,7 +17,7 @@ android {
     namespace = "com.imcys.bilibilias.core.ass"
 }
 
-uniffi {
+//uniffi {
 //    bindgenFromPath(rootProject.layout.projectDirectory.dir("crates/gobley-uniffi-bindgen"))
-    generateFromLibrary()
-}
+//    generateFromLibrary()
+//}
