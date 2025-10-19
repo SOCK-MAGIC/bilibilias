@@ -25,29 +25,29 @@ class AssWriter(
         val outline = displayConfiguration.font.outlineWidth
         val shadow = displayConfiguration.font.shadowRadius
         val head = """
-           |[Script Info]
+           [Script Info]
            
-           |ScriptType: v4.00+
-           |Collisions: Normal
-           |PlayResX: $width
-           |PlayResY: $height
-           |Timer: 100.0000
-           |WrapStyle: 2
-           |ScaledBorderAndShadow: yes
+           ScriptType: v4.00+
+           Collisions: Normal
+           PlayResX: $width
+           PlayResY: $height
+           Timer: 100.0000
+           WrapStyle: 2
+           ScaledBorderAndShadow: yes
            
-           |[V4+ Styles]
-           |Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+           [V4+ Styles]
+           Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
 
-           |Style: R2L,${fontName},${fontSize},${primaryColor},&H00FFFFFF,&H00000000,${backColor},${bold},0,0,0,100.00,100.00,0.00,0.00,1,${outline},${shadow},7,0,0,0,1
-           |Style: L2R,${fontName},${fontSize},${primaryColor},&H00FFFFFF,&H00000000,${backColor},${bold},0,0,0,100.00,100.00,0.00,0.00,1,${outline},${shadow},9,0,0,0,1
-           |Style: TOP,${fontName},${fontSize},${primaryColor},&H00FFFFFF,&H00000000,${backColor},${bold},0,0,0,100.00,100.00,0.00,0.00,1,${outline},${shadow},8,0,0,0,1
-           |Style: BTM,${fontName},${fontSize},${primaryColor},&H00FFFFFF,&H00000000,${backColor},${bold},0,0,0,100.00,100.00,0.00,0.00,1,${outline},${shadow},2,0,0,0,1
-           |Style: SP,${fontName},${fontSize},&H00FFFFFF,&H00FFFFFF,&H00000000,${backColor},${bold},0,0,0,100.00,100.00,0.00,0.00,1,${outline},${shadow},7,0,0,0,1
-           |Style: message_box,${fontName},${scFontSize},&H00FFFFFF,&H00FFFFFF,&H00000000,${backColor},${bold},0,0,0,100.00,100.00,0.00,0.00,1,0.0,0.7,7,0,0,0,1
-           |Style: price,${fontName},${(scFontSize * 0.7).toInt()},&H00FFFFFF,&H00FFFFFF,&H00000000,${backColor},${bold},0,0,0,100.00,100.00,0.00,0.00,1,0.0,0.7,7,0,0,0,1
+           Style: R2L,${fontName},${fontSize},${primaryColor},&H00FFFFFF,&H00000000,${backColor},${bold},0,0,0,100.00,100.00,0.00,0.00,1,${outline},${shadow},7,0,0,0,1
+           Style: L2R,${fontName},${fontSize},${primaryColor},&H00FFFFFF,&H00000000,${backColor},${bold},0,0,0,100.00,100.00,0.00,0.00,1,${outline},${shadow},9,0,0,0,1
+           Style: TOP,${fontName},${fontSize},${primaryColor},&H00FFFFFF,&H00000000,${backColor},${bold},0,0,0,100.00,100.00,0.00,0.00,1,${outline},${shadow},8,0,0,0,1
+           Style: BTM,${fontName},${fontSize},${primaryColor},&H00FFFFFF,&H00000000,${backColor},${bold},0,0,0,100.00,100.00,0.00,0.00,1,${outline},${shadow},2,0,0,0,1
+           Style: SP,${fontName},${fontSize},&H00FFFFFF,&H00FFFFFF,&H00000000,${backColor},${bold},0,0,0,100.00,100.00,0.00,0.00,1,${outline},${shadow},7,0,0,0,1
+           Style: message_box,${fontName},${scFontSize},&H00FFFFFF,&H00FFFFFF,&H00000000,${backColor},${bold},0,0,0,100.00,100.00,0.00,0.00,1,0.0,0.7,7,0,0,0,1
+           Style: price,${fontName},${(scFontSize * 0.7).toInt()},&H00FFFFFF,&H00FFFFFF,&H00000000,${backColor},${bold},0,0,0,100.00,100.00,0.00,0.00,1,0.0,0.7,7,0,0,0,1
            
-           |[Events]
-           |Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+           [Events]
+           Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
        """.trimIndent()
         sink.writeString(head)
     }
@@ -63,6 +63,7 @@ class AssWriter(
         val dialogue = "Dialogue: 2,$start,$end,$style,,0,0,0,,{$effect$color}${text}"
 
         sink.writeString(dialogue)
+        sink.writeString("\n")
     }
 
     override fun close() {

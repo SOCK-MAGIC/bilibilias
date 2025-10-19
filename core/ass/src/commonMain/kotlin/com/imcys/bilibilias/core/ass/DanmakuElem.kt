@@ -58,7 +58,7 @@ enum class DanmuType {
                 5 -> Top
                 4 -> Bottom
                 6 -> Reverse
-                else -> throw IllegalArgumentException("Invalid DanmuType value: $int")
+                else -> Float
             }
         }
     }
