@@ -76,7 +76,7 @@ class AssWriter(
 
         val left = second - (hour * 3600) - (minutes * 60)
 
-        return String.format(Locale.CHINESE, "%d:%02d:%05.2f", hour, minutes, left)
+        return String.format(Locale.CHINESE, "%d:%02d:%02d", hour, minutes, left)
     }
 
     private fun escapeText(text: String): String {

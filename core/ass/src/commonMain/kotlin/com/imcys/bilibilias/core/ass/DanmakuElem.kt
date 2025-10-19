@@ -48,4 +48,18 @@ enum class DanmuType {
     Top,
     Bottom,
     Reverse,
+    ;
+
+    companion object {
+        fun valueOf(int: Int): DanmuType {
+            require(int in 1..9)
+            return when (int) {
+                1, 2, 3 -> Float
+                5 -> Top
+                4 -> Bottom
+                6 -> Reverse
+                else -> throw IllegalArgumentException("Invalid DanmuType value: $int")
+            }
+        }
+    }
 }
