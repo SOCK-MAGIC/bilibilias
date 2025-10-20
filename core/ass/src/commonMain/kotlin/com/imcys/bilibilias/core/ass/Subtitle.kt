@@ -3,14 +3,13 @@ package com.imcys.bilibilias.core.ass
 import kotlin.time.Duration.Companion.seconds
 
 class Subtitle(
-    private val comment: Comment,
+    private val danmaku: Danmaku,
     private val display: Layout,
     private val offset: Int
 ) {
-
-    fun start() = comment.start + offset
+    fun start() = danmaku.start + offset
     fun end() = start() + display.duration
-    fun color() = comment.color
+    fun color() = danmaku.color
     fun position(): Pair<Point, Point> {
         return display.horizontal() to display.vertical()
     }
@@ -55,14 +54,14 @@ class Subtitle(
 
     fun style_markup(): String {
         val (p1, p2) = position()
-        if (comment.mode == Mode.SCROLL) {
+        if (danmaku.mode == Mode.SCROLL) {
             return "\\move(${p1.x}, ${p1.y}, ${p2.x}, ${p2.y})"
         }
         return "\\a6\\pos(${p1.x}, ${p1.y})"
     }
 
     fun layer_markup(): String {
-        if (comment.mode != Mode.SCROLL) {
+        if (danmaku.mode != Mode.SCROLL) {
             return "-2"
         }
         return "-3"
@@ -70,7 +69,7 @@ class Subtitle(
 
     fun content_markup(): String {
         val markUp = style_markup() + color_markup() + border_markup() + font_size_markup()
-        val content = correct_typos(comment.content)
+        val content = correct_typos(danmaku.content)
         return "{$markUp}$content"
     }
 

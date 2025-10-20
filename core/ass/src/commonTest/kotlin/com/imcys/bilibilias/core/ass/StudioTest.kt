@@ -11,7 +11,7 @@ import kotlin.test.assertTrue
 
 class StudioTest {
     private lateinit var options: RenderOptions
-    private lateinit var danmakus: List<Comment>
+    private lateinit var danmakus: List<Danmaku>
 
     @BeforeTest
     fun setUp() {
@@ -23,7 +23,7 @@ class StudioTest {
      * Loads and parses danmaku comments from a test resource file.
      * This function is robust against malformed data entries.
      */
-    private fun loadDanmakusFromTestResource(fileName: String): List<Comment> {
+    private fun loadDanmakusFromTestResource(fileName: String): List<Danmaku> {
         val fileContent = this::class.java.classLoader.getResource(fileName)?.readText()
         requireNotNull(fileContent) { "Test resource '$fileName' could not be found." }
 
@@ -39,7 +39,7 @@ class StudioTest {
 
             try {
                 val (startStr, styleStr, sizeRatioStr, colorStr) = parts
-                Comment.fromRawData(
+                Danmaku.fromRawData(
                     start = startStr.toDouble().roundToInt(),
                     style = styleStr.toInt(),
                     color = colorStr.toInt(),

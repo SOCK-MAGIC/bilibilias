@@ -1,7 +1,7 @@
 package com.imcys.bilibilias.core.ass
 
 @ConsistentCopyVisibility
-data class Comment private constructor(
+data class Danmaku private constructor(
     val start: Int,
     val mode: Mode,
     val color: Color,
@@ -22,9 +22,9 @@ data class Comment private constructor(
             color: Int,
             content: String,
             sizeRatio: Int
-        ): Comment? {
+        ): Danmaku? {
             val danmakuMode = Mode.fromCode(style) ?: return null
-            return Comment(
+            return Danmaku(
                 start = start,
                 mode = danmakuMode,
                 color = Color(color),

@@ -4,7 +4,7 @@ import kotlin.math.ceil
 
 interface Layout {
     val options: RenderOptions
-    val comment: Comment
+    val danmaku: Danmaku
     var lineIndex: Int
 
     /**
@@ -12,7 +12,7 @@ interface Layout {
      */
     val fontSize: Int
         get() {
-            return ceil(options.baseFontSize * comment.sizeRatio).toInt()
+            return ceil(options.baseFontSize * danmaku.sizeRatio).toInt()
         }
 
     /**
@@ -28,7 +28,7 @@ interface Layout {
      * 整条字幕高度
      */
     val height: Int
-        get() = comment.content.lines().size * options.baseFontSize
+        get() = danmaku.content.lines().size * options.baseFontSize
 
     /**
      * 整条字幕的显示时间
@@ -50,19 +50,19 @@ interface Layout {
      * 离开碰撞时间
      */
     val leaveTime: Long
-        get() = comment.start + duration
+        get() = danmaku.start + duration
 
     /**
      * 字体是否被缩放过
      */
     val isScaled: Boolean
-        get() = comment.sizeRatio != 1.0f
+        get() = danmaku.sizeRatio != 1.0f
 
     /**
      * 最长的行字符数
      */
     val maxLength: Int
-        get() = comment.content.lines().maxOfOrNull { it.displayLength() } ?: 0
+        get() = danmaku.content.lines().maxOfOrNull { it.displayLength() } ?: 0
 
     fun center(): Point {
         val x = options.screenWidth / 2
@@ -114,7 +114,7 @@ interface Layout {
 
 class Top(
     override val options: RenderOptions,
-    override val comment: Comment,
+    override val danmaku: Danmaku,
 ) : Layout {
     override var lineIndex: Int = 0
     override fun vertical(): Point {
@@ -125,7 +125,7 @@ class Top(
 
 class Bottom(
     override val options: RenderOptions,
-    override val comment: Comment,
+    override val danmaku: Danmaku,
 ) : Layout {
     override var lineIndex: Int = 0
     override fun vertical(): Point {
@@ -138,7 +138,7 @@ class Bottom(
 
 class Scroll(
     override val options: RenderOptions,
-    override val comment: Comment,
+    override val danmaku: Danmaku,
 ) : Layout {
     override var lineIndex: Int = 0
     override fun horizontal(): Point {
@@ -198,7 +198,7 @@ class Scroll(
             LayoutAlgorithm.ASYNC -> async_duration()
         }
     override val leaveTime: Long
-        get() = ((width / speed()) + comment.start).toLong()
+        get() = ((width / speed()) + danmaku.start).toLong()
 
 }
 

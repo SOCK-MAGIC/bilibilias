@@ -14,7 +14,7 @@ class Collision(lineCount: Int) {
      * 碰撞检测
      * 返回行号和时间偏移
      */
-    fun detect(display: Comment): Pair<Int, Int> {
+    fun detect(display: Danmaku): Pair<Int, Int> {
         val beyonds = mutableIntListOf()
         for ((index, leave) in leaves.withIndex()) {
             val beyond = display.start - leave

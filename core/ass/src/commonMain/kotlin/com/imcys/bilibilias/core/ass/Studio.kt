@@ -1,17 +1,14 @@
 package com.imcys.bilibilias.core.ass
 
-class Studio(options: RenderOptions, danmakus: List<Comment>) {
-    private val create = Creater(options, danmakus)
-    fun generate(): List<Subtitle> {
-        return create.subtitles()
-    }
-}
-
-class Creater(
+class Studio(
     private val options: RenderOptions,
-    private val danmakus: List<Comment>,
+    private val danmakus: List<Danmaku>,
 ) {
-    fun subtitles(): List<Subtitle> {
+    fun generate(): List<Subtitle> {
+        return subtitles()
+    }
+
+    private fun subtitles(): List<Subtitle> {
         val scroll = Collision(options.lineCount)
         val top = Collision(options.lineCount)
         val bottom = Collision(options.lineCount)
