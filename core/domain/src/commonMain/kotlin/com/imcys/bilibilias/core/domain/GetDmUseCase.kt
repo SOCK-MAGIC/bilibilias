@@ -23,7 +23,7 @@ class GetDmUseCase(private val api: BilibiliApi) {
         request.height
         val dmSeg = api.dmSegMobile(request.aid, request.cid, request.duration).flatMap { it.elems }
 
-        logger.debug { "弹幕 ${dmSeg.size} ${dmSeg.firstOrNull()}" }
+        logger.debug { "弹幕总数 ${dmSeg.size} ${dmSeg.firstOrNull()}" }
 
         val path = BuildConfig.MEDIA_DOWNLOAD.resolve(Uuid.random().toString())
 
@@ -31,6 +31,9 @@ class GetDmUseCase(private val api: BilibiliApi) {
 
         val studio = Studio(RenderOptions.Default, loader.load())
         val subtitles = studio.generate()
+
+        logger.debug { "转换弹幕 ${subtitles.size} ${subtitles.firstOrNull()}" }
+        logger.debug { "丢弃弹幕 ${dmSeg.size - subtitles.size}" }
 
         val writer = AssWriter(path)
         writer.writerHeader(RenderOptions.Default)
