@@ -1,6 +1,5 @@
-package com.imcys.bilibilias.core.datasource.utils
+package com.imcys.bilibilias.core.datasource.ktor
 
-import com.imcys.bilibilias.core.datasource.json.HttpClientJson
 import com.imcys.bilibilias.core.datasource.model.Box
 import io.ktor.client.plugins.api.ClientPlugin
 import io.ktor.client.plugins.api.createClientPlugin

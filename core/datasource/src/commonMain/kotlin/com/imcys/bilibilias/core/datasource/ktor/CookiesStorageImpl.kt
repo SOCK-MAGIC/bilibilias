@@ -1,4 +1,4 @@
-package com.imcys.bilibilias.core.datasource.persistent
+package com.imcys.bilibilias.core.datasource.ktor
 
 import com.imcys.bilibilias.core.datastore.CookieJarDataSource
 import io.ktor.client.plugins.cookies.CookiesStorage

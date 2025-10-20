@@ -1,5 +1,6 @@
 package com.imcys.bilibilias.core.datasource.api
 
+import com.imcys.bilibilias.core.datasource.ktor.DisableLogging
 import com.imcys.bilibilias.core.datasource.model.BiliVideoData
 import com.imcys.bilibilias.core.datasource.model.BilibiliNavigationData
 import com.imcys.bilibilias.core.datasource.model.DmSegMobileReply
@@ -109,8 +110,15 @@ class BilibiliApi(
         }.body()
     }
 
+    /**
+     * https://api.bilibili.com/x/player/wbi/playurl 从该接口会返回两个视频长度的值
+     * "timelength": 346495 毫秒
+     * "duration": 347 秒, 目前使用改制
+     */
     suspend fun dmSegMobile(aid: Long, cid: Long, duration: Int): List<DmSegMobileReply> {
-        val repetitionCount = (duration / 3600) + 1
+        val repetitionCount = (duration / 360) + 1
+        logger.debug { "获取视频 $aid-$cid 的弹幕, 总时长$duration, 预计重复 $repetitionCount 次" }
+
         return List(repetitionCount) {
             val map = buildMap {
                 put("type", 1)
@@ -123,6 +131,7 @@ class BilibiliApi(
                 url {
                     encodedParameters.appendAll(parseQueryString(signedQuery))
                 }
+                attributes.put(DisableLogging, true)
             }.body<DmSegMobileReply>()
         }
     }
