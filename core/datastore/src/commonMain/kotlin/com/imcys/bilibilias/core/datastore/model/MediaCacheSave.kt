@@ -48,27 +48,32 @@ data class MediaCacheMetadata(
     val extra: Map<MetadataKey, String> = emptyMap(),
 ) {
     fun delete(): Boolean {
-        var allDeleted = true
-        metadata.forEach { partMetadata ->
-            val path = partMetadata.filePath
-            try {
-                if (SystemFileSystem.exists(path)) {
-                    SystemFileSystem.delete(path)
-                } else {
-                    logger.warn { "Warning: File not found, skipping delete: $path" }
-                }
-            } catch (e: IOException) {
-                logger.error(e) { "Delete failed for file: $path" }
-                allDeleted = false
-            }
-        }
-        return allDeleted
+        // Collect all file paths into a single list
+        val allPaths = metadata.map { it.filePath } +
+                (extra[ASS_FILE]?.let { listOf(Path(it)) }
+                    ?: emptyList())
+
+        return allPaths.map { path -> deleteFile(path) }.all { it }
     }
 
     fun withExtra(other: Map<MetadataKey, String>): MediaCacheMetadata {
         return copy(
             extra = extra + other,
         )
+    }
+
+    private fun deleteFile(path: Path): Boolean {
+        return try {
+            if (SystemFileSystem.exists(path)) {
+                SystemFileSystem.delete(path)
+            } else {
+                logger.warn { "Warning: File not found, skipping delete: $path" }
+            }
+            true
+        } catch (e: IOException) {
+            logger.error(e) { "Delete failed for file: $path" }
+            false
+        }
     }
 
     companion object {
