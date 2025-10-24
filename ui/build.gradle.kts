@@ -7,6 +7,7 @@ kotlin {
     sourceSets {
         androidMain.dependencies {
             implementation(mediampLibs.mediamp.exoplayer)
+            implementation(libs.androidx.media3.exoplayer)
             implementation(libs.androidx.core)
         }
         commonMain.dependencies {
