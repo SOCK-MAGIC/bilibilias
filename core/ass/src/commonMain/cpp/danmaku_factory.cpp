@@ -190,14 +190,14 @@ Java_com_imcys_bilibilias_core_ass_Danmakufactory_convertDanmakuFile(
     DanmakuListManager danmakuGuard(danmakuList);
 
     // 读取弹幕文件
-    const char *ext = strrchr(inputPath, '.');
+    const char *ext = strrchr(inputPath.get(), '.');
     if (ext != nullptr && strcmp(ext, ".xml") == 0) {
-        if (readXml(inputPath, &danmakuList, "", 0.0f, &status) != 0) {
+        if (readXml(inputPath.get(), &danmakuList, "", 0.0f, &status) != 0) {
             LOGE("读取XML文件失败");
             return env->NewStringUTF("读取XML文件失败");
         }
     } else if (ext != nullptr && strcmp(ext, ".json") == 0) {
-        if (readJson(inputPath, &danmakuList, "", 0.0f, &status) != 0) {
+        if (readJson(inputPath.get(), &danmakuList, "", 0.0f, &status) != 0) {
             LOGE("读取JSON文件失败");
             return env->NewStringUTF("读取JSON文件失败");
         }
@@ -207,19 +207,19 @@ Java_com_imcys_bilibilias_core_ass_Danmakufactory_convertDanmakuFile(
     }
 
     // 写入弹幕文件
-    const char *outExt = strrchr(outputPath, '.');
+    const char *outExt = strrchr(outputPath.get(), '.');
     if (outExt != nullptr && strcmp(outExt, ".ass") == 0) {
-        if (writeAss(outputPath, danmakuList, defaultConfig, nullptr, &status) != 0) {
+        if (writeAss(outputPath.get(), danmakuList, defaultConfig, nullptr, &status) != 0) {
             LOGE("写入ASS文件失败");
             return env->NewStringUTF("写入ASS文件失败");
         }
     } else if (outExt != nullptr && strcmp(outExt, ".xml") == 0) {
-        if (writeXml(outputPath, danmakuList, &status) != 0) {
+        if (writeXml(outputPath.get(), danmakuList, &status) != 0) {
             LOGE("写入XML文件失败");
             return env->NewStringUTF("写入XML文件失败");
         }
     } else if (outExt != nullptr && strcmp(outExt, ".json") == 0) {
-        if (writeJson(outputPath, danmakuList, &status) != 0) {
+        if (writeJson(outputPath.get(), danmakuList, &status) != 0) {
             LOGE("写入JSON文件失败");
             return env->NewStringUTF("写入JSON文件失败");
         }
