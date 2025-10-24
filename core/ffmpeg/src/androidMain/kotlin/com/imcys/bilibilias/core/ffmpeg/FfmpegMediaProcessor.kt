@@ -144,7 +144,7 @@ internal class FfmpegMediaProcessor(
         // e.g., -map 0:v -map 1:a -map 2:s
         val mappings = StringBuilder()
         // 映射主输入的视频和音频
-        mappings.append("-map 0:v -map 1:a ")
+        mappings.append("-map 0:v? -map 1:a? ")
         // 映射所有字幕流
         for (i in 0 until subtitleCount) {
             mappings.append("-map ${inputCount + i}:s? ")
