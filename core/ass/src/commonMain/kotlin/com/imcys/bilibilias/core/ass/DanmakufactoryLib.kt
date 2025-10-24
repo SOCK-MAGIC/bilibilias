@@ -1,6 +1,6 @@
 package com.imcys.bilibilias.core.ass
 
-object Danmakufactory {
+object DanmakufactoryLib {
     init {
         System.loadLibrary("danmakufactory")
     }

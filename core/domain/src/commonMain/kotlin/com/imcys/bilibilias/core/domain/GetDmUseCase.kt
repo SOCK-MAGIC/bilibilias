@@ -1,7 +1,7 @@
 package com.imcys.bilibilias.core.domain
 
 import com.imcys.bilibilias.BuildConfig
-import com.imcys.bilibilias.core.ass.Danmakufactory
+import com.imcys.bilibilias.core.ass.DanmakufactoryLib
 import com.imcys.bilibilias.core.datasource.api.BilibiliApi
 import com.imcys.bilibilias.core.domain.model.DanmuRequest
 import com.imcys.bilibilias.core.io.resolve
@@ -28,7 +28,7 @@ class GetDmUseCase(private val api: BilibiliApi) {
         xmlWriter.use {
             xmlWriter.writer(dmSeg, request.cid)
         }
-        Danmakufactory.convertDanmakuFile(tempPath.toString(), danmakuOutputPath.toString())
+        DanmakufactoryLib.convertDanmakuFile(tempPath.toString(), danmakuOutputPath.toString())
 
         danmakuOutputPath.toString()
     }
