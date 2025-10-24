@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,8 +18,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Merge
-import androidx.compose.material.icons.outlined.ArrowOutward
-import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -35,6 +37,9 @@ import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,7 +50,6 @@ import androidx.compose.ui.unit.dp
 import com.imcys.bilibilias.core.datastore.model.EpisodeMetadata
 import com.imcys.bilibilias.core.datastore.model.MediaCacheMetadata
 import com.imcys.bilibilias.core.domain.model.CacheEpisodeState
-import com.imcys.bilibilias.core.model.DataSize.Companion.mb
 import com.imcys.bilibilias.core.model.DataUnit
 import com.imcys.bilibilias.core.model.FileStats
 import com.imcys.bilibilias.logic.cache.CacheViewModel
@@ -209,17 +213,21 @@ private fun CacheEpisodeItem(state: CacheEpisodeState) {
                 }
             }
             Row {
-                IconButton(onClick = { /* TODO: 处理点击事件 */ }) {
-                    Icon(
-                        imageVector = Icons.Outlined.Info,
-                        contentDescription = "更多信息"
-                    )
-                }
-                IconButton(onClick = { /* TODO: 处理点击事件 */ }) {
-                    Icon(
-                        imageVector = Icons.Outlined.ArrowOutward,
-                        contentDescription = "打开视频"
-                    )
+                Box {
+                    var expanded by remember { mutableStateOf(false) }
+                    IconButton(onClick = { expanded = true }) {
+                        Icon(Icons.Default.MoreVert, contentDescription = "More options")
+                    }
+
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("测试") },
+                            onClick = { }
+                        )
+                    }
                 }
             }
         }
@@ -245,33 +253,6 @@ private fun CacheEpisodeItemPreview() {
                 fileStats = FileStats.Unspecified,
                 canPlay = true,
                 canMux = true
-            )
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun CacheEpisodeItemDownloadingPreview() {
-    AsTheme {
-        CacheEpisodeItem(
-            state = CacheEpisodeState(
-                episodeMetadata = EpisodeMetadata(
-                    bvid = "BV1ZX411A7sC",
-                    cid = 789012L,
-                    title = "Sample Downloading Episode - Another long title to test UI elements during download"
-                ),
-                mediaCacheMetadata = MediaCacheMetadata(
-                    metadata = emptyList(),
-                    createdAt = Clock.System.now(),
-                    extra = emptyMap()
-                ),
-                fileStats = FileStats(
-                    totalSize = 100.0.mb,
-                    downloadedBytes = 50.0.mb
-                ),
-                canPlay = false,
-                canMux = false
             )
         )
     }
