@@ -1,70 +1,70 @@
-# Sets the minimum CMake version required for this project.
 cmake_minimum_required(VERSION 4.1.0)
 
-# Set project name. CMAKE_PROJECT_NAME will be "danmakufactory_plugin"
-project("danmakufactory_plugin")
+project(danmakufactory)
 
-# --- Dependency Management with FetchContent ---
 include(FetchContent)
 
-# 1. Fetch and configure PCRE2 dependency
 FetchContent_Declare(
         pcre2
         GIT_REPOSITORY https://github.com/molihuan/pcre2.git
-        GIT_TAG master # For production, a specific commit hash or tag is safer
+        GIT_TAG master
 )
 
-# Set PCRE2's build options BEFORE it is configured by FetchContent_MakeAvailable.
-set(PCRE2_BUILD_TESTS OFF CACHE BOOL "Disable building PCRE2 tests")
-set(PCRE2_SUPPORT_JIT OFF CACHE BOOL "Disable JIT support, often restricted on mobile platforms")
-set(PCRE2_BUILD_PCRE2GREP OFF CACHE BOOL "Disable building the pcre2grep tool")
-set(BUILD_SHARED_LIBS OFF CACHE BOOL "Force building PCRE2 as a static library")
+# 设置PCRE2的编译选项，这些选项会在pcre2配置时被应用。
+# 将其编译为静态库，并禁用不需要的特性。
+set(PCRE2_BUILD_TESTS OFF CACHE BOOL "Disable PCRE2 tests")
+set(PCRE2_SUPPORT_JIT OFF CACHE BOOL "Disable JIT support for mobile")
+set(PCRE2_BUILD_PCRE2GREP OFF CACHE BOOL "Disable pcre2grep utility")
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build PCRE2 as a static library")
+
 
 FetchContent_MakeAvailable(pcre2)
 
-# 2. Fetch and prepare DanmakuFactory dependency
 FetchContent_Declare(
-        DanmakuFactory
+        danmakufactory_dep
         GIT_REPOSITORY https://github.com/molihuan/DanmakuFactory.git
-        GIT_TAG master # For production, a specific commit hash or tag is safer
-)
-FetchContent_MakeAvailable(DanmakuFactory)
-
-# --- Target Definitions ---
-
-# A. Build the danmaku_factory static library from its sources
-# Since it doesn't have its own CMakeLists.txt, we define the target here.
-set(DANMAKU_FACTORY_SRC_DIR ${danmakufactory_SOURCE_DIR}/src)
-
-file(GLOB_RECURSE DANMAKU_FACTORY_SOURCES
-        "${DANMAKU_FACTORY_SRC_DIR}/*.c"
+        GIT_TAG master
 )
 
-# Exclude the original main.c to provide our own interface
-list(REMOVE_ITEM DANMAKU_FACTORY_SOURCES "${DANMAKU_FACTORY_SRC_DIR}/main.c")
+FetchContent_MakeAvailable(danmakufactory_dep)
 
+# 使用file(GLOB)查找所有需要的源文件。
+# 注意：当添加或删除源文件时，需要重新运行CMake配置。
+file(GLOB DANMAKU_FACTORY_SOURCES
+        "${danmakufactory_dep_SOURCE_DIR}/src/*.c"
+        "${danmakufactory_dep_SOURCE_DIR}/src/AssFile/*.c"
+        "${danmakufactory_dep_SOURCE_DIR}/src/Config/*.c"
+        "${danmakufactory_dep_SOURCE_DIR}/src/Define/*.c"
+        "${danmakufactory_dep_SOURCE_DIR}/src/List/*.c"
+        "${danmakufactory_dep_SOURCE_DIR}/src/String/*.c"
+        "${danmakufactory_dep_SOURCE_DIR}/src/TemplateFile/*.c"
+)
+
+# 排除不需要的main.c文件。
+list(REMOVE_ITEM DANMAKU_FACTORY_SOURCES "${danmakufactory_dep_SOURCE_DIR}/src/main.c")
+
+# 定义 "danmaku_factory" 静态库目标。
 add_library(danmaku_factory STATIC ${DANMAKU_FACTORY_SOURCES})
 
-# Define properties for the danmaku_factory target
+# 为 "danmaku_factory" 添加所需的包含目录和链接库。
+# 使用PUBLIC关键字，这样任何链接到danmaku_factory的目标都会自动继承这些属性。
 target_include_directories(danmaku_factory PUBLIC
-        # Public headers for consumers of this library
-        "${DANMAKU_FACTORY_SRC_DIR}"
-        # This seems to be a required include path for its own sources
-        "${PROJECT_ROOT}"
+        # pcre2目标会自动导出其包含目录，我们只需要链接它即可。
+        ${danmakufactory_dep_SOURCE_DIR}/src
 )
 
-# Link danmaku_factory to pcre2. This transitively provides pcre2's headers and library.
-# The static target is named pcre2-8-static when BUILD_SHARED_LIBS=OFF.
-target_link_libraries(danmaku_factory PUBLIC pcre2-8-static)
+# 将pcre2链接到danmaku_factory。pcre2的目标名称通常是pcre2-8或pcre2-posix。
+# 这会自动处理包含目录和链接。
+target_link_libraries(danmaku_factory PUBLIC pcre2-8)
 
-# B. Build the final shared library for the Android project
-add_library(${CMAKE_PROJECT_NAME} SHARED
-        danmaku_factory.cpp
-)
+# 4. 构建主项目库 (native-lib)
+add_library(${CMAKE_PROJECT_NAME} SHARED danmaku_factory_lib.cpp)
 
-# Link the final shared library against our dependencies
-target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE
-        danmaku_factory  # This will also link pcre2-8-static due to the transitive dependency
-        android          # For Android-specific APIs
-        log              # For __android_log_print
+# 链接danmaku_factory库，以及Android平台所需的日志库。
+# 由于danmaku_factory已经公开链接了pcre2-8，这里无需再次链接pcre2。
+target_link_libraries(${CMAKE_PROJECT_NAME}
+        PRIVATE
+        danmaku_factory
+        android
+        log
 )
