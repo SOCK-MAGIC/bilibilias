@@ -17,13 +17,14 @@ android {
         externalNativeBuild {
             cmake {
                 cppFlags += "-std=c++11"
+                ndkVersion = "29.0.14206865"
             }
         }
     }
     externalNativeBuild {
         cmake {
             path = file("src/commonMain/cpp/CMakeLists.txt")
-            version = "3.22.1"
+            version = "4.1.2"
         }
     }
 }
