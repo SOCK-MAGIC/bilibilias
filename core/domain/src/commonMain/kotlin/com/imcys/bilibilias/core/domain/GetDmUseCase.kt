@@ -1,13 +1,8 @@
 package com.imcys.bilibilias.core.domain
 
 import com.imcys.bilibilias.BuildConfig
-import com.imcys.bilibilias.core.ass.AssWriter
-import com.imcys.bilibilias.core.ass.Danmaku
-import com.imcys.bilibilias.core.ass.DanmakuLoader
-import com.imcys.bilibilias.core.ass.RenderOptions
-import com.imcys.bilibilias.core.ass.Studio
+import com.imcys.bilibilias.core.ass.Danmakufactory
 import com.imcys.bilibilias.core.datasource.api.BilibiliApi
-import com.imcys.bilibilias.core.datasource.model.DanmakuElem
 import com.imcys.bilibilias.core.domain.model.DanmuRequest
 import com.imcys.bilibilias.core.io.resolve
 import com.imcys.bilibilias.core.logging.logger
@@ -25,35 +20,29 @@ class GetDmUseCase(private val api: BilibiliApi) {
 
         logger.debug { "弹幕总数 ${dmSeg.size} ${dmSeg.firstOrNull()}" }
 
-        val path = BuildConfig.MEDIA_DOWNLOAD.resolve(Uuid.random().toString())
+        val tempPath = BuildConfig.MEDIA_DOWNLOAD.resolve("danmaku.xml")
+        val danmakuOutputPath =
+            BuildConfig.MEDIA_DOWNLOAD.resolve(Uuid.random().toString() + ".ass")
 
-        val loader = BilibiliDanmakuLoader(dmSeg)
+//        val loader = BilibiliDanmakuLoader(dmSeg)
+//
+//        val studio = Studio(RenderOptions.Default, loader.load())
+//        val subtitles = studio.generate()
+//
+//        logger.debug { "转换弹幕 ${subtitles.size} ${subtitles.firstOrNull()}" }
+//        logger.debug { "丢弃弹幕 ${dmSeg.size - subtitles.size}" }
+//
+//        val writer = AssWriter(path)
+//        writer.writerHeader(RenderOptions.Default)
+//        writer.writerBody(subtitles)
+//        writer.close()
 
-        val studio = Studio(RenderOptions.Default, loader.load())
-        val subtitles = studio.generate()
-
-        logger.debug { "转换弹幕 ${subtitles.size} ${subtitles.firstOrNull()}" }
-        logger.debug { "丢弃弹幕 ${dmSeg.size - subtitles.size}" }
-
-        val writer = AssWriter(path)
-        writer.writerHeader(RenderOptions.Default)
-        writer.writerBody(subtitles)
-        writer.close()
-
-        path.toString()
-    }
-}
-
-private class BilibiliDanmakuLoader(private val dmSeg: List<DanmakuElem>) : DanmakuLoader {
-    override fun load(): List<Danmaku> {
-        return dmSeg.mapNotNull {
-            Danmaku.fromRawData(
-                it.progress / 1000,
-                it.mode,
-                it.color,
-                it.content,
-                it.fontSize
-            )
+        val xmlWriter = XmlWriter(tempPath)
+        xmlWriter.use {
+            xmlWriter.writer(dmSeg, request.cid)
         }
+        Danmakufactory.convertDanmakuFile(tempPath.toString(), danmakuOutputPath.toString())
+
+        danmakuOutputPath.toString()
     }
 }
