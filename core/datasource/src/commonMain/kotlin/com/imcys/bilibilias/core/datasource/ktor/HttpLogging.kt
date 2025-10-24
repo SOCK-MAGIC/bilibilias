@@ -17,9 +17,9 @@ internal fun HttpClientConfig<*>.HttpLogging() {
             }
         }
         filter { request ->
-            request.attributes.getOrNull(DisableLogging) == true
+            request.attributes.getOrNull(DisableLogging) != true
         }
     }
 }
 
-val DisableLogging = AttributeKey<Boolean>("ss")
+internal val DisableLogging = AttributeKey<Boolean>("DisableLogging")
