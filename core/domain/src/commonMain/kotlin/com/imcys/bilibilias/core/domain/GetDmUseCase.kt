@@ -24,19 +24,6 @@ class GetDmUseCase(private val api: BilibiliApi) {
         val danmakuOutputPath =
             BuildConfig.MEDIA_DOWNLOAD.resolve(Uuid.random().toString() + ".ass")
 
-//        val loader = BilibiliDanmakuLoader(dmSeg)
-//
-//        val studio = Studio(RenderOptions.Default, loader.load())
-//        val subtitles = studio.generate()
-//
-//        logger.debug { "转换弹幕 ${subtitles.size} ${subtitles.firstOrNull()}" }
-//        logger.debug { "丢弃弹幕 ${dmSeg.size - subtitles.size}" }
-//
-//        val writer = AssWriter(path)
-//        writer.writerHeader(RenderOptions.Default)
-//        writer.writerBody(subtitles)
-//        writer.close()
-
         val xmlWriter = XmlWriter(tempPath)
         xmlWriter.use {
             xmlWriter.writer(dmSeg, request.cid)
