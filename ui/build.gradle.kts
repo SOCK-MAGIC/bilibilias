@@ -14,6 +14,7 @@ kotlin {
             implementation(projects.core.ffmpeg)
             implementation(projects.core.datastore)
             implementation(projects.core.uiPreview)
+            implementation(projects.core.videoPlayer)
 
             implementation(compose.components.resources)
             implementation(compose.foundation)
