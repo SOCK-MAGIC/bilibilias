@@ -11,7 +11,7 @@ kotlin {
             implementation(libs.androidx.media3.exoplayer)
         }
         commonMain.dependencies {
-            implementation(mediampLibs.mediamp.api)
+            api(mediampLibs.mediamp.api)
         }
     }
 }
