@@ -5,19 +5,24 @@ import androidx.navigation3.runtime.entry
 import com.imcys.bilibilias.core.navigation.AsBackStack
 import com.imcys.bilibilias.core.navigation.AsBackStackViewModel
 import com.imcys.bilibilias.core.navigation.AsNavKey
+import com.imcys.bilibilias.logic.player.PlayerViewModel
 import com.imcys.bilibilias.navigation.CacheRoute
 import com.imcys.bilibilias.navigation.LoginRoute
+import com.imcys.bilibilias.navigation.PlayerRoute
 import com.imcys.bilibilias.navigation.SearchRoute
 import com.imcys.bilibilias.navigation.SettingRoute
 import com.imcys.bilibilias.navigation.TopLevelDestination
 import com.imcys.bilibilias.ui.cache.CacheScreen
 import com.imcys.bilibilias.ui.login.LoginScreen
+import com.imcys.bilibilias.ui.player.PlayerScreen
 import com.imcys.bilibilias.ui.search.SearchScreen
 import com.imcys.bilibilias.ui.setting.SettingsScreen
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
+import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.module.dsl.viewModelOf
+import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
 
 val NavigationModule = module {
@@ -44,7 +49,9 @@ val NavigationModule = module {
                 )
             }
             entry<CacheRoute> {
-                CacheScreen()
+                CacheScreen(
+                    navigationToPlayer = { backStack.navigate(PlayerRoute(it)) },
+                )
             }
             entry<LoginRoute> {
                 LoginScreen(
@@ -56,6 +63,11 @@ val NavigationModule = module {
                 SettingsScreen(
                     onBack = { backStack.popLast() }
                 )
+            }
+            entry<PlayerRoute> {
+                val playerViewModel: PlayerViewModel =
+                    koinViewModel(parameters = { parametersOf(it.id) })
+                PlayerScreen(playerViewModel)
             }
         }
     }

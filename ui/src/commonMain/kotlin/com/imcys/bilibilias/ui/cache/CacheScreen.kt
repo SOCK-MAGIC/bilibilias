@@ -60,6 +60,7 @@ import kotlin.time.Clock
 
 @Composable
 fun CacheScreen(
+    navigationToPlayer: (String) -> Unit,
     cacheViewModel: CacheViewModel = koinViewModel()
 ) {
     val state by cacheViewModel.stateFlow.collectAsState()
@@ -70,7 +71,8 @@ fun CacheScreen(
         state,
         onDelete = cacheViewModel::deleteEpisodeCache,
         canMux = true,
-        onCombine = cacheViewModel::onCombine
+        onCombine = cacheViewModel::onCombine,
+        navigationToPlayer = navigationToPlayer,
     )
 }
 
@@ -81,6 +83,7 @@ fun CaCheContent(
     canMux: Boolean,
     onDelete: (CacheEpisodeState) -> Unit = { },
     onCombine: (CacheEpisodeState) -> Unit = { },
+    navigationToPlayer: (String) -> Unit,
 ) {
     Scaffold { innerPadding ->
         LazyColumn(modifier = Modifier.padding(innerPadding)) {
@@ -111,7 +114,12 @@ fun CaCheContent(
                     enableDismissFromStartToEnd = canMux,
                     modifier = Modifier.animateItem(),
                 ) {
-                    CacheEpisodeItem(item)
+                    CacheEpisodeItem(
+                        item,
+                        onClick = {
+                            navigationToPlayer(item.episodeMetadata.bvid + "-" + item.episodeMetadata.cid)
+                        }
+                    )
                     if (cacheEpisodeState.last() != item) {
                         HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp))
                     }
@@ -181,7 +189,7 @@ private fun SwipeToDismissBoxState.SwipeDismissBackground() {
 }
 
 @Composable
-private fun CacheEpisodeItem(state: CacheEpisodeState) {
+private fun CacheEpisodeItem(state: CacheEpisodeState, onClick: () -> Unit) {
     OutlinedCard(
         modifier = Modifier
             .padding(horizontal = 8.dp, vertical = 8.dp)
@@ -224,8 +232,12 @@ private fun CacheEpisodeItem(state: CacheEpisodeState) {
                         onDismissRequest = { expanded = false }
                     ) {
                         DropdownMenuItem(
-                            text = { Text("测试") },
-                            onClick = { }
+                            text = { Text("播放") },
+                            onClick = {
+                                if (state.canPlay) {
+                                    onClick()
+                                }
+                            }
                         )
                     }
                 }
@@ -253,7 +265,8 @@ private fun CacheEpisodeItemPreview() {
                 fileStats = FileStats.Unspecified,
                 canPlay = true,
                 canMux = true
-            )
+            ),
+            onClick = {},
         )
     }
 }

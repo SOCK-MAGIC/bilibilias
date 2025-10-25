@@ -26,3 +26,11 @@ data object SettingRoute : AsNavKey {
     override val isTopLevel: Boolean
         get() = false
 }
+
+@Serializable
+data class PlayerRoute(
+    val id: String
+) : AsNavKey {
+    override val isTopLevel: Boolean
+        get() = false
+}
