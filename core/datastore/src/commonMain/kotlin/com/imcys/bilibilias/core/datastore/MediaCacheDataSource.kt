@@ -6,11 +6,12 @@ import com.imcys.bilibilias.core.datastore.model.MediaCachePartMetadata
 import com.imcys.bilibilias.core.datastore.model.MediaCacheSave
 import com.imcys.bilibilias.core.logging.logger
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlin.time.Clock
 
 interface MediaCacheDataSource {
     val listFlow: Flow<List<MediaCacheSave>>
-
+    suspend fun findCache(bvid: String, cid: Long): MediaCacheSave?
     suspend fun delete(episodeMetadata: EpisodeMetadata): Boolean
 
     suspend fun cacheEpisode(episodeData: MediaCacheSave)
@@ -27,6 +28,12 @@ internal class DataStoreMediaCacheDataSource(
 ) : MediaCacheDataSource {
 
     override val listFlow = store.data
+    override suspend fun findCache(bvid: String, cid: Long): MediaCacheSave? {
+        val saves = store.data.first()
+        return saves.find { episode ->
+            episode.origin.bvid == bvid && episode.origin.cid == cid
+        }
+    }
 
     override suspend fun cacheEpisode(episodeData: MediaCacheSave) {
         val itemWithTimestamp = episodeData.copy(
