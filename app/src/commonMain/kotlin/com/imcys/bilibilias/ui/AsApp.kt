@@ -93,7 +93,6 @@ fun AsApp(
 val LocalSnackbarHostState = compositionLocalOf<SnackbarHostState> {
     error("SnackbarHostState state should be initialized at runtime")
 }
-
 @Composable
 internal fun AsApp(
     appState: AsAppState,
@@ -103,34 +102,9 @@ internal fun AsApp(
     windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo(),
 ) {
     val currentTopLevelKey = appState.currentTopLevelDestination!!.key
+    val currentKey = appState.currentKey
 
-    AsNavigationSuiteScaffold(
-        navigationSuiteItems = {
-            appState.topLevelDestinations.forEach { destination ->
-                val selected = destination.key == currentTopLevelKey
-                item(
-                    selected = selected,
-                    onClick = { appState.asBackStack.navigate(destination.key) },
-                    icon = {
-                        Icon(
-                            imageVector = destination.unselectedIcon,
-                            contentDescription = null,
-                        )
-                    },
-                    selectedIcon = {
-                        Icon(
-                            imageVector = destination.selectedIcon,
-                            contentDescription = null,
-                        )
-                    },
-                    label = { Text(destination.iconText) },
-                    modifier = Modifier
-                        .testTag("NiaNavItem")
-                )
-            }
-        },
-        windowAdaptiveInfo = windowAdaptiveInfo,
-    ) {
+    val content: @Composable () -> Unit = {
         Scaffold(
             modifier = modifier,
             containerColor = Color.Transparent,
@@ -154,51 +128,41 @@ internal fun AsApp(
             )
         }
     }
-}
 
-//@OptIn(ExperimentalDecomposeApi::class)
-//@Composable
-//private fun Children(
-//    component: RootComponent,
-//    onShowSnackbar: suspend (String, String?) -> Boolean,
-//    modifier: Modifier = Modifier
-//) {
-//    Children(
-//        stack = component.stack,
-//        modifier = modifier,
-//        animation = predictiveBackAnimation(
-//            backHandler = component.backHandler,
-//            fallbackAnimation = stackAnimation(slide()),
-//            onBack = component::onBackClicked,
-//        ),
-//    ) {
-//        CompositionLocalProvider(
-//            LocalGradientColors provides GradientColors(DarkGreenGray95)
-//        ) {
-//            when (val child = it.instance) {
-//                is RootComponent.Child.SearchChild -> SearchScreen(
-//                    component = child.component,
-//                    navigationToLogin = component::onLoginClicked,
-//                    navigationToPlayer = component::onPlayerClicked,
-//                    navigationToSettings = component::onSettingsClicked
-//                )
-//
-//                is RootComponent.Child.CacheChild -> CacheScreen(child.component)
-//                is RootComponent.Child.LoginChild -> LoginScreen(
-//                    child.component,
-//                    onBack = component::onBackClicked,
-//                    onShowSnackbar = onShowSnackbar,
-//                )
-//
-//                is RootComponent.Child.PlayerChild -> PlayerScreen(child.component)
-//                is RootComponent.Child.SettingsChild -> SettingsScreen(
-//                    child.component,
-//                    onBack = component::onBackClicked
-//                )
-//            }
-//        }
-//    }
-//}
+    if (currentKey.isTopLevel) {
+        AsNavigationSuiteScaffold(
+            navigationSuiteItems = {
+                appState.topLevelDestinations.forEach { destination ->
+                    val selected = destination.key == currentTopLevelKey
+                    item(
+                        selected = selected,
+                        onClick = { appState.asBackStack.navigate(destination.key) },
+                        icon = {
+                            Icon(
+                                imageVector = destination.unselectedIcon,
+                                contentDescription = null,
+                            )
+                        },
+                        selectedIcon = {
+                            Icon(
+                                imageVector = destination.selectedIcon,
+                                contentDescription = null,
+                            )
+                        },
+                        label = { Text(destination.iconText) },
+                        modifier = Modifier
+                            .testTag("AsNavItem")
+                    )
+                }
+            },
+            windowAdaptiveInfo = windowAdaptiveInfo,
+        ) {
+            content()
+        }
+    } else {
+        content()
+    }
+}
 
 private suspend fun getSnackbarValues(
     message: MessageData
@@ -209,5 +173,3 @@ private suspend fun getSnackbarValues(
         MessageType.UNKNOWN -> getString(bilibilias.app.generated.resources.Res.string.unknown_error) to SnackbarDuration.Short
     }
 }
-
-private val DarkGreenGray95 = Color(0xFFF0F1EC)

@@ -14,7 +14,7 @@ class AsBackStack(
 ) {
     internal var backStackMap: LinkedHashMap<AsNavKey, MutableList<AsNavKey>> =
         linkedMapOf(
-            startKey to mutableListOf(startKey),
+            startKey to mutableStateListOf(startKey),
         )
 
     @VisibleForTesting

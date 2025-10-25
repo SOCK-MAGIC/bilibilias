@@ -47,6 +47,8 @@ class AsAppState(
 
     val currentTopLevelDestination: TopLevelDestination?
         @Composable get() = TopLevelDestinations[asBackStack.currentTopLevelKey]
+
+    val currentKey @Composable get() = asBackStack.currentKey
     val stateMessage: StateFlow<MessageData?> = errorMonitor.messages.map {
         it.firstOrNull()
     }.stateIn(
