@@ -93,6 +93,7 @@ fun AsApp(
 val LocalSnackbarHostState = compositionLocalOf<SnackbarHostState> {
     error("SnackbarHostState state should be initialized at runtime")
 }
+
 @Composable
 internal fun AsApp(
     appState: AsAppState,
@@ -103,7 +104,8 @@ internal fun AsApp(
 ) {
     val currentTopLevelKey = appState.currentTopLevelDestination!!.key
     val currentKey = appState.currentKey
-
+    println(currentKey)
+    println(currentKey.isTopLevel)
     val content: @Composable () -> Unit = {
         Scaffold(
             modifier = modifier,
