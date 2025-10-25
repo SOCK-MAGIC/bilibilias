@@ -60,6 +60,7 @@ androidx-lifecycle-viewmodel-compose = { module = "org.jetbrains.androidx.lifecy
 androidx-media3-datasource-okhttp = { module = "androidx.media3:media3-datasource-okhttp", version.ref = "androidx-media3" }
 androidx-media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "androidx-media3" }
 androidx-media3-transformer = { module = "androidx.media3:media3-transformer", version.ref = "androidx-media3" }
+androidx-media3-ui = { module = "androidx.media3:media3-ui", version.ref = "androidx-media3" }
 
 androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "navigation3Ui" }
 androidx-savedstate-compose = { group = "androidx.savedstate", name = "savedstate-compose", version.ref = "androidxSavedStateCompose" }

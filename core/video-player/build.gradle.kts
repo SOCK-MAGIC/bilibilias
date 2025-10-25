@@ -9,6 +9,11 @@ kotlin {
             implementation(mediampLibs.mediamp.exoplayer)
             implementation(libs.androidx.media3.datasource.okhttp)
             implementation(libs.androidx.media3.exoplayer)
+            implementation(libs.androidx.media3.ui)
+
+            implementation(libs.androidx.compose.ui.tooling.preview)
+            implementation(libs.androidx.compose.ui.tooling)
+//            implementation(libs.compose.material3.adaptive.core)
         }
         commonMain.dependencies {
             api(mediampLibs.mediamp.api)
