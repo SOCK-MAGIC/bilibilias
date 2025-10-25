@@ -17,6 +17,8 @@ kotlin {
         }
         commonMain.dependencies {
             api(mediampLibs.mediamp.api)
+
+            implementation(libs.androidx.annotation)
         }
     }
 }
