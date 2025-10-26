@@ -6,6 +6,8 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
+            api(projects.core.uiPreview)
+
             api(compose.components.resources)
             api(compose.foundation)
             api(compose.ui)
@@ -14,6 +16,7 @@ kotlin {
             api(compose.material3AdaptiveNavigationSuite)
             api(compose.materialIconsExtended)
 
+            api(libs.androidx.compose.material3.adaptive)
         }
     }
 }

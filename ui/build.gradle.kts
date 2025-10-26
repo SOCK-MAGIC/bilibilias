@@ -15,6 +15,7 @@ kotlin {
             implementation(projects.core.datastore)
             implementation(projects.core.uiPreview)
             implementation(projects.core.videoPlayer)
+            implementation(projects.core.designsystem)
 
             implementation(compose.components.resources)
             implementation(compose.foundation)
@@ -34,7 +35,6 @@ kotlin {
 
             implementation(libs.koin.compose.viewmodel)
 
-            implementation(libs.androidx.compose.material3.adaptive)
             implementation(libs.androidx.lifecycle.runtime.compose)
             implementation(libs.androidx.lifecycle.viewmodel.compose)
         }

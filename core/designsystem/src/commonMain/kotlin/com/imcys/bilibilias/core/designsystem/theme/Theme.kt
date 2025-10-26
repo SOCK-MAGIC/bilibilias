@@ -1,4 +1,4 @@
-package com.imcys.bilibilias.ui.theme
+package com.imcys.bilibilias.core.designsystem.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

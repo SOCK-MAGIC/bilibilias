@@ -32,11 +32,11 @@ import bilibilias.app.generated.resources.not_connected
 import bilibilias.app.generated.resources.unknown_error
 import com.imcys.bilibilias.core.data.model.MessageData
 import com.imcys.bilibilias.core.data.model.MessageType
+import com.imcys.bilibilias.core.designsystem.component.AsBackground
+import com.imcys.bilibilias.core.designsystem.component.AsGradientBackground
+import com.imcys.bilibilias.core.designsystem.component.AsNavigationSuiteScaffold
 import com.imcys.bilibilias.core.navigation.AsNavKey
 import com.imcys.bilibilias.navigation.AsNavDisplay
-import com.imcys.bilibilias.ui.component.AsBackground
-import com.imcys.bilibilias.ui.component.AsGradientBackground
-import com.imcys.bilibilias.ui.component.AsNavigationSuiteScaffold
 import org.jetbrains.compose.resources.getString
 
 @Composable

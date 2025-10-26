@@ -24,8 +24,8 @@ import com.alorma.compose.settings.ui.SettingsSwitch
 import com.imcys.bilibilias.core.datastore.model.Codecs
 import com.imcys.bilibilias.core.datastore.model.Resolution
 import com.imcys.bilibilias.core.datastore.model.UserPreferences
+import com.imcys.bilibilias.core.designsystem.component.BackButton
 import com.imcys.bilibilias.logic.setting.SettingsViewModel
-import com.imcys.bilibilias.ui.component.BackButton
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable

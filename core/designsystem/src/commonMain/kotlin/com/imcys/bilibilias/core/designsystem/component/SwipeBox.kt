@@ -1,4 +1,4 @@
-package com.imcys.bilibilias.ui.component
+package com.imcys.bilibilias.core.designsystem.component
 
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors

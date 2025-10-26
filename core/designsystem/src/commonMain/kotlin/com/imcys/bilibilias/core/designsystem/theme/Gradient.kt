@@ -1,4 +1,4 @@
-package com.imcys.bilibilias.ui.theme
+package com.imcys.bilibilias.core.designsystem.theme
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf

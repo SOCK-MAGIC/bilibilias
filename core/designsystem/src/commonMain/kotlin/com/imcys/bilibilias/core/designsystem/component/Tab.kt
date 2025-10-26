@@ -1,4 +1,4 @@
-package com.imcys.bilibilias.ui.component
+package com.imcys.bilibilias.core.designsystem.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

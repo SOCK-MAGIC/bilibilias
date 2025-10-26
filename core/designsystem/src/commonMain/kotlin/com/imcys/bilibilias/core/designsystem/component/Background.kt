@@ -1,4 +1,4 @@
-package com.imcys.bilibilias.ui.component
+package com.imcys.bilibilias.core.designsystem.component
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,9 +17,9 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.imcys.bilibilias.ui.theme.GradientColors
-import com.imcys.bilibilias.ui.theme.LocalBackgroundTheme
-import com.imcys.bilibilias.ui.theme.LocalGradientColors
+import com.imcys.bilibilias.core.designsystem.theme.GradientColors
+import com.imcys.bilibilias.core.designsystem.theme.LocalBackgroundTheme
+import com.imcys.bilibilias.core.designsystem.theme.LocalGradientColors
 import org.jetbrains.compose.ui.tooling.preview.Configuration
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.math.PI

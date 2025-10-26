@@ -39,6 +39,7 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.core.common)
             implementation(projects.core.datastore)
+            implementation(projects.core.designsystem)
             implementation(projects.core.httpDownloader)
             implementation(projects.core.ktorClient)
             implementation(projects.core.ffmpeg)

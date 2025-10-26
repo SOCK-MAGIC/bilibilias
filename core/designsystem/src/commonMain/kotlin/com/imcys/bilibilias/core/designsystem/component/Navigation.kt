@@ -1,4 +1,4 @@
-package com.imcys.bilibilias.ui.component
+package com.imcys.bilibilias.core.designsystem.component
 
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.RowScope

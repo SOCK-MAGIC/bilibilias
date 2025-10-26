@@ -1,4 +1,4 @@
-package com.imcys.bilibilias.ui.theme
+package com.imcys.bilibilias.core.designsystem.theme
 import androidx.compose.ui.graphics.Color
 
 val primaryLight = Color(0xFF8D4A5B)
