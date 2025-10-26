@@ -135,3 +135,4 @@ bilibilias-android-room = { id = "bilibilias.android.room" }
 bilibilias-compose = { id = "bilibilias.compose" }
 bilibilias-kmp-library = { id = "bilibilias.kmp.library" }
 bilibilias-koin = { id = "bilibilias.koin" }
+bilibilias-feature = { id = "bilibilias.feature" }

@@ -53,5 +53,9 @@ gradlePlugin {
             id = libs.plugins.bilibilias.koin.get().pluginId
             implementationClass = "KoinConventionPlugin"
         }
+        register("feature") {
+            id = libs.plugins.bilibilias.feature.get().pluginId
+            implementationClass = "FeatureConventionPlugin"
+        }
     }
 }
