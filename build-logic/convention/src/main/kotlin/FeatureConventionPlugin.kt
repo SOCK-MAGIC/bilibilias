@@ -22,12 +22,8 @@ class FeatureConventionPlugin : Plugin<Project> {
 //                "commonMainImplementation"(project(":core:ui"))
                 "commonMainImplementation"(project(":core:designsystem"))
 
-                "commonMainImplementation"(
-                    libs.findLibrary("androidx.lifecycle.runtime.compose").get()
-                )
-                "commonMainImplementation"(
-                    libs.findLibrary("androidx.lifecycle.viewmodel.compose").get()
-                )
+                "commonMainImplementation"(libs.findLibrary("androidx.lifecycle.runtime.compose").get())
+                "commonMainImplementation"(libs.findLibrary("androidx.lifecycle.viewmodel.compose").get())
 //                "commonMainImplementation"(libs.findLibrary("koin.compose").get())
                 "commonMainImplementation"(libs.findLibrary("koin.compose.viewmodel").get())
 
