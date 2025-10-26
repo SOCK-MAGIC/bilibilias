@@ -20,7 +20,7 @@ class FeatureConventionPlugin : Plugin<Project> {
 
             dependencies {
 //                "commonMainImplementation"(project(":core:ui"))
-//                "commonMainImplementation"(project(":core:designsystem"))
+                "commonMainImplementation"(project(":core:designsystem"))
 
                 "commonMainImplementation"(
                     libs.findLibrary("androidx.lifecycle.runtime.compose").get()
