@@ -37,18 +37,18 @@ kotlin {
             implementation(libs.kotlinx.coroutines.android)
         }
         commonMain.dependencies {
-            implementation(projects.core.common)
+            implementation(projects.core.data)
             implementation(projects.core.datastore)
             implementation(projects.core.designsystem)
             implementation(projects.core.httpDownloader)
             implementation(projects.core.ktorClient)
             implementation(projects.core.ffmpeg)
             implementation(projects.core.navigation)
-            implementation(projects.logic)
-            implementation(projects.ui)
 
             implementation(projects.feature.cache)
+            implementation(projects.feature.login)
             implementation(projects.feature.search)
+            implementation(projects.feature.settings)
             implementation(projects.feature.videoPlayer)
 
             implementation(compose.runtime)
