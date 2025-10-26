@@ -47,6 +47,7 @@ kotlin {
             implementation(projects.logic)
             implementation(projects.ui)
 
+            implementation(projects.feature.cache)
             implementation(projects.feature.search)
             implementation(projects.feature.videoPlayer)
 

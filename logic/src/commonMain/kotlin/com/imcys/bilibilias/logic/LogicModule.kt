@@ -1,6 +1,5 @@
 package com.imcys.bilibilias.logic
 
-import com.imcys.bilibilias.logic.cache.CacheViewModel
 import com.imcys.bilibilias.logic.login.CookieStateMachine
 import com.imcys.bilibilias.logic.login.LoginViewModel
 import com.imcys.bilibilias.logic.login.QrCodeLoginStateMachine
@@ -12,7 +11,6 @@ import org.koin.dsl.module
 val LogicModule = module {
     factoryOf(::CookieStateMachine)
     factoryOf(::QrCodeLoginStateMachine)
-    viewModelOf(::CacheViewModel)
     viewModelOf(::LoginViewModel)
     viewModelOf(::SettingsViewModel)
 }

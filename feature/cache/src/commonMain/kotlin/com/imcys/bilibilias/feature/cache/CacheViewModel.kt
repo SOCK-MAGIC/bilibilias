@@ -1,4 +1,4 @@
-package com.imcys.bilibilias.logic.cache
+package com.imcys.bilibilias.feature.cache
 
 import androidx.lifecycle.ViewModel
 import com.eygraber.uri.toKmpUri
@@ -12,11 +12,9 @@ import com.imcys.bilibilias.core.ffmpeg.SubtitleMode
 import com.imcys.bilibilias.core.ffmpeg.SubtitleTrack
 import com.imcys.bilibilias.core.logging.logger
 import com.imcys.bilibilias.core.storage.MediaStoreAccess
-import com.imcys.bilibilias.logic.stateInViewModelScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -32,7 +30,7 @@ class CacheViewModel(
 
     private val lock = MutableStateFlow(false)
 
-    val canProcess = multiplexer.isRunning.map { !it }.stateInViewModelScope(true)
+    //    val canProcess = multiplexer.isRunning.map { !it }.stateInViewModelScope(true)
     val stateFlow = getCachedEpisodeStateUseCase()
         .stateIn(
             scope = applicationScope,

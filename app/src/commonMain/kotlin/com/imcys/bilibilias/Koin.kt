@@ -19,6 +19,8 @@ import com.imcys.bilibilias.core.http.downloader.model.DownloadState
 import com.imcys.bilibilias.core.ktor.client.createHttpClient
 import com.imcys.bilibilias.core.logging.logger
 import com.imcys.bilibilias.di.NavigationModule
+import com.imcys.bilibilias.feature.cache.di.CacheModule
+import com.imcys.bilibilias.feature.search.di.SearchModule
 import com.imcys.bilibilias.feature.videoplaayer.di.VideoPlayerModule
 import com.imcys.bilibilias.logic.LogicModule
 import io.ktor.client.plugins.defaultRequest
@@ -71,6 +73,8 @@ fun KoinApplication.commonModules() = module {
 
 fun KoinApplication.featureModules() = module {
     includes(
+        CacheModule,
+        SearchModule,
         VideoPlayerModule,
     )
 }
