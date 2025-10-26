@@ -1,12 +1,13 @@
 plugins {
     alias(libs.plugins.bilibilias.feature)
+    alias(libs.plugins.bilibilias.compose)
 }
 
 kotlin {
     sourceSets {
-        androidMain.dependencies {
-        }
         commonMain.dependencies {
+            implementation(projects.core.data)
+            implementation(projects.core.videoPlayer)
         }
     }
 }

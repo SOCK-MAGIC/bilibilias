@@ -46,6 +46,8 @@ kotlin {
             implementation(projects.logic)
             implementation(projects.ui)
 
+            implementation(projects.feature.videoPlayer)
+
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)

@@ -1,4 +1,4 @@
-package com.imcys.bilibilias.ui.player
+package com.imcys.bilibilias.feature.videoplaayer
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -9,13 +9,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.imcys.bilibilias.core.videoplayer.playUri
-import com.imcys.bilibilias.logic.player.PlayerUiState
-import com.imcys.bilibilias.logic.player.PlayerViewModel
 import org.openani.mediamp.compose.rememberMediampPlayer
 
 @Composable
-fun PlayerScreen(playerViewModel: PlayerViewModel) {
-    val uiState by playerViewModel.uiState.collectAsState()
+fun PlayerScreen(viewModel: VideoPlayerViewModel) {
+    val uiState by viewModel.uiState.collectAsState()
     PlayerContent(uiState)
 }
 

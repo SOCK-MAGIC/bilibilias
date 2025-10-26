@@ -1,19 +1,22 @@
-package com.imcys.bilibilias.logic.player
+package com.imcys.bilibilias.feature.videoplaayer
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.imcys.bilibilias.core.datastore.MediaCacheDataSource
 import com.imcys.bilibilias.core.logging.logger
 import com.imcys.bilibilias.core.result.Result
 import com.imcys.bilibilias.core.result.asResult
-import com.imcys.bilibilias.logic.stateInViewModelScope
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import org.openani.mediamp.MediampPlayer
 
-class PlayerViewModel(
+class VideoPlayerViewModel(
     private val compositeVideoId: String,
     private val mediaCacheStorage: MediaCacheDataSource,
 ) : ViewModel() {
-    private val logger = logger<PlayerViewModel>()
+    private val logger = logger<VideoPlayerViewModel>()
     val player: MediampPlayer = MediampPlayer(Unit)
     val uiState = flow {
         val (bvid, cid) = parseVideoIdentifier(compositeVideoId)
@@ -23,7 +26,7 @@ class PlayerViewModel(
             ?: throw NoSuchElementException("Video not found in cache for ID: $compositeVideoId")
 
         val uris = cache.metadata.metadata.map { it.filePath.toString() }
-        emit(PlayerUiState.Success(cache, uris))
+        emit(PlayerUiState.Success(uris))
     }.asResult()
         .map { result ->
             when (result) {
@@ -34,7 +37,11 @@ class PlayerViewModel(
                 Result.Loading -> PlayerUiState.Loading
             }
         }
-        .stateInViewModelScope(PlayerUiState.Loading)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = PlayerUiState.Loading
+        )
 
     private fun parseVideoIdentifier(identifier: String): VideoIdentifier? {
         val parts = identifier.split('-')
