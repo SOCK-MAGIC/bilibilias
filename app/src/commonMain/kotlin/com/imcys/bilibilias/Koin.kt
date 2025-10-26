@@ -21,6 +21,7 @@ import com.imcys.bilibilias.core.logging.logger
 import com.imcys.bilibilias.di.NavigationModule
 import com.imcys.bilibilias.feature.cache.di.CacheModule
 import com.imcys.bilibilias.feature.search.di.SearchModule
+import com.imcys.bilibilias.feature.settings.di.SettingsModule
 import com.imcys.bilibilias.feature.videoplaayer.di.VideoPlayerModule
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
@@ -73,6 +74,7 @@ fun KoinApplication.featureModules() = module {
     includes(
         CacheModule,
         SearchModule,
+        SettingsModule,
         VideoPlayerModule,
     )
 }
