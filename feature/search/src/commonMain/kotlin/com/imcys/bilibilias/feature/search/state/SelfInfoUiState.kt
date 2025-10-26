@@ -1,4 +1,4 @@
-package com.imcys.bilibilias.logic.search
+package com.imcys.bilibilias.feature.search.state
 
 import com.imcys.bilibilias.core.datastore.model.SelfInfo
 

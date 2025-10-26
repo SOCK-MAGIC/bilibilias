@@ -1,4 +1,4 @@
-package com.imcys.bilibilias.ui.search
+package com.imcys.bilibilias.feature.search
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row

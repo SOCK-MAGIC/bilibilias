@@ -1,7 +1,8 @@
-package com.imcys.bilibilias.logic.search
+package com.imcys.bilibilias.feature.search
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.imcys.bilibilias.BuildConfig
 import com.imcys.bilibilias.core.datasource.api.BilibiliLoginApi
 import com.imcys.bilibilias.core.datastore.AsPreferencesDataSource
@@ -28,14 +29,18 @@ import com.imcys.bilibilias.core.result.Result.Error
 import com.imcys.bilibilias.core.result.Result.Loading
 import com.imcys.bilibilias.core.result.Result.Success
 import com.imcys.bilibilias.core.result.asResult
-import com.imcys.bilibilias.logic.stateInViewModelScope
+import com.imcys.bilibilias.feature.search.state.MediaSourceSelectedUiState
+import com.imcys.bilibilias.feature.search.state.SearchResultUiState
+import com.imcys.bilibilias.feature.search.state.SelfInfoUiState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class SearchViewModel(
@@ -54,7 +59,11 @@ class SearchViewModel(
         .map { preferences ->
             preferences.selfInfo?.let { SelfInfoUiState.Success(it) } ?: SelfInfoUiState.Guest
         }
-        .stateInViewModelScope(SelfInfoUiState.Loading)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = SelfInfoUiState.Loading
+        )
     val searchQuery: StateFlow<String> =
         savedStateHandle.getStateFlow(SEARCH_QUERY, getDefaultSearchQuery())
 
@@ -91,7 +100,11 @@ class SearchViewModel(
             }
         }
             .restartable(restarter)
-            .stateInViewModelScope(SearchResultUiState.Loading)
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5_000),
+                initialValue = SearchResultUiState.Loading
+            )
 
     private val currentSelectEpisode = MutableStateFlow<SelectedEpisodeContext?>(null)
     val mediaSourceSelectedUiState: StateFlow<MediaSourceSelectedUiState> =
@@ -107,7 +120,11 @@ class SearchViewModel(
                     is Error -> MediaSourceSelectedUiState.LoadFailed(result.exception.message)
                     is Loading -> MediaSourceSelectedUiState.Loading
                 }
-            }.stateInViewModelScope(MediaSourceSelectedUiState.Loading)
+            }.stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5_000),
+                initialValue = MediaSourceSelectedUiState.Loading
+            )
 
     fun requestCache(request: EpisodeCacheRequest) {
         applicationScope.launch {
@@ -208,4 +225,4 @@ class SearchViewModel(
     )
 }
 
-internal expect val SEARCH_QUERY: String
+private const val SEARCH_QUERY: String = "android.intent.extra.TEXT"

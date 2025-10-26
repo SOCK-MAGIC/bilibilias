@@ -1,4 +1,4 @@
-package com.imcys.bilibilias.ui.search
+package com.imcys.bilibilias.feature.search
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.imcys.bilibilias.core.datastore.model.SelfInfo
-import com.imcys.bilibilias.logic.search.SelfInfoUiState
+import com.imcys.bilibilias.feature.search.state.SelfInfoUiState
 
 @Composable
 fun SelfAvatar(

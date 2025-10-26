@@ -1,4 +1,4 @@
-package com.imcys.bilibilias.ui.search
+package com.imcys.bilibilias.feature.search
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -62,10 +62,9 @@ import com.imcys.bilibilias.core.domain.model.EpisodeCacheRequest
 import com.imcys.bilibilias.core.domain.model.EpisodeCacheState
 import com.imcys.bilibilias.core.domain.model.SelectedEpisodeContext
 import com.imcys.bilibilias.core.domain.model.TrackInfo
-import com.imcys.bilibilias.logic.search.MediaSourceSelectedUiState
-import com.imcys.bilibilias.logic.search.SearchResultUiState
-import com.imcys.bilibilias.logic.search.SearchViewModel
-import com.imcys.bilibilias.logic.search.SelfInfoUiState
+import com.imcys.bilibilias.feature.search.state.MediaSourceSelectedUiState
+import com.imcys.bilibilias.feature.search.state.SearchResultUiState
+import com.imcys.bilibilias.feature.search.state.SelfInfoUiState
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
