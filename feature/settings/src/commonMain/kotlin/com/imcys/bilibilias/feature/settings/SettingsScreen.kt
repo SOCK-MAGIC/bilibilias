@@ -40,7 +40,8 @@ fun SettingsScreen(
         updateDecoderCodec = settingsViewModel::setDecoderCodecPriorityList,
         updateVideoResolutions = settingsViewModel::setVideoResolutions,
         updateAudioResolutions = settingsViewModel::setAudioResolutions,
-        updateSubtitles = settingsViewModel::setSubtitles
+        updateSubtitles = settingsViewModel::setSubtitles,
+        errorTip = settingsViewModel::errorTip
     )
 }
 
@@ -54,16 +55,13 @@ fun SettingsContent(
     updateVideoResolutions: (List<Resolution>) -> Unit = {},
     updateAudioResolutions: (List<Resolution>) -> Unit = {},
     updateSubtitles: (Boolean) -> Unit,
+    errorTip: (String) -> Unit,
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {
-                    Text("设置")
-                },
-                navigationIcon = {
-                    BackButton(onBack = onBack)
-                }
+                title = { Text("设置") },
+                navigationIcon = { BackButton(onBack = onBack) }
             )
         }
     ) { innerPadding ->
@@ -138,10 +136,10 @@ fun SettingsContent(
             ) {
                 updateTryLook(it)
             }
-            ShareLogFile()
+            ShareLogFileSection(errorTip)
         }
     }
 }
 
 @Composable
-internal expect fun ShareLogFile()
+internal expect fun ShareLogFileSection(onTip: (String) -> Unit)
