@@ -22,7 +22,6 @@ import com.imcys.bilibilias.di.NavigationModule
 import com.imcys.bilibilias.feature.cache.di.CacheModule
 import com.imcys.bilibilias.feature.search.di.SearchModule
 import com.imcys.bilibilias.feature.videoplaayer.di.VideoPlayerModule
-import com.imcys.bilibilias.logic.LogicModule
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logging
@@ -63,7 +62,6 @@ fun KoinApplication.commonModules() = module {
         DataModule,
         DataSourceModule,
         DataStoreModule,
-        LogicModule,
         MediaProcessorModule,
         UseCaseModule,
         featureModules(),

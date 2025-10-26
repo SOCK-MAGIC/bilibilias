@@ -6,7 +6,9 @@ import com.imcys.bilibilias.core.navigation.AsBackStack
 import com.imcys.bilibilias.core.navigation.AsBackStackViewModel
 import com.imcys.bilibilias.core.navigation.AsNavKey
 import com.imcys.bilibilias.feature.cache.CacheScreen
+import com.imcys.bilibilias.feature.login.LoginScreen
 import com.imcys.bilibilias.feature.search.SearchScreen
+import com.imcys.bilibilias.feature.settings.SettingsScreen
 import com.imcys.bilibilias.feature.videoplaayer.PlayerScreen
 import com.imcys.bilibilias.feature.videoplaayer.VideoPlayerViewModel
 import com.imcys.bilibilias.navigation.CacheRoute
@@ -15,8 +17,6 @@ import com.imcys.bilibilias.navigation.PlayerRoute
 import com.imcys.bilibilias.navigation.SearchRoute
 import com.imcys.bilibilias.navigation.SettingRoute
 import com.imcys.bilibilias.navigation.TopLevelDestination
-import com.imcys.bilibilias.ui.login.LoginScreen
-import com.imcys.bilibilias.ui.setting.SettingsScreen
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
