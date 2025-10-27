@@ -17,8 +17,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.imcys.bilibilias.core.danmaku.DanmakuHostState.Companion.logger
 import com.imcys.bilibilias.core.danmaku.config.DanmakuConfig
+import com.imcys.bilibilias.core.logging.logger
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
