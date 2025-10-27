@@ -1,0 +1,120 @@
+package com.imcys.bilibilias.core.danmaku
+
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
+
+@Composable
+fun DanmakuHost(
+    state: DanmakuHostState,
+    modifier: Modifier = Modifier,
+    baseStyle: TextStyle = MaterialTheme.typography.bodyMedium
+) {
+    val density = LocalDensity.current
+    val trackStubMeasurer = rememberTextMeasurer(1)
+    val danmakuTextMeasurer = rememberTextMeasurer(3000)
+
+    SideEffect {
+        state.setUIContext(baseStyle, danmakuTextMeasurer, density)
+    }
+
+    // observe config changes
+    LaunchedEffect(trackStubMeasurer) { state.observeConfig(trackStubMeasurer) }
+    // calculate current play time on every frame
+    LaunchedEffect(state.paused) { if (!state.paused) state.interpolateFrameLoop() }
+    // logical tick for removal of danmaku
+    LaunchedEffect(state.paused) {
+        if (!state.paused) {
+            while (true) {
+                state.tick()
+                delay(1000)
+            }
+        }
+    }
+
+    BoxWithConstraints(modifier) {
+        val hostWidth = constraints.maxWidth
+        state.hostWidth = hostWidth
+        state.hostHeight = constraints.maxHeight
+
+        // Canvas only subscribes `danmakuUpdateSubscription` and `hostHeight` to re-draw.
+        Canvas(
+            modifier = Modifier.fillMaxSize()
+                .clipToBounds()
+                .alpha(state.canvasAlpha),
+        ) {
+            state.danmakuUpdateSubscription // subscribe changes
+
+            state.forEachFloatingDanmaku {
+                // don't draw uninitialized danmaku
+                if (it.y.isNaN()) return@forEachFloatingDanmaku
+
+                with(it.danmaku) {
+                    draw(
+                        screenPosX = hostWidth - it.distanceX,
+                        screenPosY = it.y,
+                    )
+                }
+            }
+            state.forEachFixedDanmaku {
+                // don't draw uninitialized danmaku
+                if (it.y.isNaN()) return@forEachFixedDanmaku
+
+                with(it.danmaku) {
+                    draw(
+                        screenPosX = (hostWidth - danmakuWidth) / 2f,
+                        screenPosY = it.y,
+                    )
+                }
+            }
+        }
+
+        if (state.isDebug) {
+            CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.bodySmall) {
+                Column(modifier = Modifier.padding(4.dp).fillMaxSize()) {
+                    Text("DanmakuHost state: ")
+                    Text("  hostSize: ${state.hostWidth}x${state.hostHeight}, trackHeight: ${state.trackHeight}")
+                    Text("  paused: ${state.paused}, elapsedFrameTimeMillis: ${state.elapsedFrameTimeNanos / 1_000_000}, frameTimeDeltaMillis: ${state.currentFrameTimeDeltaNanos / 1_000_000}")
+                    Text(
+                        "  presentDanmakuCount: ${
+                            DanmakuCollectionIterator(state.floatingTrack).toList().size +
+                                    DanmakuCollectionIterator(state.topTrack).toList().size +
+                                    DanmakuCollectionIterator(state.bottomTrack).toList().size
+                        }",
+                    )
+                    HorizontalDivider()
+                    Text("  floating tracks: ")
+                    for (track in state.floatingTrack) {
+                        Text("    $track")
+                    }
+                    Text("  top tracks: ")
+                    for (track in state.topTrack) {
+                        Text("    $track")
+                    }
+                    Text("  bottom tracks: ")
+                    for (track in state.bottomTrack) {
+                        Text("    $track")
+                    }
+                }
+            }
+        }
+    }
+}

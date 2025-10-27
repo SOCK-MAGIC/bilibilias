@@ -42,6 +42,7 @@ rootProject.name = "bilibilias"
 include(":app")
 include(":core:ass")
 include(":core:common")
+include(":core:danmaku")
 include(":core:data")
 include(":core:datasource")
 include(":core:datastore")
