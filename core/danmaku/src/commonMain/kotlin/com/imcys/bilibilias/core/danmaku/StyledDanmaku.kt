@@ -30,9 +30,7 @@ data class StyledDanmaku(
 ) : SizeSpecifiedDanmaku {
     private val danmakuText = presentation.danmaku.run {
         val seconds = playTimeMillis.toFloat().div(1000)
-        if (isDebug) "$text (${floor((seconds / 60)).toInt()}:${
-            (seconds % 60).toString().padStart(2, '0')
-        })"
+        if (isDebug) "$text (${floor((seconds / 60)).toInt()}:${(seconds % 60).toString().padStart(2, '0')})"
         else text
     }
 
