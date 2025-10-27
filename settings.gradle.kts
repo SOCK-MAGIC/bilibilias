@@ -53,6 +53,7 @@ include(":core:ktor-client")
 include(":core:http-downloader")
 include(":core:model")
 include(":core:navigation")
+include(":core:ui")
 include(":core:ui-preview")
 include(":core:video-player")
 
