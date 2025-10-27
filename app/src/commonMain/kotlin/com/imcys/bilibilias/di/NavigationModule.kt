@@ -35,6 +35,7 @@ val NavigationModule = module {
                 subclass(CacheRoute::class)
                 subclass(LoginRoute::class)
                 subclass(SettingRoute::class)
+                subclass(PlayerRoute::class)
             }
         }
     }
