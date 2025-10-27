@@ -4,9 +4,16 @@ plugins {
 }
 
 kotlin {
+    sourceSets {
+        androidMain.dependencies {
+            implementation(libs.androidx.activity.compose)
+        }
+    }
+
     dependencies {
         api(projects.core.designsystem)
         api(projects.core.model)
+
 
         implementation(libs.coil)
         implementation(libs.coil.compose)
