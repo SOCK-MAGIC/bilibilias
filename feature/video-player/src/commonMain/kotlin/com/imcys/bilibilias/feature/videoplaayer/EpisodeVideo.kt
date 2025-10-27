@@ -2,7 +2,11 @@ package com.imcys.bilibilias.feature.videoplaayer
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.imcys.bilibilias.core.danmaku.DanmakuHostState
+import com.imcys.bilibilias.core.ui.setRequestFullScreen
 import com.imcys.bilibilias.core.videoplayer.PlayerControllerState
 import com.imcys.bilibilias.core.videoplayer.VideoPlayer
 import com.imcys.bilibilias.core.videoplayer.VideoScaffold
@@ -18,11 +22,13 @@ import org.openani.mediamp.togglePause
 fun EpisodeVideo(
     mediampPlayer: MediampPlayer,
     playerControllerState: PlayerControllerState,
+    danmakuHostState: DanmakuHostState,
     title: String,
     expanded: Boolean,
-    isPlaying: Boolean,
     onClickFullScreen: () -> Unit = {},
 ) {
+    setRequestFullScreen(expanded)
+
     VideoScaffold(
         expanded = expanded,
         controllerState = playerControllerState,
@@ -43,7 +49,9 @@ fun EpisodeVideo(
                     .matchParentSize(),
             )
         },
-        danmakuHost = {},
+        danmakuHost = {
+            PlayerDanmakuHost(mediampPlayer, danmakuHostState)
+        },
         gestureHost = {
             val gestureIndicatorState = rememberGestureIndicatorState()
             PlayerGestureHost(
@@ -54,10 +62,11 @@ fun EpisodeVideo(
         },
         bottomBar = {
             PlayerControllerBar(
-                expanded = false,
+                expanded = expanded,
                 startActions = {
+                    val playbackState by mediampPlayer.playbackState.collectAsStateWithLifecycle()
                     PlayerControllerDefaults.PlaybackIcon(
-                        isPlaying = { isPlaying },
+                        isPlaying = { playbackState.isPlaying },
                         onClick = { mediampPlayer.togglePause() },
                     )
                 },

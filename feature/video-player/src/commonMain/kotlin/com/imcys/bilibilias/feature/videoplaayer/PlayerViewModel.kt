@@ -5,6 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.imcys.bilibilias.core.danmaku.DanmakuHostState
 import com.imcys.bilibilias.core.videoplayer.PlayerControllerState
 import com.imcys.bilibilias.core.videoplayer.playUri
 import org.openani.mediamp.MediampPlayer
@@ -16,11 +17,12 @@ fun rememberPlayerViewModel(player: MediampPlayer): PlayerViewModel {
 
 class PlayerViewModel(val player: MediampPlayer) {
 
-    var title by mutableStateOf("")
     val playerControllerState = PlayerControllerState()
-    val isPlaying = player.getCurrentPlaybackState().isPlaying
+    val danmakuHostState = DanmakuHostState()
 
     var isFullscreen by mutableStateOf(false)
+        private set
+
     suspend fun playUri(uris: List<String>) {
         player.playUri(uris)
     }

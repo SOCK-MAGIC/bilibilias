@@ -39,7 +39,7 @@ fun PlayerContent(uiState: PlayerUiState, playerViewModel: PlayerViewModel) {
                         title = "hello",
                         expanded = playerViewModel.isFullscreen,
                         onClickFullScreen = playerViewModel::toggleFullScreen,
-                        isPlaying = playerViewModel.isPlaying,
+                        danmakuHostState = playerViewModel.danmakuHostState,
                     )
                 }
             }
