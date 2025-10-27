@@ -4,14 +4,12 @@ plugins {
 }
 
 kotlin {
-    sourceSets {
-        commonMain.dependencies {
-            api(projects.core.designsystem)
-            api(projects.core.model)
+    dependencies {
+        api(projects.core.designsystem)
+        api(projects.core.model)
 
-            implementation(libs.coil)
-            implementation(libs.coil.compose)
-        }
+        implementation(libs.coil)
+        implementation(libs.coil.compose)
     }
 }
 
