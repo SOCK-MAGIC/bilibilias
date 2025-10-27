@@ -7,6 +7,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core.data)
+            implementation(projects.core.danmaku)
             implementation(projects.core.videoPlayer)
         }
     }
