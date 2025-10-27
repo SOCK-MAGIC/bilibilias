@@ -10,14 +10,13 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import org.openani.mediamp.MediampPlayer
 
 class VideoPlayerViewModel(
     private val compositeVideoId: String,
     private val mediaCacheStorage: MediaCacheDataSource,
 ) : ViewModel() {
     private val logger = logger<VideoPlayerViewModel>()
-    val player: MediampPlayer = MediampPlayer(Unit)
+
     val uiState = flow {
         val (bvid, cid) = parseVideoIdentifier(compositeVideoId)
             ?: throw IllegalArgumentException("Invalid video identifier format: $compositeVideoId")
@@ -34,6 +33,7 @@ class VideoPlayerViewModel(
                 is Result.Error -> PlayerUiState.Error(
                     result.exception.message ?: "An unknown error occurred"
                 )
+
                 Result.Loading -> PlayerUiState.Loading
             }
         }

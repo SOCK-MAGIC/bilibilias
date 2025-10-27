@@ -8,19 +8,21 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import com.imcys.bilibilias.core.videoplayer.playUri
 import org.openani.mediamp.compose.rememberMediampPlayer
 
 @Composable
 fun PlayerScreen(viewModel: VideoPlayerViewModel) {
     val uiState by viewModel.uiState.collectAsState()
-    PlayerContent(uiState)
+    val player = rememberMediampPlayer()
+    val playerViewModel = rememberPlayerViewModel(player)
+    PlayerContent(
+        uiState,
+        playerViewModel
+    )
 }
 
 @Composable
-fun PlayerContent(uiState: PlayerUiState) {
-    val player = rememberMediampPlayer()
-
+fun PlayerContent(uiState: PlayerUiState, playerViewModel: PlayerViewModel) {
     Scaffold { innerPadding ->
         Column(Modifier.padding(innerPadding)) {
             when (uiState) {
@@ -28,11 +30,16 @@ fun PlayerContent(uiState: PlayerUiState) {
                 PlayerUiState.Loading -> {}
                 is PlayerUiState.Success -> {
                     LaunchedEffect(Unit) {
-                        player.playUri(uiState.uris)
+                        playerViewModel.playUri(uiState.uris)
                     }
 
                     EpisodeVideo(
-                        playerState = player
+                        mediampPlayer = playerViewModel.player,
+                        playerControllerState = playerViewModel.playerControllerState,
+                        title = "hello",
+                        expanded = playerViewModel.isFullscreen,
+                        onClickFullScreen = playerViewModel::toggleFullScreen,
+                        isPlaying = playerViewModel.isPlaying,
                     )
                 }
             }

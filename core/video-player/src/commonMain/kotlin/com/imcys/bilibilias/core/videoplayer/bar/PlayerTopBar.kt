@@ -16,11 +16,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalFocusManager
 
 /**
  * 播放器顶部导航栏
@@ -43,7 +40,7 @@ fun PlayerTopBar(
                 }
             }
         },
-        modifier
+        modifier = modifier
             .fillMaxWidth(),
         navigationIcon = {
             CompositionLocalProvider(LocalContentColor provides color) {
