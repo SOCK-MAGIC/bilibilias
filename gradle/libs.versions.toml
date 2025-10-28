@@ -22,6 +22,7 @@ androidx-collection = "1.5.0"
 composeHotReload = "1.0.0-beta06"
 composeMultiplatform = "1.9.0"
 coil = "3.3.0"
+composeRetain = "1.10.0-beta01"
 ffmpegKit = "1.1.0"
 filekitCore = "0.11.0"
 flowredux = "2.0.0-alpha4"
@@ -50,6 +51,7 @@ androidx-compose-adaptive-navigation3 = { module = "androidx.compose.material3.a
 androidx-compose-material3-adaptive = { module = "org.jetbrains.compose.material3.adaptive:adaptive", version.ref = "androidx-material3-adaptive" }
 androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "composeMultiplatform" }
 androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "composeMultiplatform" }
+androidx-compose-runtime-retain = { module = "androidx.compose.runtime:runtime-retain", version.ref = "composeRetain" }
 androidx-core = { group = "androidx.core", name = "core", version.ref = "androidx-core" }
 androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "androidx-datastore" }
 

@@ -9,6 +9,8 @@ kotlin {
             implementation(projects.core.data)
             implementation(projects.core.danmaku)
             implementation(projects.core.videoPlayer)
+
+            implementation(libs.androidx.compose.runtime.retain)
         }
     }
 }
