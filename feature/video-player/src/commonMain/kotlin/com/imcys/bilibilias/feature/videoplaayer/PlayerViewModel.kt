@@ -1,19 +1,12 @@
 package com.imcys.bilibilias.feature.videoplaayer
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.imcys.bilibilias.core.danmaku.DanmakuHostState
 import com.imcys.bilibilias.core.videoplayer.PlayerControllerState
 import com.imcys.bilibilias.core.videoplayer.playUri
 import org.openani.mediamp.MediampPlayer
-
-@Composable
-fun rememberPlayerViewModel(player: MediampPlayer): PlayerViewModel {
-    return remember(player) { PlayerViewModel(player) }
-}
 
 class PlayerViewModel(val player: MediampPlayer) {
 

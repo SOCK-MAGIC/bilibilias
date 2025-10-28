@@ -8,16 +8,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import org.openani.mediamp.compose.rememberMediampPlayer
 
 @Composable
 fun PlayerScreen(viewModel: VideoPlayerViewModel) {
     val uiState by viewModel.uiState.collectAsState()
-    val player = rememberMediampPlayer()
-    val playerViewModel = rememberPlayerViewModel(player)
     PlayerContent(
-        uiState,
-        playerViewModel
+        uiState = uiState,
+        playerViewModel = viewModel.playerViewModel
     )
 }
 
