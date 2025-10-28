@@ -10,12 +10,16 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import org.openani.mediamp.MediampPlayer
 
 class VideoPlayerViewModel(
     private val compositeVideoId: String,
     private val mediaCacheStorage: MediaCacheDataSource,
+    private val mediampPlayer: MediampPlayer,
 ) : ViewModel() {
     private val logger = logger<VideoPlayerViewModel>()
+
+    val playerViewModel = PlayerViewModel(mediampPlayer)
 
     val uiState = flow {
         val (bvid, cid) = parseVideoIdentifier(compositeVideoId)
