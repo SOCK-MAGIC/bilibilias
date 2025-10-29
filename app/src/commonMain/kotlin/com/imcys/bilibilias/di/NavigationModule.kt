@@ -9,8 +9,8 @@ import com.imcys.bilibilias.feature.cache.CacheScreen
 import com.imcys.bilibilias.feature.login.LoginScreen
 import com.imcys.bilibilias.feature.search.SearchScreen
 import com.imcys.bilibilias.feature.settings.SettingsScreen
+import com.imcys.bilibilias.feature.videoplaayer.EpisodePlayerViewModel
 import com.imcys.bilibilias.feature.videoplaayer.PlayerScreen
-import com.imcys.bilibilias.feature.videoplaayer.VideoPlayerViewModel
 import com.imcys.bilibilias.navigation.CacheRoute
 import com.imcys.bilibilias.navigation.LoginRoute
 import com.imcys.bilibilias.navigation.PlayerRoute
@@ -66,9 +66,9 @@ val NavigationModule = module {
                 )
             }
             entry<PlayerRoute> {
-                val playerViewModel: VideoPlayerViewModel =
+                val playerViewModel: EpisodePlayerViewModel =
                     koinViewModel(parameters = { parametersOf(it.id) })
-                PlayerScreen(playerViewModel)
+                PlayerScreen(playerViewModel, onBack = { backStack.popLast() })
             }
         }
     }

@@ -1,26 +1,39 @@
 package com.imcys.bilibilias.feature.videoplaayer
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.imcys.bilibilias.core.danmaku.DanmakuHostState
 import com.imcys.bilibilias.core.datastore.MediaCacheDataSource
 import com.imcys.bilibilias.core.logging.logger
 import com.imcys.bilibilias.core.result.Result
 import com.imcys.bilibilias.core.result.asResult
+import com.imcys.bilibilias.core.videoplayer.PlayerControllerState
+import com.imcys.bilibilias.core.videoplayer.playUri
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import org.openani.mediamp.MediampPlayer
 
-class VideoPlayerViewModel(
+class EpisodePlayerViewModel(
     private val compositeVideoId: String,
     private val mediaCacheStorage: MediaCacheDataSource,
-    private val mediampPlayer: MediampPlayer,
+    val mediampPlayer: MediampPlayer,
 ) : ViewModel() {
-    private val logger = logger<VideoPlayerViewModel>()
+    private val logger = logger<EpisodePlayerViewModel>()
 
-    val playerViewModel = PlayerViewModel(mediampPlayer)
+    val playerControllerState = PlayerControllerState()
+    val danmakuHostState = DanmakuHostState()
 
+    var isFullscreen by mutableStateOf(false)
+        private set
+
+    init {
+        println("TEst")
+    }
     val uiState = flow {
         val (bvid, cid) = parseVideoIdentifier(compositeVideoId)
             ?: throw IllegalArgumentException("Invalid video identifier format: $compositeVideoId")
@@ -46,6 +59,18 @@ class VideoPlayerViewModel(
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = PlayerUiState.Loading
         )
+
+    suspend fun playUri(uris: List<String>) {
+        mediampPlayer.playUri(uris)
+    }
+
+    fun toggleFullScreen() {
+        isFullscreen = !isFullscreen
+    }
+
+    override fun onCleared() {
+        mediampPlayer.close()
+    }
 
     private fun parseVideoIdentifier(identifier: String): VideoIdentifier? {
         val parts = identifier.split('-')
