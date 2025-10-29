@@ -1,3 +1,5 @@
+import org.jetbrains.compose.compose
+
 plugins {
     alias(libs.plugins.bilibilias.feature)
     alias(libs.plugins.bilibilias.compose)
@@ -11,6 +13,8 @@ kotlin {
             implementation(projects.core.videoPlayer)
 
             implementation(libs.androidx.compose.runtime.retain)
+
+            implementation(compose("org.jetbrains.compose.ui:ui-backhandler"))
         }
     }
 }
