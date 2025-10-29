@@ -12,28 +12,24 @@ import com.imcys.bilibilias.core.result.Result
 import com.imcys.bilibilias.core.result.asResult
 import com.imcys.bilibilias.core.videoplayer.PlayerControllerState
 import com.imcys.bilibilias.core.videoplayer.playUri
+import com.imcys.bilibilias.feature.videoplaayer.di.MediaPlayerFactory
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import org.openani.mediamp.MediampPlayer
 
 class EpisodePlayerViewModel(
     private val compositeVideoId: String,
     private val mediaCacheStorage: MediaCacheDataSource,
-    val mediampPlayer: MediampPlayer,
+    playerFactory: MediaPlayerFactory,
 ) : ViewModel() {
-    private val logger = logger<EpisodePlayerViewModel>()
-
+    val mediampPlayer = playerFactory.create(viewModelScope.coroutineContext)
     val playerControllerState = PlayerControllerState()
     val danmakuHostState = DanmakuHostState()
 
     var isFullscreen by mutableStateOf(false)
         private set
 
-    init {
-        println("TEst")
-    }
     val uiState = flow {
         val (bvid, cid) = parseVideoIdentifier(compositeVideoId)
             ?: throw IllegalArgumentException("Invalid video identifier format: $compositeVideoId")
@@ -88,4 +84,7 @@ class EpisodePlayerViewModel(
     }
 
     data class VideoIdentifier(val bvid: String, val cid: Long)
+    companion object {
+        private val logger = logger<EpisodePlayerViewModel>()
+    }
 }
