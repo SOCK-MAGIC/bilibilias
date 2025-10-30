@@ -16,7 +16,7 @@ android {
     defaultConfig {
         externalNativeBuild {
             cmake {
-                cppFlags += "-std=c++11"
+                cppFlags += "-std=c++17"
                 ndkVersion = "29.0.14206865"
             }
         }
