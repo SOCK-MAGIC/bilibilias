@@ -13,5 +13,4 @@ actual val EpisodePlayerModule: Module = module {
     factory<MediaPlayerFactory> {
         AndroidMediaPlayerFactory(androidContext())
     }
-//    includes(VideoPlayerModule)
 }
