@@ -128,7 +128,11 @@ fun VideoScaffold(
             }
 
             Box(Modifier) {
-                Column(Modifier.fillMaxSize().background(Color.Transparent)) {
+                Column(
+                    Modifier
+                        .fillMaxSize()
+                        .background(Color.Transparent)
+                ) {
                     // 顶部控制栏: 返回键, 标题, 设置
                     AnimatedVisibility(
                         visible = controllerVisibility.topBar,
@@ -155,23 +159,24 @@ fun VideoScaffold(
                             ) {
                                 //force skip layout hit test for windows
                                 val desktopTitleBarInsets =
-                                    WindowInsets(0.dp).only(WindowInsetsSides.Top)
+                                    WindowInsets().only(WindowInsetsSides.Top)
                                 Spacer(
                                     modifier = Modifier.fillMaxWidth()
                                         .pointerInput(Unit) {}
                                         .windowInsetsPadding(desktopTitleBarInsets),
-                                )
+
+                                    )
                                 Row(
                                     Modifier.fillMaxWidth()
                                         .consumeWindowInsets(desktopTitleBarInsets)
                                         .windowInsetsPadding(
-                                            contentWindowInsets.only(
-                                                WindowInsetsSides.Horizontal + WindowInsetsSides.Top
-                                            )
+                                            contentWindowInsets.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
                                         ),
                                     verticalAlignment = Alignment.CenterVertically,
                                 ) {
-                                    CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onBackground) {
+                                    CompositionLocalProvider(
+                                        LocalContentColor provides MaterialTheme.colorScheme.onBackground
+                                    ) {
                                         topBar()
                                     }
                                 }
@@ -219,9 +224,8 @@ fun VideoScaffold(
                                 Row(
                                     Modifier.fillMaxWidth()
                                         .windowInsetsPadding(
-                                            contentWindowInsets.only(
-                                                WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom
-                                            )
+                                            contentWindowInsets
+                                                .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
                                         ),
                                     verticalAlignment = Alignment.CenterVertically,
                                 ) {
@@ -261,7 +265,9 @@ fun VideoScaffold(
                 }
             }
             Column(
-                Modifier.fillMaxSize().background(Color.Transparent)
+                Modifier
+                    .fillMaxSize()
+                    .background(Color.Transparent)
                     .windowInsetsPadding(contentWindowInsets.only(WindowInsetsSides.End)),
             ) {
                 Box(Modifier.weight(1f, fill = true).fillMaxWidth()) {
@@ -303,9 +309,7 @@ fun VideoScaffold(
             ) {
                 ProvideTextStyle(MaterialTheme.typography.labelSmall) {
                     CompositionLocalProvider(
-                        LocalContentColor provides MaterialTheme.colorScheme.onBackground.copy(
-                            alpha = 0.618f
-                        )
+                        LocalContentColor provides MaterialTheme.colorScheme.onBackground.slightlyWeaken()
                     ) {
                         floatingMessage()
                     }
@@ -342,4 +346,9 @@ private fun ControllerVisibility.withExpanded(isExpanded: Boolean): ControllerVi
     } else {
         this
     }
+}
+
+@Composable
+private fun Color.slightlyWeaken(): Color {
+    return copy(alpha = 0.618f)
 }
