@@ -16,13 +16,18 @@ import com.imcys.bilibilias.feature.videoplaayer.di.MediaPlayerFactory
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import kotlin.concurrent.atomics.AtomicBoolean
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
 
 class EpisodePlayerViewModel(
     private val compositeVideoId: String,
     private val mediaCacheStorage: MediaCacheDataSource,
     playerFactory: MediaPlayerFactory,
 ) : ViewModel() {
+    @OptIn(ExperimentalAtomicApi::class)
+    private val playbackTriggered = AtomicBoolean(false)
     val mediampPlayer = playerFactory.create(viewModelScope.coroutineContext)
     val playerControllerState = PlayerControllerState()
     val danmakuHostState = DanmakuHostState()
@@ -30,6 +35,7 @@ class EpisodePlayerViewModel(
     var isFullscreen by mutableStateOf(false)
         private set
 
+    @OptIn(ExperimentalAtomicApi::class)
     val uiState = flow {
         val (bvid, cid) = parseVideoIdentifier(compositeVideoId)
             ?: throw IllegalArgumentException("Invalid video identifier format: $compositeVideoId")
@@ -49,6 +55,12 @@ class EpisodePlayerViewModel(
 
                 Result.Loading -> PlayerUiState.Loading
             }
+        }.onEach { state ->
+            if (state is PlayerUiState.Success &&
+                playbackTriggered.compareAndSet(expectedValue = false, newValue = true)
+            ) {
+                playUri(state.uris)
+            }
         }
         .stateIn(
             scope = viewModelScope,
@@ -67,7 +79,6 @@ class EpisodePlayerViewModel(
     override fun onCleared() {
         mediampPlayer.close()
     }
-
     private fun parseVideoIdentifier(identifier: String): VideoIdentifier? {
         val parts = identifier.split('-')
         if (parts.size != 2) {

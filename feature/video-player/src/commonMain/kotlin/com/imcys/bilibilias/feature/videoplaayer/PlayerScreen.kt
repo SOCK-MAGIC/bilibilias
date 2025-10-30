@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.LifecycleEventObserver
@@ -13,8 +12,8 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.imcys.bilibilias.core.danmaku.DanmakuHostState
 import com.imcys.bilibilias.core.videoplayer.PlayerControllerState
+import com.imcys.bilibilias.core.videoplayer.progress.rememberMediaProgressSliderState
 import org.openani.mediamp.MediampPlayer
-import org.openani.mediamp.PlaybackState
 
 @Composable
 fun PlayerScreen(
@@ -22,22 +21,11 @@ fun PlayerScreen(
     onBack: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val playbackState by viewModel.mediampPlayer.playbackState.collectAsStateWithLifecycle()
-    val currentPositionMillis by viewModel.mediampPlayer.currentPositionMillis.collectAsStateWithLifecycle()
-    val mediaProperties by viewModel.mediampPlayer.mediaProperties.collectAsStateWithLifecycle()
-
-    println(currentPositionMillis.toString() + " bo1")
-    LaunchedEffect(viewModel.isFullscreen) {
-        viewModel.mediampPlayer.seekTo(currentPositionMillis)
-
-        println(currentPositionMillis.toString() + " bo2")
-    }
 
     PlayerLifecycleHandler(viewModel.mediampPlayer)
+
     PlayerContent(
         uiState = uiState,
-        viewModel = viewModel,
-        playbackState = playbackState,
         onBack = onBack,
         danmakuHostState = viewModel.danmakuHostState,
         expanded = viewModel.isFullscreen,
@@ -50,24 +38,24 @@ fun PlayerScreen(
 @Composable
 fun PlayerContent(
     uiState: PlayerUiState,
-    viewModel: EpisodePlayerViewModel,
     mediampPlayer: MediampPlayer,
     playerControllerState: PlayerControllerState,
-    playbackState: PlaybackState,
     danmakuHostState: DanmakuHostState,
     expanded: Boolean,
     onClickFullScreen: () -> Unit,
     onBack: () -> Unit
 ) {
+    val progressSliderState = rememberMediaProgressSliderState(
+        player = mediampPlayer,
+        onPreview = {},
+        onPreviewFinished = { mediampPlayer.seekTo(it) },
+    )
     Scaffold { innerPadding ->
         Column(Modifier.padding(innerPadding)) {
             when (uiState) {
                 is PlayerUiState.Error -> {}
                 PlayerUiState.Loading -> {}
                 is PlayerUiState.Success -> {
-                    LaunchedEffect(Unit) {
-                        viewModel.playUri(uiState.uris)
-                    }
 
                     EpisodeVideo(
                         mediampPlayer = mediampPlayer,
@@ -76,8 +64,8 @@ fun PlayerContent(
                         expanded = expanded,
                         onClickFullScreen = onClickFullScreen,
                         danmakuHostState = danmakuHostState,
-                        playbackState = playbackState,
                         onBack = onBack,
+                        progressSliderState = progressSliderState,
                     )
                 }
             }
