@@ -42,5 +42,8 @@ internal fun Project.configureKotlinMultiplatform() {
             freeCompilerArgs.add("-opt-in=kotlin.time.ExperimentalTime")
             freeCompilerArgs.add("-opt-in=kotlin.uuid.ExperimentalUuidApi")
         }
+        project.tasks.register("testClasses") {
+            dependsOn("allTests")
+        }
     }
 }
