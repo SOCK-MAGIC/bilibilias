@@ -1,6 +1,5 @@
 package com.imcys.bilibilias.feature.videoplaayer
 
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -12,6 +11,7 @@ import com.imcys.bilibilias.core.ui.setRequestFullScreen
 import com.imcys.bilibilias.core.videoplayer.PlayerControllerState
 import com.imcys.bilibilias.core.videoplayer.VideoPlayer
 import com.imcys.bilibilias.core.videoplayer.VideoScaffold
+import com.imcys.bilibilias.core.videoplayer.bar.EpisodePlayerTitle
 import com.imcys.bilibilias.core.videoplayer.bar.PlayerControllerBar
 import com.imcys.bilibilias.core.videoplayer.bar.PlayerControllerDefaults
 import com.imcys.bilibilias.core.videoplayer.bar.PlayerTopBar
@@ -34,15 +34,11 @@ fun EpisodeVideo(
     onClickFullScreen: () -> Unit = {},
     onBack: () -> Unit,
 ) {
-
-    BackHandler {
+    BackHandler(expanded) {
         if (expanded) {
             onClickFullScreen()
-        } else {
-            onBack()
         }
     }
-
     setRequestFullScreen(expanded)
 
     VideoScaffold(
@@ -50,7 +46,11 @@ fun EpisodeVideo(
         controllerState = playerControllerState,
         topBar = {
             PlayerTopBar(
-                title = { Text(title) },
+                title = if (expanded) {
+                    { EpisodePlayerTitle(title) }
+                } else {
+                    null
+                },
                 actions = {},
                 onBack = if (expanded) {
                     onClickFullScreen
@@ -63,9 +63,6 @@ fun EpisodeVideo(
             VideoPlayer(
                 player = mediampPlayer,
                 modifier = Modifier
-                    //                    .ifThen(statusBarHeight != 0.dp) {
-                    //                        offset(x = -statusBarHeight / 2, y = 0.dp)
-                    //                    }
                     .matchParentSize(),
             )
         },

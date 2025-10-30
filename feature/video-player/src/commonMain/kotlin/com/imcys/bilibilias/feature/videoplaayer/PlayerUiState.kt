@@ -3,6 +3,7 @@ package com.imcys.bilibilias.feature.videoplaayer
 sealed interface PlayerUiState {
     data object Loading : PlayerUiState
     data class Success(
+        val title: String,
         val uris: List<String>,
     ) : PlayerUiState
 

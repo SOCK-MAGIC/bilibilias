@@ -13,11 +13,16 @@ import com.imcys.bilibilias.core.result.asResult
 import com.imcys.bilibilias.core.videoplayer.PlayerControllerState
 import com.imcys.bilibilias.core.videoplayer.playUri
 import com.imcys.bilibilias.feature.videoplaayer.di.MediaPlayerFactory
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.concurrent.atomics.AtomicBoolean
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 
@@ -42,9 +47,9 @@ class EpisodePlayerViewModel(
 
         val cache = mediaCacheStorage.findCache(bvid, cid)
             ?: throw NoSuchElementException("Video not found in cache for ID: $compositeVideoId")
-
+        val title = cache.origin.title
         val uris = cache.metadata.metadata.map { it.filePath.toString() }
-        emit(PlayerUiState.Success(uris))
+        emit(PlayerUiState.Success(title, uris))
     }.asResult()
         .map { result ->
             when (result) {
@@ -77,8 +82,13 @@ class EpisodePlayerViewModel(
     }
 
     override fun onCleared() {
-        mediampPlayer.close()
+        viewModelScope.launch(NonCancellable + CoroutineName("EpisodePlayerViewModel#onCleared")) {
+            withContext(Dispatchers.Main) {
+                mediampPlayer.stopPlayback()
+            }
+        }
     }
+
     private fun parseVideoIdentifier(identifier: String): VideoIdentifier? {
         val parts = identifier.split('-')
         if (parts.size != 2) {

@@ -60,7 +60,7 @@ fun PlayerContent(
                     EpisodeVideo(
                         mediampPlayer = mediampPlayer,
                         playerControllerState = playerControllerState,
-                        title = "hello",
+                        title = uiState.title,
                         expanded = expanded,
                         onClickFullScreen = onClickFullScreen,
                         danmakuHostState = danmakuHostState,
