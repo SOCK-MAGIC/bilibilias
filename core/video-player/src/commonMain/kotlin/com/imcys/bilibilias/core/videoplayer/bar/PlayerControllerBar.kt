@@ -20,13 +20,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
+import com.imcys.bilibilias.core.videoplayer.progress.PlayerProgressSliderState
 
 @Stable
 object PlayerControllerDefaults {
@@ -75,6 +73,21 @@ object PlayerControllerDefaults {
                 )
             }
         }
+    }
+
+    @Composable
+    fun MediaProgressSlider(
+        progressSliderState: PlayerProgressSliderState,
+        modifier: Modifier = Modifier,
+        enabled: Boolean = true,
+        showPreviewTimeTextOnThumb: Boolean = true,
+    ) {
+        com.imcys.bilibilias.core.videoplayer.progress.MediaProgressSlider(
+            progressSliderState,
+            enabled = enabled,
+            showPreviewTimeTextOnThumb = showPreviewTimeTextOnThumb,
+            modifier = modifier,
+        )
     }
 }
 
