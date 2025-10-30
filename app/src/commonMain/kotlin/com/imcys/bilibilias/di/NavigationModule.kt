@@ -1,7 +1,6 @@
 package com.imcys.bilibilias.di
 
-import androidx.navigation3.runtime.EntryProviderBuilder
-import androidx.navigation3.runtime.entry
+import androidx.navigation3.runtime.EntryProviderScope
 import com.imcys.bilibilias.core.navigation.AsBackStack
 import com.imcys.bilibilias.core.navigation.AsBackStackViewModel
 import com.imcys.bilibilias.core.navigation.AsNavKey
@@ -39,7 +38,7 @@ val NavigationModule = module {
             }
         }
     }
-    single<EntryProviderBuilder<AsNavKey>.() -> Unit> {
+    single<EntryProviderScope<AsNavKey>.() -> Unit> {
         {
             val backStack: AsBackStack = get()
             entry<SearchRoute> {

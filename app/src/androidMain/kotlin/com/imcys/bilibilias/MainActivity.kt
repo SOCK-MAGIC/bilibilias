@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.navigation3.runtime.EntryProviderBuilder
+import androidx.navigation3.runtime.EntryProviderScope
 import com.imcys.bilibilias.core.data.util.ErrorMonitor
 import com.imcys.bilibilias.core.designsystem.theme.AsTheme
 import com.imcys.bilibilias.core.navigation.AsBackStackViewModel
@@ -20,7 +20,7 @@ class MainActivity : ComponentActivity(), KoinComponent {
 
     private val errorMonitor: ErrorMonitor = get()
     private val backStackViewModel: AsBackStackViewModel by viewModel()
-    private val entryProviderBuilders: EntryProviderBuilder<AsNavKey>.() -> Unit = get()
+    private val entryProviderBuilders: EntryProviderScope<AsNavKey>.() -> Unit = get()
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)

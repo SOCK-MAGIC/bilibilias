@@ -27,7 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
-import androidx.navigation3.runtime.EntryProviderBuilder
+import androidx.navigation3.runtime.EntryProviderScope
 import bilibilias.app.generated.resources.not_connected
 import bilibilias.app.generated.resources.unknown_error
 import com.imcys.bilibilias.core.data.model.MessageData
@@ -43,7 +43,7 @@ import org.jetbrains.compose.resources.getString
 @OptIn(ExperimentalMaterial3Api::class)
 fun AsApp(
     appState: AsAppState,
-    entryProviderBuilders: EntryProviderBuilder<AsNavKey>.() -> Unit,
+    entryProviderBuilders: EntryProviderScope<AsNavKey>.() -> Unit,
     modifier: Modifier = Modifier,
     windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo(),
 ) {
@@ -98,7 +98,7 @@ val LocalSnackbarHostState = compositionLocalOf<SnackbarHostState> {
 internal fun AsApp(
     appState: AsAppState,
     snackbarHostState: SnackbarHostState,
-    entryProviderBuilders: EntryProviderBuilder<AsNavKey>.() -> Unit,
+    entryProviderBuilders: EntryProviderScope<AsNavKey>.() -> Unit,
     modifier: Modifier = Modifier,
     windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo(),
 ) {
