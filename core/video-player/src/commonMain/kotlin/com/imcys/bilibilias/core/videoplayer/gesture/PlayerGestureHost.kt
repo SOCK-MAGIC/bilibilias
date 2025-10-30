@@ -1,6 +1,7 @@
 package com.imcys.bilibilias.core.videoplayer.gesture
 
 import androidx.annotation.UiThread
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -155,6 +156,7 @@ class GestureIndicatorState {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PlayerGestureHost(
     controllerState: PlayerControllerState,
