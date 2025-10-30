@@ -6,15 +6,17 @@
 @file:Repository("https://bindings.krzeminski.it")
 @file:DependsOn("actions:checkout:v4")
 @file:DependsOn("actions:upload-artifact:v4")
-@file:DependsOn("actions:setup-java:v4")
+@file:DependsOn("actions:setup-java:v5")
 @file:DependsOn("gradle:actions__setup-gradle:v4")
 @file:DependsOn("dawidd6:action-get-tag:v1")
 @file:DependsOn("softprops:action-gh-release:v2")
 @file:DependsOn("bhowell2:github-substring-action:v1.0.0")
+@file:DependsOn("android-actions:setup-android:v3")
 
 import io.github.typesafegithub.workflows.actions.actions.Checkout
 import io.github.typesafegithub.workflows.actions.actions.SetupJava
 import io.github.typesafegithub.workflows.actions.actions.UploadArtifact
+import io.github.typesafegithub.workflows.actions.androidactions.SetupAndroid_Untyped
 import io.github.typesafegithub.workflows.actions.bhowell2.GithubSubstringAction_Untyped
 import io.github.typesafegithub.workflows.actions.dawidd6.ActionGetTag_Untyped
 import io.github.typesafegithub.workflows.actions.gradle.ActionsSetupGradle
@@ -52,6 +54,7 @@ workflow(
         uses(name = "Checkout", action = Checkout())
         copyCiGradleProperties()
         setupJava()
+        setupAndroid()
         setupGradle()
         run(name = "Check build-logic", command = "./gradlew :build-logic:convention:check")
         prepareSigningKey()
@@ -86,6 +89,7 @@ workflow(
         uses(name = "Checkout", action = Checkout())
         copyCiGradleProperties()
         setupJava()
+        setupAndroid()
         setupGradle()
         prepareSigningKey()
         run(
@@ -134,6 +138,15 @@ fun JobBuilder<*>.setupGradle() {
             buildScanPublish = true,
             buildScanTermsOfUseUrl = ActionsSetupGradle.BuildScanTermsOfUseUrl.HttpsGradleComTermsOfService,
             buildScanTermsOfUseAgree = ActionsSetupGradle.BuildScanTermsOfUseAgree.Yes,
+        ),
+    )
+}
+
+fun JobBuilder<*>.setupAndroid() {
+    uses(
+        name = "Setup Android",
+        action = SetupAndroid_Untyped(
+            packages_Untyped = "cmake;4.1.0"
         ),
     )
 }
