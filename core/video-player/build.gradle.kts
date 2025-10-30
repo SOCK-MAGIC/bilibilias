@@ -13,9 +13,10 @@ kotlin {
 
             implementation(libs.androidx.compose.ui.tooling.preview)
             implementation(libs.androidx.compose.ui.tooling)
-//            implementation(libs.compose.material3.adaptive.core)
         }
         commonMain.dependencies {
+            implementation(projects.core.ui)
+
             api(mediampLibs.mediamp.api)
 
             implementation(libs.androidx.annotation)
