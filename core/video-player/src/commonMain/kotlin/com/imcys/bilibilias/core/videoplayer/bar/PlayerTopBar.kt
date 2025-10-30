@@ -2,9 +2,7 @@ package com.imcys.bilibilias.core.videoplayer.bar
 
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.only
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -40,13 +38,11 @@ fun PlayerTopBar(
                 }
             }
         },
-        modifier = modifier
-            .fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         navigationIcon = {
             CompositionLocalProvider(LocalContentColor provides color) {
                 IconButton(
                     onClick = onBack,
-                    modifier = Modifier,
                 ) {
                     Icon(Icons.AutoMirrored.Rounded.ArrowBack, "Back")
                 }
@@ -60,6 +56,6 @@ fun PlayerTopBar(
                 actions()
             }
         },
-        windowInsets = windowInsets.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top),
+        windowInsets = WindowInsets(),
     )
 }
