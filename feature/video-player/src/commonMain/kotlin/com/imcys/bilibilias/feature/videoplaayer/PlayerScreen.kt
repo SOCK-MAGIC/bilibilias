@@ -1,12 +1,17 @@
 package com.imcys.bilibilias.feature.videoplaayer
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -43,14 +48,16 @@ fun PlayerContent(
     danmakuHostState: DanmakuHostState,
     expanded: Boolean,
     onClickFullScreen: () -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    windowInsets: WindowInsets = ScaffoldDefaults.contentWindowInsets,
 ) {
     val progressSliderState = rememberMediaProgressSliderState(
         player = mediampPlayer,
         onPreview = {},
         onPreviewFinished = { mediampPlayer.seekTo(it) },
     )
-    Scaffold { innerPadding ->
+
+    Scaffold(contentWindowInsets = WindowInsets(0.dp)) { innerPadding ->
         Column(Modifier.padding(innerPadding)) {
             when (uiState) {
                 is PlayerUiState.Error -> {}
@@ -66,6 +73,13 @@ fun PlayerContent(
                         danmakuHostState = danmakuHostState,
                         onBack = onBack,
                         progressSliderState = progressSliderState,
+                        windowInsets = if (expanded) {
+                            windowInsets
+                        } else {
+                            // 非全屏右边还有东西
+                            // Consider #1923 平板横屏模式下播放器底栏和导航栏重合
+                            windowInsets.only(WindowInsetsSides.Left + WindowInsetsSides.Vertical)
+                        },
                     )
                 }
             }

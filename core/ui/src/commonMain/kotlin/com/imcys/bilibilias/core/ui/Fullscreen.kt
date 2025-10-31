@@ -14,7 +14,8 @@ import androidx.compose.runtime.Composable
 @Composable
 expect fun setRequestFullScreen(fullscreen: Boolean)
 
-//expect fun Context.setSystemBarVisible(window: PlatformWindowMP, visible: Boolean)
+@Composable
+expect fun setSystemBarVisible(visible: Boolean)
 
 //@Suppress("NOTHING_TO_INLINE", "KotlinRedundantDiagnosticSuppress")
 //@Composable

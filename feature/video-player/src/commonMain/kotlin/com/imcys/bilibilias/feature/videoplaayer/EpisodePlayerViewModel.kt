@@ -48,6 +48,7 @@ class EpisodePlayerViewModel(
         val cache = mediaCacheStorage.findCache(bvid, cid)
             ?: throw NoSuchElementException("Video not found in cache for ID: $compositeVideoId")
         val title = cache.origin.title
+        logger.debug { title }
         val uris = cache.metadata.metadata.map { it.filePath.toString() }
         emit(PlayerUiState.Success(title, uris))
     }.asResult()
