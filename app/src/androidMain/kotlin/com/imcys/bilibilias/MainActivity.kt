@@ -1,5 +1,6 @@
 package com.imcys.bilibilias
 
+import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
@@ -9,6 +10,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 import androidx.navigation3.runtime.EntryProviderScope
 import com.imcys.bilibilias.core.data.util.ErrorMonitor
@@ -27,38 +30,40 @@ class MainActivity : ComponentActivity(), KoinComponent {
     private val backStackViewModel: AsBackStackViewModel by viewModel()
     private val entryProviderBuilders: EntryProviderScope<AsNavKey>.() -> Unit = get()
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-//        val notifier = get<Notifier>()
-//        notifier.postNotifications()
-        enableEdgeToEdge(
-            // 透明状态栏
-            statusBarStyle = SystemBarStyle.auto(
-                android.graphics.Color.TRANSPARENT,
-                android.graphics.Color.TRANSPARENT,
-            ),
-            // 透明导航栏
-            navigationBarStyle = SystemBarStyle.auto(
-                android.graphics.Color.TRANSPARENT,
-                android.graphics.Color.TRANSPARENT,
-            ),
-        )
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
-            SystemBarColorEffect()
+//            SystemBarAppearanceController()
 
             val appState = rememberAsAppState(
                 errorMonitor,
                 asBackStack = backStackViewModel.asBackStack,
             )
             CompositionLocalProvider {
-                AsTheme(false) {
+                AsTheme {
                     AsApp(appState, entryProviderBuilders)
                 }
             }
         }
     }
 
+    @Composable
+    private fun SystemBarAppearanceController(isDark: Boolean) {
+        val view = LocalView.current
+        // SideEffect 会在每次 Composable 成功重组后运行
+        SideEffect {
+            val window = (view.context as Activity).window
+            // WindowInsetsControllerCompat 是用于控制窗口 Insets 和系统栏外观的正确 API
+            val insetsController = WindowCompat.getInsetsController(window, view)
+
+            // true = 状态栏图标为浅色 (用于深色背景)
+            // false = 状态栏图标为深色 (用于浅色背景)
+            insetsController.isAppearanceLightStatusBars = !isDark
+            insetsController.isAppearanceLightNavigationBars = !isDark
+        }
+    }
     @Composable
     fun SystemBarColorEffect(
         isDark: Boolean = false,
