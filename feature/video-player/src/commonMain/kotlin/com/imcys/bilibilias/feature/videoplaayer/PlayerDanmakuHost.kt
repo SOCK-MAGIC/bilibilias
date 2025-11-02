@@ -5,18 +5,15 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import com.imcys.bilibilias.core.danmaku.DanmakuHost
 import com.imcys.bilibilias.core.danmaku.DanmakuHostState
-import org.openani.mediamp.MediampPlayer
 
 @Composable
 fun PlayerDanmakuHost(
-    player: MediampPlayer,
+    isPaused: Boolean,
     danmakuHostState: DanmakuHostState,
     modifier: Modifier = Modifier,
 ) {
-    LaunchedEffect(player, danmakuHostState) {
-        player.playbackState.collect {
-            danmakuHostState.setPaused(!it.isPlaying)
-        }
+    LaunchedEffect(isPaused, danmakuHostState) {
+        danmakuHostState.setPaused(isPaused)
     }
 
     DanmakuHost(danmakuHostState, modifier)
