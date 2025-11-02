@@ -16,7 +16,3 @@ expect fun setRequestFullScreen(fullscreen: Boolean)
 
 @Composable
 expect fun setSystemBarVisible(visible: Boolean)
-
-//@Suppress("NOTHING_TO_INLINE", "KotlinRedundantDiagnosticSuppress")
-//@Composable
-//inline fun isSystemInFullscreen(): Boolean = LocalPlatformWindow.current.isUndecoratedFullscreen
