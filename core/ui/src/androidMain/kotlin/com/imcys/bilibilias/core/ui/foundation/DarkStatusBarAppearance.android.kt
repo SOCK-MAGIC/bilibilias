@@ -11,10 +11,9 @@ actual fun DarkStatusBarAppearance() {
     val activity = LocalActivity.current
 
     DisposableEffect(Unit) {
-        // 通过视图获取窗口，比从 context 转换更安全
         val window: Window = activity?.window ?: return@DisposableEffect onDispose {}
 
-        val insetsController = WindowCompat.getInsetsController(window, activity)
+        val insetsController = WindowCompat.getInsetsController(window, window.decorView)
 
         val wasAppearanceLightStatusBars = insetsController.isAppearanceLightStatusBars
 
