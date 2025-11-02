@@ -47,18 +47,8 @@ data class DanmakuConfig(
      * 允许彩色弹幕. 禁用时将会把所有彩色弹幕都显示为白色.
      */
     val enableColor: Boolean = true,
-    /**
-     * @since 3.1.0-beta04
-     */
     val enableTop: Boolean = true,
-    /**
-     * @since 3.1.0-beta04
-     */
     val enableFloating: Boolean = true,
-    /**
-     * @since 3.1.0-beta04
-     * 4.4.0 改为默认关闭
-     */
     val enableBottom: Boolean = false,
     /**
      * 调试模式, 启用发送弹幕的信息和弹幕处理信息.
