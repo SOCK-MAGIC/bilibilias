@@ -1,21 +1,18 @@
 package com.imcys.bilibilias.feature.videoplaayer
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.ScaffoldDefaults
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.compose.ui.backhandler.BackHandler
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.imcys.bilibilias.core.danmaku.DanmakuHostState
+import com.imcys.bilibilias.core.ui.foundation.DarkStatusBarAppearance
 import com.imcys.bilibilias.core.videoplayer.PlayerControllerState
 import com.imcys.bilibilias.core.videoplayer.progress.rememberMediaProgressSliderState
 import org.openani.mediamp.MediampPlayer
@@ -26,8 +23,6 @@ fun PlayerScreen(
     onBack: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-    PlayerLifecycleHandler(viewModel.mediampPlayer)
 
     PlayerContent(
         uiState = uiState,
@@ -40,6 +35,7 @@ fun PlayerScreen(
     )
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun PlayerContent(
     uiState: PlayerUiState,
@@ -49,63 +45,43 @@ fun PlayerContent(
     expanded: Boolean,
     onClickFullScreen: () -> Unit,
     onBack: () -> Unit,
-    windowInsets: WindowInsets = ScaffoldDefaults.contentWindowInsets,
 ) {
+    DarkStatusBarAppearance()
     val progressSliderState = rememberMediaProgressSliderState(
         player = mediampPlayer,
         onPreview = {},
         onPreviewFinished = { mediampPlayer.seekTo(it) },
     )
-
-    Scaffold(contentWindowInsets = WindowInsets(0.dp)) { innerPadding ->
-        Column(Modifier.padding(innerPadding)) {
-            when (uiState) {
-                is PlayerUiState.Error -> {}
-                PlayerUiState.Loading -> {}
-                is PlayerUiState.Success -> {
-
-                    EpisodeVideo(
-                        mediampPlayer = mediampPlayer,
-                        playerControllerState = playerControllerState,
-                        title = uiState.title,
-                        expanded = expanded,
-                        onClickFullScreen = onClickFullScreen,
-                        danmakuHostState = danmakuHostState,
-                        onBack = onBack,
-                        progressSliderState = progressSliderState,
-                        windowInsets = if (expanded) {
-                            windowInsets
-                        } else {
-                            // 非全屏右边还有东西
-                            // Consider #1923 平板横屏模式下播放器底栏和导航栏重合
-                            windowInsets.only(WindowInsetsSides.Left + WindowInsetsSides.Vertical)
-                        },
-                    )
-                }
-            }
+    val back = {
+        if (expanded) {
+            onClickFullScreen()
+        } else {
+            mediampPlayer.stopPlayback()
+            onBack()
         }
     }
-}
+    BackHandler(onBack = back)
 
-@Composable
-fun PlayerLifecycleHandler(mediampPlayer: MediampPlayer) {
-    val lifecycleOwner = LocalLifecycleOwner.current
-    DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-//            if (event == Lifecycle.Event.ON_START) {
-//                mediampPlayer.resume()
-//            }
-//
-//            if (event == Lifecycle.Event.ON_STOP) {
-//                mediampPlayer.pause()
-//            }
-        }
-
-        val lifecycle = lifecycleOwner.lifecycle
-        lifecycle.addObserver(observer)
-
-        onDispose {
-            lifecycle.removeObserver(observer)
+    Column {
+        when (uiState) {
+            is PlayerUiState.Error -> {}
+            PlayerUiState.Loading -> {}
+            is PlayerUiState.Success -> {
+                EpisodeVideo(
+                    mediampPlayer = mediampPlayer,
+                    playerControllerState = playerControllerState,
+                    title = uiState.title,
+                    expanded = expanded,
+                    onClickFullScreen = onClickFullScreen,
+                    danmakuHostState = danmakuHostState,
+                    onBack = back,
+                    progressSliderState = progressSliderState,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.Black)
+                        .statusBarsPadding()
+                )
+            }
         }
     }
 }
