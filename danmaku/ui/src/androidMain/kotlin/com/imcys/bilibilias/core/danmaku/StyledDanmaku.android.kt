@@ -1,4 +1,4 @@
-package com.imcys.bilibilias.core.danmaku
+package com.imcys.bilibilias.danmaku.ui
 
 import android.graphics.Bitmap
 import androidx.compose.ui.geometry.Offset

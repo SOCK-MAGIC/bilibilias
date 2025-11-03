@@ -1,4 +1,4 @@
-package com.imcys.bilibilias.core.danmaku
+package com.imcys.bilibilias.danmaku.ui
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.geometry.Offset
@@ -12,7 +12,7 @@ import androidx.compose.ui.text.TextPainter
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
-import com.imcys.bilibilias.core.danmaku.config.DanmakuStyle
+import com.imcys.bilibilias.danmaku.ui.config.DanmakuStyle
 import kotlin.math.floor
 import kotlin.uuid.Uuid
 

@@ -5,13 +5,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.imcys.bilibilias.core.danmaku.DanmakuHostState
 import com.imcys.bilibilias.core.datastore.MediaCacheDataSource
 import com.imcys.bilibilias.core.logging.logger
 import com.imcys.bilibilias.core.result.Result
 import com.imcys.bilibilias.core.result.asResult
 import com.imcys.bilibilias.core.videoplayer.PlayerControllerState
 import com.imcys.bilibilias.core.videoplayer.playUri
+import com.imcys.bilibilias.danmaku.ui.DanmakuHostState
 import com.imcys.bilibilias.feature.videoplaayer.di.MediaPlayerFactory
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.Dispatchers

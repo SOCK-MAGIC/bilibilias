@@ -16,5 +16,5 @@ kotlin {
     }
 }
 android {
-    namespace = "com.imcys.bilibilias.core.danmaku"
+    namespace = "com.imcys.bilibilias.danmaku.ui"
 }

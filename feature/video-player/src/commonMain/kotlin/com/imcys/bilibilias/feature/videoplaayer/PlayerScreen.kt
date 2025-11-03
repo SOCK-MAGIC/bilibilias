@@ -11,10 +11,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.imcys.bilibilias.core.danmaku.DanmakuHostState
 import com.imcys.bilibilias.core.ui.foundation.DarkStatusBarAppearance
 import com.imcys.bilibilias.core.videoplayer.PlayerControllerState
 import com.imcys.bilibilias.core.videoplayer.progress.rememberMediaProgressSliderState
+import com.imcys.bilibilias.danmaku.ui.DanmakuHostState
 import org.openani.mediamp.MediampPlayer
 
 @Composable

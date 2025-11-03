@@ -1,4 +1,4 @@
-package com.imcys.bilibilias.core.danmaku
+package com.imcys.bilibilias.danmaku.ui
 
 import androidx.compose.runtime.LongState
 import androidx.compose.runtime.Stable
@@ -17,8 +17,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.imcys.bilibilias.core.danmaku.config.DanmakuConfig
 import com.imcys.bilibilias.core.logging.logger
+import com.imcys.bilibilias.danmaku.ui.config.DanmakuConfig
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope

@@ -1,4 +1,4 @@
-package com.imcys.bilibilias.core.danmaku
+package com.imcys.bilibilias.danmaku.ui
 
 import androidx.compose.runtime.IntState
 import androidx.compose.runtime.LongState

@@ -1,4 +1,4 @@
-package com.imcys.bilibilias.core.danmaku
+package com.imcys.bilibilias.danmaku.ui
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable

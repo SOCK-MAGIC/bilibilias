@@ -19,7 +19,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.imcys.bilibilias.core.danmaku.DanmakuHostState
 import com.imcys.bilibilias.core.ui.foundation.KeepScreenOn
 import com.imcys.bilibilias.core.ui.setRequestFullScreen
 import com.imcys.bilibilias.core.videoplayer.PlayerControllerState
@@ -33,6 +32,7 @@ import com.imcys.bilibilias.core.videoplayer.gesture.PlayerGestureHost
 import com.imcys.bilibilias.core.videoplayer.gesture.rememberGestureIndicatorState
 import com.imcys.bilibilias.core.videoplayer.progress.MediaProgressIndicatorText
 import com.imcys.bilibilias.core.videoplayer.progress.PlayerProgressSliderState
+import com.imcys.bilibilias.danmaku.ui.DanmakuHostState
 import kotlinx.coroutines.launch
 import org.openani.mediamp.MediampPlayer
 import org.openani.mediamp.PlaybackState

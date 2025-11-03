@@ -1,4 +1,4 @@
-package com.imcys.bilibilias.core.danmaku
+package com.imcys.bilibilias.danmaku.ui
 
 class DanmakuPresentation(
     val danmaku: DanmakuInfo,

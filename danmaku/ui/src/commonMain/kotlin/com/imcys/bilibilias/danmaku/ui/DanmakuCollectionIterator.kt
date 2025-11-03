@@ -1,4 +1,4 @@
-package com.imcys.bilibilias.core.danmaku
+package com.imcys.bilibilias.danmaku.ui
 
 class DanmakuCollectionIterator<T : SizeSpecifiedDanmaku, D>(
     private val tracks: List<DanmakuTrack<T, D>>
