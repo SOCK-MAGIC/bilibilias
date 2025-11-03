@@ -8,6 +8,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core.common)
+            implementation(projects.danmaku.api)
 
             implementation(compose.foundation)
             implementation(compose.material3)
