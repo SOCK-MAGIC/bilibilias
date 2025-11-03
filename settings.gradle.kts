@@ -42,7 +42,6 @@ rootProject.name = "bilibilias"
 include(":app")
 include(":core:ass")
 include(":core:common")
-include(":core:danmaku")
 include(":core:data")
 include(":core:datasource")
 include(":core:datastore")
@@ -56,6 +55,9 @@ include(":core:navigation")
 include(":core:ui")
 include(":core:ui-preview")
 include(":core:video-player")
+
+include(":danmaku:api")
+include(":danmaku:ui")
 
 include(":feature:cache")
 include(":feature:login")
