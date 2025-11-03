@@ -5,8 +5,8 @@ import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import com.imcys.bilibilias.core.data.di.DataModule
 import com.imcys.bilibilias.core.datasource.DataSourceModule
 import com.imcys.bilibilias.core.datasource.utils.WbiInitializer
-import com.imcys.bilibilias.core.datastore.DataStoreModule
 import com.imcys.bilibilias.core.datastore.asDataStoreSerializer
+import com.imcys.bilibilias.core.datastore.di.DataStoreModule
 import com.imcys.bilibilias.core.datastore.new
 import com.imcys.bilibilias.core.datastore.resolveDataStoreFile
 import com.imcys.bilibilias.core.di.CommonModule
