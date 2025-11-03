@@ -74,11 +74,7 @@ fun EpisodeVideo(
                         Icon(Icons.Default.Settings, null)
                     }
                 },
-                onBackClick = if (expanded) {
-                    onClickFullScreen
-                } else {
-                    onBack
-                },
+                onBackClick = onBack,
             )
         },
         video = {
@@ -100,7 +96,6 @@ fun EpisodeVideo(
             PlayerControllerBar(
                 expanded = expanded,
                 startActions = {
-
                     PlayerControllerDefaults.PlaybackIcon(
                         isPlaying = { playbackState.isPlaying },
                         onClick = { mediampPlayer.togglePause() },
@@ -123,8 +118,7 @@ fun EpisodeVideo(
             )
         },
         danmakuHost = {
-            danmakuHostState
-
+            PlayerDanmakuHost(!playbackState.isPlaying, danmakuHostState)
         },
         modifier = modifier,
     )
