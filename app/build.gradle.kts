@@ -66,6 +66,8 @@ kotlin {
             implementation(libs.koin.compose.viewmodel)
 
             implementation(libs.androidx.navigation3.ui)
+            // https://mvnrepository.com/artifact/androidx.lifecycle/lifecycle-viewmodel-navigation3
+            implementation("androidx.lifecycle:lifecycle-viewmodel-navigation3:2.10.0-beta01")
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
