@@ -51,9 +51,6 @@ static CONFIG defaultConfig = {
         FALSE, /* 弹幕黑名单是否启用正则表达式匹配 */
 };
 
-// --- 弹幕列表的智能释放器 ---
-// 使用 C++ 的 unique_ptr 和自定义删除器来自动管理 DANMAKU 列表的内存
-// 这样无论函数在哪里返回，内存都会被安全释放
 void releaseDanmakuList(DANMAKU *danmakuList) {
     DANMAKU *current = danmakuList;
     while (current != nullptr) {
@@ -67,19 +64,14 @@ void releaseDanmakuList(DANMAKU *danmakuList) {
     }
 }
 
-// 为 unique_ptr 定义一个自定义删除器
 struct DanmakuListDeleter {
     void operator()(DANMAKU *p) const {
         releaseDanmakuList(p);
     }
 };
 
-// 使用 unique_ptr 简化内存管理
 using DanmakuListPtr = std::unique_ptr<DANMAKU, DanmakuListDeleter>;
 
-
-// --- JNI 字符串的 RAII 管理器 ---
-// 这个辅助类能确保 GetStringUTFChars 获取的 C 字符串在作用域结束时自动释放
 class JniUtfChars {
 public:
     JniUtfChars(JNIEnv *env, jstring jstr) : env_(env), jstr_(jstr), cstr_(nullptr) {
@@ -118,63 +110,38 @@ Java_com_imcys_bilibilias_core_ass_DanmakufactoryLib_convertDanmakuFile(
         jstring inputPath_,
         jstring outputPath_) {
 
-    // 1. 使用 RAII 包装器自动管理 JNI 字符串资源
     JniUtfChars inputPath(env, inputPath_);
     JniUtfChars outputPath(env, outputPath_);
 
-    // 检查字符串是否获取成功
     if (!inputPath.get() || !outputPath.get()) {
         LOGE("无法获取输入或输出路径字符串");
-        return env->NewStringUTF("无法获取路径字符串，可能内存不足");
+        return env->NewStringUTF("无法获取路径字符串，可能内存不足。");
     }
 
     LOGD("转换文件: %s -> %s", inputPath.get(), outputPath.get());
 
-    // 使用 try-catch 块来统一处理所有错误
     try {
         STATUS status = {FALSE, 0, 0};
         DANMAKU *rawDanmakuList = nullptr;
 
-        // 2. 读取弹幕文件
-        const char *inExt = strrchr(inputPath, '.');
-        if (!inExt) throw std::runtime_error("输入文件没有扩展名");
-
-        int readResult = -1;
-        if (strcmp(inExt, ".xml") == 0) {
-            readResult = readXml(inputPath, &rawDanmakuList, "", 0.0f, &status);
-        } else if (strcmp(inExt, ".json") == 0) {
-            readResult = readJson(inputPath, &rawDanmakuList, "", 0.0f, &status);
-        } else {
-            throw std::runtime_error("不支持的输入文件格式");
+        if (readXml(inputPath, &rawDanmakuList, "", 0.0f, &status) != 0) {
+            throw std::runtime_error("读取并解析弹幕 XML 文件失败。");
         }
-        if (readResult != 0) throw std::runtime_error("读取弹幕文件失败");
 
-        // 3. 使用智能指针管理弹幕列表内存
         DanmakuListPtr danmakuList(rawDanmakuList);
 
-        // 4. 写入弹幕文件
-        const char *outExt = strrchr(outputPath, '.');
-        if (!outExt) throw std::runtime_error("输出文件没有扩展名");
-
-        int writeResult = -1;
-        if (strcmp(outExt, ".ass") == 0) {
-            writeResult = writeAss(outputPath, danmakuList.get(), defaultConfig, nullptr, &status);
-        } else if (strcmp(outExt, ".xml") == 0) {
-            writeResult = writeXml(outputPath, danmakuList.get(), &status);
-        } else if (strcmp(outExt, ".json") == 0) {
-            writeResult = writeJson(outputPath, danmakuList.get(), &status);
-        } else {
-            throw std::runtime_error("不支持的输出文件格式");
+        if (!danmakuList) {
+            LOGD("输入文件为空或不包含有效弹幕数据。");
         }
-        if (writeResult != 0) throw std::runtime_error("写入目标文件失败");
+
+        if (writeAss(outputPath, danmakuList.get(), defaultConfig, nullptr, &status) != 0) {
+            throw std::runtime_error("写入目标 ASS 文件失败。");
+        }
 
         LOGD("文件转换成功");
-        return env->NewStringUTF(""); // 成功时返回空字符串
-
+        return env->NewStringUTF("");
     } catch (const std::runtime_error &e) {
         LOGE("发生错误: %s", e.what());
-        // 5. 统一的错误返回
-        // 所有的资源（JNI字符串、弹幕列表）都会在这里被自动释放
         return env->NewStringUTF(e.what());
     }
 }
