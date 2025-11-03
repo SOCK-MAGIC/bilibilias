@@ -4,15 +4,13 @@ plugins {
 }
 
 kotlin {
-    sourceSets {
-        commonMain.dependencies {
-            commonMain.dependencies {
-                implementation(projects.core.model)
-                implementation(projects.core.common)
+    dependencies {
+        implementation(projects.core.model)
+        implementation(projects.core.common)
 
-                implementation(projects.core.httpDownloader)
-            }
-        }
+        implementation(libs.kotlinx.serialization.json)
+
+        implementation(libs.store5)
     }
 }
 
