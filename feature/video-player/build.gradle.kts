@@ -9,7 +9,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core.data)
-            implementation(projects.core.danmaku)
+            implementation(projects.danmaku.ui)
             implementation(projects.core.videoPlayer)
 
             implementation(libs.androidx.compose.runtime.retain)
