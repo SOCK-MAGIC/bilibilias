@@ -12,7 +12,6 @@ import com.imcys.bilibilias.core.datastore.model.EpisodeMetadata
 import com.imcys.bilibilias.core.datastore.model.MediaCacheMetadata
 import com.imcys.bilibilias.core.datastore.model.MediaCachePartMetadata
 import com.imcys.bilibilias.core.datastore.model.MediaCacheSave
-import com.imcys.bilibilias.core.datastore.model.MetadataKey
 import com.imcys.bilibilias.core.domain.GetDmUseCase
 import com.imcys.bilibilias.core.domain.GetEpisodeInfoUseCase
 import com.imcys.bilibilias.core.domain.MediaSourceUseCase
@@ -131,23 +130,19 @@ class SearchViewModel(
             val state = searchResultUiState.value
             if (state is SearchResultUiState.Success) {
                 val episodeCacheState = state.episodes[request.index - 1]
-                episodeCacheState.episodeAliasId
+                val aid = episodeCacheState.episodeAliasId
                 val bvid = episodeCacheState.episodeId
                 val cid = episodeCacheState.episodeSubId
                 val title = episodeCacheState.title
 
-                val path = cacheDanmu(episodeCacheState)
+//                val path = cacheDanmu(episodeCacheState)
 
-                val metadata = EpisodeMetadata(
-                    bvid,
-                    cid,
-                    title
-                )
+                val metadata = EpisodeMetadata(aid, bvid, cid, title)
                 val mediaCacheSave = MediaCacheSave(
                     metadata,
                     MediaCacheMetadata(
                         emptyList(),
-                        extra = mapOf(MetadataKey.ASS_FILE to path)
+//                        extra = mapOf(MetadataKey.ASS_FILE to path)
                     )
                 )
                 mediaCacheStorage.cacheEpisode(mediaCacheSave)

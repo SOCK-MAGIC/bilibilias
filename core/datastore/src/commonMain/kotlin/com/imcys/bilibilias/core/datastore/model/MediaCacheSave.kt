@@ -18,6 +18,7 @@ data class MediaCacheSave(
 
 @Serializable
 data class EpisodeMetadata(
+    val aid: Long,
     val bvid: String,
     val cid: Long,
     val title: String,
