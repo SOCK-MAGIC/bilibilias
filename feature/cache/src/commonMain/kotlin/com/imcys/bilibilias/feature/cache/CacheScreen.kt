@@ -59,7 +59,7 @@ import kotlin.time.Clock
 
 @Composable
 fun CacheScreen(
-    navigationToPlayer: (String) -> Unit,
+    navigationToPlayer: (Long, String, Long) -> Unit,
     cacheViewModel: CacheViewModel = koinViewModel()
 ) {
     val state by cacheViewModel.stateFlow.collectAsState()
@@ -82,7 +82,7 @@ fun CaCheContent(
     canMux: Boolean,
     onDelete: (CacheEpisodeState) -> Unit = { },
     onCombine: (CacheEpisodeState) -> Unit = { },
-    navigationToPlayer: (String) -> Unit,
+    navigationToPlayer: (Long, String, Long) -> Unit,
 ) {
     Scaffold { innerPadding ->
         LazyColumn(modifier = Modifier.padding(innerPadding)) {
@@ -116,7 +116,10 @@ fun CaCheContent(
                     CacheEpisodeItem(
                         item,
                         onClick = {
-                            navigationToPlayer(item.episodeMetadata.bvid + "-" + item.episodeMetadata.cid)
+                            navigationToPlayer(
+                                item.episodeMetadata.aid, item.episodeMetadata.bvid,
+                                item.episodeMetadata.cid
+                            )
                         }
                     )
                     if (cacheEpisodeState.last() != item) {
@@ -252,6 +255,7 @@ private fun CacheEpisodeItemPreview() {
         CacheEpisodeItem(
             state = CacheEpisodeState(
                 episodeMetadata = EpisodeMetadata(
+                    aid = 1111111111111111,
                     bvid = "BV1fx411y7R2",
                     cid = 123456L,
                     title = "Sample Episode Title - A very long title to check how text overflow behaves in the UI design"

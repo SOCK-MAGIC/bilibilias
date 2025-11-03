@@ -50,7 +50,9 @@ val NavigationModule = module {
             }
             entry<CacheRoute> {
                 CacheScreen(
-                    navigationToPlayer = { backStack.navigate(PlayerRoute(it)) },
+                    navigationToPlayer = { aid, bvid, cid ->
+                        backStack.navigate(PlayerRoute(aid, bvid, cid))
+                    },
                 )
             }
             entry<LoginRoute> {
@@ -66,7 +68,7 @@ val NavigationModule = module {
             }
             entry<PlayerRoute> {
                 val playerViewModel: EpisodePlayerViewModel =
-                    koinViewModel(parameters = { parametersOf(it.id) })
+                    koinViewModel(parameters = { parametersOf(it.aid, it.bvid, it.cid) })
                 PlayerScreen(playerViewModel, onBack = { backStack.popLast() })
             }
         }

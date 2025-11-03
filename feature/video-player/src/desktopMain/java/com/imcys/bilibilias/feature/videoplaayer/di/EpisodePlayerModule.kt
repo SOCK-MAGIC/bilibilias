@@ -8,7 +8,7 @@ import org.openani.mediamp.MediampPlayer
 
 actual val EpisodePlayerModule: Module = module {
     viewModel {
-        EpisodePlayerViewModel(it[0], get(), get())
+        EpisodePlayerViewModel(it[0], it[1], it[2], get(), get(), get())
     }
     single<MediampPlayer> { MediampPlayer(Unit) }
 }
