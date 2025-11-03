@@ -12,6 +12,10 @@ import androidx.compose.ui.text.TextPainter
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import com.imcys.bilibilias.danmaku.api.DanmakuContent
+import com.imcys.bilibilias.danmaku.api.DanmakuInfo
+import com.imcys.bilibilias.danmaku.api.DanmakuLocation
+import com.imcys.bilibilias.danmaku.api.DanmakuServiceId
 import com.imcys.bilibilias.danmaku.ui.config.DanmakuStyle
 import kotlin.math.floor
 import kotlin.uuid.Uuid
