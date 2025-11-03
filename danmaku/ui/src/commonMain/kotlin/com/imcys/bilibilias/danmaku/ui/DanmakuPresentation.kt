@@ -5,6 +5,4 @@ import com.imcys.bilibilias.danmaku.api.DanmakuInfo
 class DanmakuPresentation(
     val danmaku: DanmakuInfo,
     val isSelf: Boolean,
-) {
-    val id get() = danmaku.id
-}
+)
