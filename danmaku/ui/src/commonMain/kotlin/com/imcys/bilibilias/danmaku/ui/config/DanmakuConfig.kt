@@ -15,9 +15,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.serialization.Transient
 
-/**
- * Configuration for the presentation of each `me.him188.ani.danmaku.api.Danmaku`.
- */
 @Immutable
 data class DanmakuConfig(
     // 备注: 增加新的属性后还要修改 [DanmakuConfigData]
