@@ -32,7 +32,9 @@ import com.imcys.bilibilias.core.videoplayer.gesture.PlayerGestureHost
 import com.imcys.bilibilias.core.videoplayer.gesture.rememberGestureIndicatorState
 import com.imcys.bilibilias.core.videoplayer.progress.MediaProgressIndicatorText
 import com.imcys.bilibilias.core.videoplayer.progress.PlayerProgressSliderState
+import com.imcys.bilibilias.danmaku.api.DanmakuEvent
 import com.imcys.bilibilias.danmaku.ui.DanmakuHostState
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import org.openani.mediamp.MediampPlayer
 import org.openani.mediamp.PlaybackState
@@ -45,6 +47,7 @@ fun EpisodeVideo(
     playerControllerState: PlayerControllerState,
     progressSliderState: PlayerProgressSliderState,
     danmakuHostState: DanmakuHostState,
+    danmakuEventFlow: Flow<DanmakuEvent>,
     title: String,
     expanded: Boolean,
     onBack: () -> Unit,
@@ -118,7 +121,12 @@ fun EpisodeVideo(
             )
         },
         danmakuHost = {
-            PlayerDanmakuHost(!playbackState.isPlaying, danmakuHostState)
+            PlayerDanmakuHost(
+                !playbackState.isPlaying,
+                mediampPlayer.getCurrentPositionMillis(),
+                danmakuHostState,
+                danmakuEventFlow,
+            )
         },
         modifier = modifier,
     )

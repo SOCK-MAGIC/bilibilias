@@ -34,11 +34,11 @@ interface DanmakuCollection {
     ): DanmakuSession
 }
 
-sealed class DanmakuEvent {
+sealed interface DanmakuEvent {
     /**
      * 发送一个新弹幕
      */
-    class Add(val danmaku: DanmakuInfo) : DanmakuEvent()
+    class Add(val danmaku: DanmakuInfo) : DanmakuEvent
 
     /**
      * 清空屏幕并以这些弹幕填充. 常见于快进/快退时
@@ -46,7 +46,7 @@ sealed class DanmakuEvent {
      * @param list 顺序为由距离当前时间近到远.
      * @param playTimeMillis 当前播放器的时间
      */
-    data class Repopulate(val list: List<DanmakuInfo>, val playTimeMillis: Long) : DanmakuEvent()
+    data class Repopulate(val list: List<DanmakuInfo>, val playTimeMillis: Long) : DanmakuEvent
 }
 
 fun emptyDanmakuCollection(): DanmakuCollection {
@@ -139,7 +139,6 @@ class TimeBasedDanmakuSession private constructor(
                 launch(start = CoroutineStart.UNDISPATCHED) {
                     progress.collect {
                         state.curTimeShared = it
-                        println("时间 $it")
                     }
                     // progress finished, no need to calculate
                     this@channelFlow.channel.close()

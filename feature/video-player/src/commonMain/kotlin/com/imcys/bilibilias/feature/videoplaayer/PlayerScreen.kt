@@ -14,7 +14,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.imcys.bilibilias.core.ui.foundation.DarkStatusBarAppearance
 import com.imcys.bilibilias.core.videoplayer.PlayerControllerState
 import com.imcys.bilibilias.core.videoplayer.progress.rememberMediaProgressSliderState
+import com.imcys.bilibilias.danmaku.api.DanmakuEvent
 import com.imcys.bilibilias.danmaku.ui.DanmakuHostState
+import kotlinx.coroutines.flow.Flow
 import org.openani.mediamp.MediampPlayer
 
 @Suppress("NonSkippableComposable")
@@ -29,6 +31,7 @@ fun PlayerScreen(
         uiState = uiState,
         onBack = onBack,
         danmakuHostState = viewModel.danmakuHostState,
+        danmakuEventFlow = viewModel.danmakuEventFlow,
         expanded = viewModel.isFullscreen,
         mediampPlayer = viewModel.mediampPlayer,
         playerControllerState = viewModel.playerControllerState,
@@ -43,6 +46,7 @@ fun PlayerContent(
     mediampPlayer: MediampPlayer,
     playerControllerState: PlayerControllerState,
     danmakuHostState: DanmakuHostState,
+    danmakuEventFlow: Flow<DanmakuEvent>,
     expanded: Boolean,
     onClickFullScreen: () -> Unit,
     onBack: () -> Unit,
@@ -75,6 +79,7 @@ fun PlayerContent(
                     expanded = expanded,
                     onClickFullScreen = onClickFullScreen,
                     danmakuHostState = danmakuHostState,
+                    danmakuEventFlow = danmakuEventFlow,
                     onBack = back,
                     progressSliderState = progressSliderState,
                     modifier = Modifier
