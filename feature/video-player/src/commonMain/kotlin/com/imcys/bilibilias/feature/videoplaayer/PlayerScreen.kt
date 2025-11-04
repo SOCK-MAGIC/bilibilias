@@ -17,6 +17,7 @@ import com.imcys.bilibilias.core.videoplayer.progress.rememberMediaProgressSlide
 import com.imcys.bilibilias.danmaku.ui.DanmakuHostState
 import org.openani.mediamp.MediampPlayer
 
+@Suppress("NonSkippableComposable")
 @Composable
 fun PlayerScreen(
     viewModel: EpisodePlayerViewModel,
