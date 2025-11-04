@@ -8,7 +8,14 @@ import org.koin.dsl.module
 
 actual val EpisodePlayerModule: Module = module {
     viewModel {
-        EpisodePlayerViewModel(it[0], get(), get())
+        EpisodePlayerViewModel(
+            aid = it[0],
+            bvid = it[1],
+            cid = it[2],
+            mediaCacheStorage = get(),
+            api = get(),
+            playerFactory = get(),
+        )
     }
     factory<MediaPlayerFactory> {
         AndroidMediaPlayerFactory(androidContext())
