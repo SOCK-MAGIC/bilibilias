@@ -51,7 +51,7 @@ androidx-compose-material3-adaptive = { module = "org.jetbrains.compose.material
 androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "composeMultiplatform" }
 androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "composeMultiplatform" }
 androidx-compose-runtime-retain = { module = "androidx.compose.runtime:runtime-retain", version.ref = "composeRetain" }
-androidx-core = { group = "androidx.core", name = "core", version.ref = "androidx-core" }
+androidx-core = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core" }
 androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "androidx-datastore" }
 
 androidx-lifecycle-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel", version.ref = "androidx-viewmodel" }
