@@ -1,15 +1,43 @@
 package com.imcys.bilibilias.core.videoplayer.gesture
 
 import androidx.annotation.UiThread
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemGesturesPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.VolumeUp
+import androidx.compose.material.icons.rounded.BrightnessHigh
+import androidx.compose.material.icons.rounded.BrightnessLow
+import androidx.compose.material.icons.rounded.BrightnessMedium
+import androidx.compose.material.icons.rounded.FastForward
+import androidx.compose.material.icons.rounded.FastRewind
+import androidx.compose.material.icons.rounded.Pause
+import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProvideTextStyle
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
@@ -20,9 +48,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import com.imcys.bilibilias.core.ui.foundation.ifThen
 import com.imcys.bilibilias.core.videoplayer.PlayerControllerState
 import com.imcys.bilibilias.core.videoplayer.gesture.GestureIndicatorState.State.BRIGHTNESS
 import com.imcys.bilibilias.core.videoplayer.gesture.GestureIndicatorState.State.FAST_BACKWARD
@@ -32,6 +66,7 @@ import com.imcys.bilibilias.core.videoplayer.gesture.GestureIndicatorState.State
 import com.imcys.bilibilias.core.videoplayer.gesture.GestureIndicatorState.State.SEEKING
 import com.imcys.bilibilias.core.videoplayer.gesture.GestureIndicatorState.State.VOLUME
 import kotlinx.coroutines.delay
+import kotlin.math.absoluteValue
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
@@ -160,16 +195,16 @@ class GestureIndicatorState {
 @Composable
 fun PlayerGestureHost(
     controllerState: PlayerControllerState,
-//    seekerState: SwipeSeekerState,
+    seekerState: SwipeSeekerState,
 //    progressSliderState: PlayerProgressSliderState,
     indicatorState: GestureIndicatorState,
 //    fastSkipState: FastSkipState?,
     enableSwipeToSeek: Boolean,
-//    audioController: LevelController,
-//    brightnessController: LevelController,
+    audioController: LevelController,
+    brightnessController: LevelController,
 //    playbackSpeedControllerState: PlaybackSpeedControllerState?,
     modifier: Modifier = Modifier,
-//    family: GestureFamily = LocalPlatform.current.mouseFamily,
+    family: GestureFamily = GestureFamily.TOUCH,    // todo 多平台触摸类型
     onTogglePauseResume: () -> Unit = {},
     onToggleFullscreen: () -> Unit = {},
     onExitFullscreen: () -> Unit = {},
@@ -178,21 +213,23 @@ fun PlayerGestureHost(
     val onTogglePauseResumeState by rememberUpdatedState(onTogglePauseResume)
 
     BoxWithConstraints {
-//        Row(
-//            Modifier.align(Alignment.TopCenter)
-//                .systemGesturesPadding()
-//                .padding(top = 16.dp),
-//        ) {
-//            LaunchedEffect(seekerState.deltaSeconds) {
-//                if (seekerState.isSeeking) {
-//                    indicatorState.showSeeking(seekerState.deltaSeconds)
-//                }
-//            }
-//            GestureIndicator(indicatorState)
-//        }
-        maxHeight
-        indicatorState.visible && (indicatorState.state == VOLUME || indicatorState.state == BRIGHTNESS)
-        indicatorState.visible && (indicatorState.state == FAST_FORWARD || indicatorState.state == FAST_BACKWARD)
+        Row(
+            Modifier.align(Alignment.TopCenter)
+                .systemGesturesPadding()
+                .padding(top = 16.dp),
+        ) {
+            LaunchedEffect(seekerState.deltaSeconds) {
+                if (seekerState.isSeeking) {
+                    indicatorState.showSeeking(seekerState.deltaSeconds)
+                }
+            }
+            GestureIndicator(indicatorState)
+        }
+        val maxHeight = maxHeight
+        val adjustingVolumeOrBrightness =
+            indicatorState.visible && (indicatorState.state == VOLUME || indicatorState.state == BRIGHTNESS)
+        val adjustingForwardOrBackward =
+            indicatorState.visible && (indicatorState.state == FAST_FORWARD || indicatorState.state == FAST_BACKWARD)
 
 //   useDesktopGestureLayoutWorkaround = false,
 //        clickToPauseResume = false,
@@ -300,19 +337,19 @@ fun PlayerGestureHost(
             ) {
                 Box(
                     Modifier
-//                            .ifThen(family.swipeLhsForBrightness) {
-//                                swipeLevelControlWithIndicator(
-//                                    brightnessController,
-//                                    ((maxHeight - 100.dp) / 40).coerceAtLeast(2.dp),
-//                                    Orientation.Vertical,
-//                                    indicatorState,
-//                                    enabled = !seekerState.isSeeking && !adjustingForwardOrBackward,
-//                                    step = 0.01f,
-//                                    setup = {
-//                                        indicatorState.state = BRIGHTNESS
-//                                    },
-//                                )
-//                            }
+                        .ifThen(family.swipeLhsForBrightness) {
+                            swipeLevelControlWithIndicator(
+                                brightnessController,
+                                ((maxHeight - 100.dp) / 40).coerceAtLeast(2.dp),
+                                Orientation.Vertical,
+                                indicatorState,
+                                enabled = !seekerState.isSeeking && !adjustingForwardOrBackward,
+                                step = 0.01f,
+                                setup = {
+                                    indicatorState.state = BRIGHTNESS
+                                },
+                            )
+                        }
                         .weight(1f)
                         .fillMaxHeight(),
                 )
@@ -321,19 +358,19 @@ fun PlayerGestureHost(
 
                 Box(
                     Modifier
-//                            .ifThen(family.swipeRhsForVolume) {
-//                                swipeLevelControlWithIndicator(
-//                                    audioController,
-//                                    ((maxHeight - 100.dp) / 40).coerceAtLeast(2.dp),
-//                                    Orientation.Vertical,
-//                                    indicatorState,
-//                                    enabled = !seekerState.isSeeking && !adjustingForwardOrBackward,
-//                                    step = 0.05f,
-//                                    setup = {
-//                                        indicatorState.state = VOLUME
-//                                    },
-//                                )
-//                            }
+                        .ifThen(family.swipeRhsForVolume) {
+                            swipeLevelControlWithIndicator(
+                                audioController,
+                                ((maxHeight - 100.dp) / 40).coerceAtLeast(2.dp),
+                                Orientation.Vertical,
+                                indicatorState,
+                                enabled = !seekerState.isSeeking && !adjustingForwardOrBackward,
+                                step = 0.05f,
+                                setup = {
+                                    indicatorState.state = VOLUME
+                                },
+                            )
+                        }
                         .weight(1f)
                         .fillMaxHeight(),
                 )
@@ -348,6 +385,148 @@ fun PlayerGestureHost(
 //                    }
 //                    .combineClickableWithFamilyGesture(),
 //            )
+    }
+}
+
+/**
+ * 展示当前快进/快退秒数的指示器.
+ *
+ * `<< 00:00` / `>> 00:00`
+ */
+@Composable
+fun GestureIndicator(
+    state: GestureIndicatorState,
+) {
+    val shape = MaterialTheme.shapes.small
+    val colors = MaterialTheme.colorScheme
+    var lastDelta by remember(state) {
+        mutableIntStateOf(state.deltaSeconds)
+    }
+
+    AnimatedVisibility(
+        visible = state.visible,
+        enter = fadeIn(spring(stiffness = Spring.StiffnessMedium)),
+        exit = fadeOut(tween(durationMillis = 500)),
+        label = "SeekPositionIndicator",
+    ) {
+        Surface(
+            Modifier.alpha(0.8f),
+            color = colors.surface,
+            shape = shape,
+            shadowElevation = 1.dp,
+            contentColor = colors.onSurface,
+        ) {
+            val iconSize = 36.dp
+            ProvideTextStyle(MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold)) {
+                Row(
+                    Modifier.background(Color.Transparent)
+                        .padding(horizontal = 12.dp, vertical = 8.dp)
+                        .height(iconSize),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    // Used by volume and brightness
+                    val progressIndicator: @Composable () -> Unit = remember(state, colors) {
+                        // This remember is needed because Compose does not remember lambdas
+                        // and can cause performance problem in this fast-changing composable.
+                        {
+                            LinearProgressIndicator(
+                                progress = { state.progressValue },
+                                modifier = Modifier.width(80.dp),
+                                color = colors.primary,
+                                trackColor = colors.onSurface.copy(alpha = 0.5f),
+                                drawStopIndicator = {},
+                            )
+                        }
+                    }
+
+                    when (state.state) {
+                        RESUMED_ONCE -> {
+                            Icon(
+                                Icons.Rounded.PlayArrow, null,
+                                Modifier.size(iconSize).background(Color.Transparent),
+                            )
+                        }
+
+                        PAUSED_ONCE -> {
+                            Icon(Icons.Rounded.Pause, null, Modifier.size(iconSize))
+                        }
+
+                        SEEKING -> {
+                            val deltaDuration = state.deltaSeconds
+                            // 记忆变为 0 之前的 delta, 这样在快进/快退结束后, 会显示上一次的 delta, 而不是显示 0
+                            val duration = if (deltaDuration == 0) {
+                                lastDelta
+                            } else {
+                                deltaDuration.also {
+                                    lastDelta = deltaDuration
+                                }
+                            }
+
+                            Icon(
+                                if (duration > 0) {
+                                    Icons.Rounded.FastForward
+                                } else {
+                                    Icons.Rounded.FastRewind
+                                },
+                                null,
+                                Modifier.size(iconSize),
+                            )
+                            val text = renderTime(duration.absoluteValue)
+                            Text(
+                                text,
+                                maxLines = 1,
+                            )
+                        }
+
+                        VOLUME -> {
+                            Icon(
+                                Icons.AutoMirrored.Rounded.VolumeUp, null,
+                                Modifier.size(iconSize),
+                            )
+                            progressIndicator()
+                        }
+
+                        BRIGHTNESS -> {
+                            Icon(
+                                when (state.progressValue) {
+                                    in 0.67..1.0 -> Icons.Rounded.BrightnessHigh
+                                    in 0.33..0.67 -> Icons.Rounded.BrightnessMedium
+                                    else -> Icons.Rounded.BrightnessLow
+                                },
+                                null,
+                                Modifier.size(iconSize),
+                            )
+                            progressIndicator()
+                        }
+
+                        FAST_FORWARD -> {
+                            Icon(Icons.Rounded.FastForward, null, Modifier.size(iconSize))
+                        }
+
+                        FAST_BACKWARD -> {
+                            Icon(Icons.Rounded.FastRewind, null, Modifier.size(iconSize))
+                        }
+
+                        null -> {}
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Stable
+private fun renderTime(seconds: Int): String {
+    return "${(seconds / 60).fixToString(2)}:${(seconds % 60).fixToString(2)}"
+}
+
+private fun Int.fixToString(length: Int, prefix: Char = '0'): String {
+    val str = this.toString()
+    return if (str.length >= length) {
+        str
+    } else {
+        prefix.toString().repeat(length - str.length) + str
     }
 }
 
