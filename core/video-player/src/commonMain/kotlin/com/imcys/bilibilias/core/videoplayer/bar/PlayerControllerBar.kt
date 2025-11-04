@@ -14,6 +14,8 @@ import androidx.compose.material.icons.rounded.Fullscreen
 import androidx.compose.material.icons.rounded.FullscreenExit
 import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.Subtitles
+import androidx.compose.material.icons.rounded.SubtitlesOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -23,9 +25,12 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.imcys.bilibilias.core.videoplayer.progress.PlayerProgressSliderState
 
+const val TAG_SPEED_SWITCHER_DROPDOWN_MENU = "SpeedSwitcherDropdownMenu"
+const val TAG_DANMAKU_ICON_BUTTON = "DanmakuIconButton"
 @Stable
 object PlayerControllerDefaults {
     @Composable
@@ -46,6 +51,37 @@ object PlayerControllerDefaults {
         }
     }
 
+    /**
+     * To turn danmaku on/off
+     */
+    @Composable
+    fun DanmakuIcon(
+        danmakuEnabled: Boolean,
+        onClick: () -> Unit,
+        modifier: Modifier = Modifier,
+    ) {
+        IconButton(
+            onClick = onClick,
+            modifier.testTag(TAG_DANMAKU_ICON_BUTTON),
+        ) {
+            if (danmakuEnabled) {
+                Icon(Icons.Rounded.Subtitles, contentDescription = "禁用弹幕")
+            } else {
+                Icon(Icons.Rounded.SubtitlesOff, contentDescription = "启用弹幕")
+            }
+        }
+    }
+//    @Composable
+//    fun inVideoDanmakuTextFieldColors(): TextFieldColors {
+//        return OutlinedTextFieldDefaults.colors(
+//            unfocusedContainerColor = MaterialTheme.colorScheme.surface.stronglyWeaken(),
+//            focusedContainerColor = MaterialTheme.colorScheme.surface.stronglyWeaken(),
+//            unfocusedBorderColor = Color.Transparent,
+//            focusedBorderColor = Color.Transparent,
+//            unfocusedTextColor = MaterialTheme.colorScheme.onSurface.slightlyWeaken(),
+//            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+//        )
+//    }
     /**
      * To enter/exit fullscreen
      */
@@ -89,6 +125,34 @@ object PlayerControllerDefaults {
             modifier = modifier,
         )
     }
+    /**
+     * Set 1x, 2x playback speed.
+     * @param optionsProvider The options to choose from. Note that when the value changes, it will not reflect in the UI.
+     */
+//    @Composable
+//    fun SpeedSwitcher(
+//        playbackSpeedControllerState: PlaybackSpeedControllerState,
+//        modifier: Modifier = Modifier,
+//        onExpandedChanged: (expanded: Boolean) -> Unit = {},
+//    ) {
+//        return OptionsSwitcher(
+//            value = playbackSpeedControllerState.currentIndex,
+//            onValueChange = { playbackSpeedControllerState.setSpeed(it) },
+//            optionsProvider = { playbackSpeedControllerState.speedList.indices.toList() },
+//            renderValue = { Text(remember(it) { "${playbackSpeedControllerState.speedList[it]}x" }) },
+//            renderValueExposed = {
+//                val speedValue = playbackSpeedControllerState.speedList[it]
+//                Text(remember(speedValue) { if (speedValue == 1.0f) "倍速" else """${speedValue}x""" })
+//            },
+//            modifier,
+//            properties = PlatformPopupProperties(
+//                clippingEnabled = false,
+//            ),
+//            textButtonTestTag = TAG_SPEED_SWITCHER_TEXT_BUTTON,
+//            dropdownMenuTestTag = TAG_SPEED_SWITCHER_DROPDOWN_MENU,
+//            onExpandedChanged = onExpandedChanged,
+//        )
+//    }
 }
 
 /**
