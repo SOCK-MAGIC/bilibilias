@@ -14,6 +14,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -78,6 +79,7 @@ fun EpisodeVideo(
                     }
                 },
                 onBackClick = onBack,
+                contentColor = Color.White
             )
         },
         video = {
