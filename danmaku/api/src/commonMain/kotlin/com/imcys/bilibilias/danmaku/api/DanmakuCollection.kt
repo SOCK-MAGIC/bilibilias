@@ -246,7 +246,8 @@ internal class DanmakuSessionFlowState(
 
 /**
  * 弹幕装填算法的具体实现
- */ // see DanmakuSessionAlgorithmTest
+ * see DanmakuSessionAlgorithmTest
+ */
 internal class DanmakuSessionAlgorithm(
     val state: DanmakuSessionFlowState,
 ) {
