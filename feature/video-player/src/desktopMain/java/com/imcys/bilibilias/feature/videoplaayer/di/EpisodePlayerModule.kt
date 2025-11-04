@@ -1,5 +1,6 @@
 package com.imcys.bilibilias.feature.videoplaayer.di
 
+import com.imcys.bilibilias.core.videoplayer.di.VideoPlayerModule
 import com.imcys.bilibilias.feature.videoplaayer.EpisodePlayerViewModel
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
@@ -11,4 +12,5 @@ actual val EpisodePlayerModule: Module = module {
         EpisodePlayerViewModel(it[0], it[1], it[2], get(), get(), get())
     }
     single<MediampPlayer> { MediampPlayer(Unit) }
+    includes(VideoPlayerModule)
 }

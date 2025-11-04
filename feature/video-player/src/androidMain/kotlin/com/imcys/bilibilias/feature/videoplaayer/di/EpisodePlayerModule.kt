@@ -1,5 +1,6 @@
 package com.imcys.bilibilias.feature.videoplaayer.di
 
+import com.imcys.bilibilias.core.videoplayer.di.VideoPlayerModule
 import com.imcys.bilibilias.feature.videoplaayer.EpisodePlayerViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
@@ -20,4 +21,5 @@ actual val EpisodePlayerModule: Module = module {
     factory<MediaPlayerFactory> {
         AndroidMediaPlayerFactory(androidContext())
     }
+    includes(VideoPlayerModule)
 }
