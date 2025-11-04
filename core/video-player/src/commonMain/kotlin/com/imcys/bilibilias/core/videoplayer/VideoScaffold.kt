@@ -13,6 +13,8 @@ import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.BoxWithConstraintsScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -85,7 +87,7 @@ fun VideoScaffold(
     topBar: @Composable RowScope.() -> Unit = {},
     video: @Composable BoxScope.() -> Unit = {},
     danmakuHost: @Composable BoxScope.() -> Unit = {},
-    gestureHost: @Composable BoxScope.() -> Unit = {},
+    gestureHost: @Composable BoxWithConstraintsScope.() -> Unit = {},
     floatingMessage: @Composable BoxScope.() -> Unit = {},
     rhsButtons: @Composable ColumnScope.() -> Unit = {},
     gestureLock: @Composable ColumnScope.() -> Unit = {},
@@ -415,8 +417,8 @@ private fun DanmakuLayer(
 }
 
 @Composable
-private fun GestureLayer(content: @Composable BoxScope.() -> Unit) {
-    Box(
+private fun GestureLayer(content: @Composable BoxWithConstraintsScope.() -> Unit) {
+    BoxWithConstraints(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
         content = content
