@@ -6,11 +6,15 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -22,17 +26,23 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.imcys.bilibilias.core.ui.foundation.KeepScreenOn
 import com.imcys.bilibilias.core.ui.setRequestFullScreen
+import com.imcys.bilibilias.core.videoplayer.PlaybackSpeedControllerState
 import com.imcys.bilibilias.core.videoplayer.PlayerControllerState
 import com.imcys.bilibilias.core.videoplayer.VideoPlayer
 import com.imcys.bilibilias.core.videoplayer.VideoScaffold
 import com.imcys.bilibilias.core.videoplayer.bar.EpisodePlayerTitle
 import com.imcys.bilibilias.core.videoplayer.bar.PlayerControllerBar
 import com.imcys.bilibilias.core.videoplayer.bar.PlayerControllerDefaults
+import com.imcys.bilibilias.core.videoplayer.bar.PlayerControllerDefaults.SpeedSwitcher
 import com.imcys.bilibilias.core.videoplayer.bar.PlayerTopBar
+import com.imcys.bilibilias.core.videoplayer.gesture.GestureFamily
+import com.imcys.bilibilias.core.videoplayer.gesture.LevelController
 import com.imcys.bilibilias.core.videoplayer.gesture.PlayerGestureHost
 import com.imcys.bilibilias.core.videoplayer.gesture.rememberGestureIndicatorState
+import com.imcys.bilibilias.core.videoplayer.gesture.rememberSwipeSeekerState
 import com.imcys.bilibilias.core.videoplayer.progress.MediaProgressIndicatorText
 import com.imcys.bilibilias.core.videoplayer.progress.PlayerProgressSliderState
+import com.imcys.bilibilias.core.videoplayer.rememberAlwaysOnRequester
 import com.imcys.bilibilias.danmaku.api.DanmakuEvent
 import com.imcys.bilibilias.danmaku.ui.DanmakuHostState
 import kotlinx.coroutines.flow.Flow
@@ -47,13 +57,19 @@ fun EpisodeVideo(
     mediampPlayer: MediampPlayer,
     playerControllerState: PlayerControllerState,
     progressSliderState: PlayerProgressSliderState,
+    danmakuEnabled: Boolean,
     danmakuHostState: DanmakuHostState,
     danmakuEventFlow: Flow<DanmakuEvent>,
+    onToggleDanmaku: () -> Unit,
+    audioController: LevelController,
+    brightnessController: LevelController,
+    playbackSpeedControllerState: PlaybackSpeedControllerState?,
     title: String,
     expanded: Boolean,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
-    onClickFullScreen: () -> Unit = {},
+    gestureFamily: GestureFamily = GestureFamily.TOUCH, // todo
+    onToggleFullScreen: () -> Unit = {},
 ) {
     val playbackState by mediampPlayer.playbackState.collectAsStateWithLifecycle()
     if (playbackState.isPlaying) {
@@ -90,11 +106,27 @@ fun EpisodeVideo(
             )
         },
         gestureHost = {
+            val swipeSeekerState = rememberSwipeSeekerState(constraints.maxWidth) {
+                mediampPlayer.skip(it * 1000L)
+            }
+            val videoPropertiesState by mediampPlayer.mediaProperties.collectAsState(null)
+            val enableSwipeToSeek by remember {
+                derivedStateOf {
+                    // todo 时长无法获取
+                    videoPropertiesState?.let { it.durationMillis != 0L } == true
+                    true
+                }
+            }
             val gestureIndicatorState = rememberGestureIndicatorState()
+
             PlayerGestureHost(
                 controllerState = playerControllerState,
                 indicatorState = gestureIndicatorState,
-                enableSwipeToSeek = true,
+                enableSwipeToSeek = enableSwipeToSeek,
+                seekerState = swipeSeekerState,
+                audioController = audioController,
+                brightnessController = brightnessController,
+//                onTogglePauseResume = { mediampPlayer.togglePause() },
             )
         },
         bottomBar = {
@@ -105,6 +137,25 @@ fun EpisodeVideo(
                         isPlaying = { playbackState.isPlaying },
                         onClick = { mediampPlayer.togglePause() },
                     )
+                    PlayerControllerDefaults.DanmakuIcon(danmakuEnabled, onToggleDanmaku)
+                    val audioLevelController = audioController as? MediampAudioLevelController
+                    if (expanded && audioLevelController != null && gestureFamily == GestureFamily.MOUSE) {
+                        val level by audioLevelController.levelFlow.collectAsState()
+                        val isMute by audioLevelController.muteFlow.collectAsState()
+
+                        PlayerControllerDefaults.AudioIcon(
+                            level,
+                            isMute = isMute,
+                            maxValue = audioLevelController.range.endInclusive,
+                            onClick = {
+                                audioLevelController.toggleMute()
+                            },
+                            onchange = {
+                                audioLevelController.setLevel(it)
+                            },
+                            controllerState = playerControllerState,
+                        )
+                    }
                 },
                 progressIndicator = { MediaProgressIndicatorText(progressSliderState) },
                 progressSlider = {
@@ -114,9 +165,28 @@ fun EpisodeVideo(
                     )
                 },
                 endActions = {
+                    val alwaysOnRequester =
+                        rememberAlwaysOnRequester(playerControllerState, "speedSwitcher")
+
+                    var isSpeedSwitcherExpanded by rememberSaveable { mutableStateOf(false) }
+                    LaunchedEffect(expanded) {
+                        if (expanded) {
+                            alwaysOnRequester.request()
+                        } else {
+                            alwaysOnRequester.cancelRequest()
+                        }
+                    }
+                    playbackSpeedControllerState?.also { controller ->
+                        SpeedSwitcher(
+                            playbackSpeedControllerState = controller,
+                            expanded = isSpeedSwitcherExpanded,
+                            onExpandedChange = { isSpeedSwitcherExpanded = it },
+                        )
+                    }
+
                     PlayerControllerDefaults.FullscreenIcon(
                         expanded,
-                        onClickFullscreen = onClickFullScreen,
+                        onClickFullscreen = onToggleFullScreen,
                     )
                 },
                 danmakuEditor = { }
