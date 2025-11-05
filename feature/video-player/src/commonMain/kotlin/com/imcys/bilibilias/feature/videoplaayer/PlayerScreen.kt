@@ -44,7 +44,7 @@ fun PlayerScreen(
         expanded = viewModel.isFullscreen,
         mediampPlayer = viewModel.mediampPlayer,
         playerControllerState = viewModel.playerControllerState,
-        onClickFullScreen = viewModel::toggleFullScreen,
+        onToggleFullScreen = viewModel::toggleFullScreen,
         danmakuEnabled = viewModel.danmakuEnabled,
         onToggleDanmaku = viewModel::toggleDanmakuEnabled,
         audioManager = viewModel.audioManager,
@@ -63,7 +63,7 @@ fun PlayerContent(
     expanded: Boolean,
     audioManager: AudioManager?,
     brightnessManager: BrightnessManager?,
-    onClickFullScreen: () -> Unit,
+    onToggleFullScreen: () -> Unit,
     onBack: () -> Unit,
     danmakuEnabled: Boolean,
     onToggleDanmaku: () -> Unit,
@@ -76,7 +76,7 @@ fun PlayerContent(
     )
     val back = {
         if (expanded) {
-            onClickFullScreen()
+            onToggleFullScreen()
         } else {
             mediampPlayer.stopPlayback()
             onBack()
@@ -98,7 +98,7 @@ fun PlayerContent(
                     playerControllerState = playerControllerState,
                     title = uiState.title,
                     expanded = expanded,
-                    onToggleFullScreen = onClickFullScreen,
+                    onToggleFullScreen = onToggleFullScreen,
                     danmakuHostState = danmakuHostState,
                     danmakuEnabled = danmakuEnabled,
                     onToggleDanmaku = onToggleDanmaku,

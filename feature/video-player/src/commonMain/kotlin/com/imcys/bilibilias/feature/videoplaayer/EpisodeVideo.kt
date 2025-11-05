@@ -1,5 +1,6 @@
 package com.imcys.bilibilias.feature.videoplaayer
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
@@ -176,14 +177,15 @@ fun EpisodeVideo(
                             alwaysOnRequester.cancelRequest()
                         }
                     }
-                    playbackSpeedControllerState?.also { controller ->
-                        SpeedSwitcher(
-                            playbackSpeedControllerState = controller,
-                            expanded = isSpeedSwitcherExpanded,
-                            onExpandedChange = { isSpeedSwitcherExpanded = it },
-                        )
+                    if (expanded) {
+                        playbackSpeedControllerState?.also { controller ->
+                            SpeedSwitcher(
+                                playbackSpeedControllerState = controller,
+                                expanded = isSpeedSwitcherExpanded,
+                                onExpandedChange = { isSpeedSwitcherExpanded = it },
+                            )
+                        }
                     }
-
                     PlayerControllerDefaults.FullscreenIcon(
                         expanded,
                         onClickFullscreen = onToggleFullScreen,
@@ -193,12 +195,14 @@ fun EpisodeVideo(
             )
         },
         danmakuHost = {
-            PlayerDanmakuHost(
-                !playbackState.isPlaying,
-                mediampPlayer.getCurrentPositionMillis(),
-                danmakuHostState,
-                danmakuEventFlow,
-            )
+            AnimatedVisibility(danmakuEnabled) {
+                PlayerDanmakuHost(
+                    isPaused = !playbackState.isPlaying,
+                    currentPosition = mediampPlayer.getCurrentPositionMillis(),
+                    danmakuHostState = danmakuHostState,
+                    danmakuEvent = danmakuEventFlow,
+                )
+            }
         },
         modifier = modifier,
     )
