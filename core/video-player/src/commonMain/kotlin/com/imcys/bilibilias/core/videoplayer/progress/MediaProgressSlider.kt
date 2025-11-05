@@ -67,6 +67,32 @@ import kotlin.math.roundToLong
 const val TAG_PROGRESS_SLIDER_PREVIEW_POPUP = "ProgressSliderPreviewPopup"
 const val TAG_PROGRESS_SLIDER = "ProgressSlider"
 
+@Composable
+fun rememberMediaProgressSliderState(
+    player: MediampPlayer,
+    chaptersFlow: Flow<List<Chapter>> = player.chapters ?: flowOf(emptyList()),
+    onPreview: (positionMillis: Long) -> Unit,
+    onPreviewFinished: (positionMillis: Long) -> Unit,
+): PlayerProgressSliderState {
+    val currentPosition by player.currentPositionMillis.collectAsState()
+    val chapters by chaptersFlow.collectAsState(initial = emptyList())
+    val totalDuration by TimelineState.durationMillis.collectAsState()
+
+    val onPreviewUpdated by rememberUpdatedState(onPreview)
+    val onPreviewFinishedUpdated by rememberUpdatedState(onPreviewFinished)
+
+    return remember(player) {
+        PlayerProgressSliderState(
+            currentPositionMillis = { currentPosition },
+            totalDurationMillis = { totalDuration },
+            chapters = { chapters },
+            onPreview = onPreviewUpdated,
+            onPreviewFinished = onPreviewFinishedUpdated,
+        )
+    }
+}
+
+
 /**
  * 播放器进度滑块的状态.
  *
@@ -132,32 +158,6 @@ class PlayerProgressSliderState(
     }
 }
 
-/**
- * 便捷方法, 从 [MediampPlayer.currentPositionMillis] 创建  [PlayerProgressSliderState]
- */
-@Composable
-fun rememberMediaProgressSliderState(
-    player: MediampPlayer,
-    chaptersFlow: Flow<List<Chapter>> = player.chapters ?: flowOf(emptyList()),
-    onPreview: (positionMillis: Long) -> Unit,
-    onPreviewFinished: (positionMillis: Long) -> Unit,
-): PlayerProgressSliderState {
-    val currentPosition by player.currentPositionMillis.collectAsState()
-    val chapters by chaptersFlow.collectAsState(initial = emptyList())
-    val totalDuration by TimelineState.durationMillis.collectAsState()
-
-    val onPreviewUpdated by rememberUpdatedState(onPreview)
-    val onPreviewFinishedUpdated by rememberUpdatedState(onPreviewFinished)
-    return remember {
-        PlayerProgressSliderState(
-            { currentPosition },
-            { totalDuration },
-            { chapters },
-            onPreviewUpdated,
-            onPreviewFinishedUpdated,
-        )
-    }
-}
 
 object MediaProgressSliderDefaults {
     @Composable
@@ -265,13 +265,13 @@ fun MediaProgressSlider(
                 previewTimeMillis in it.offsetMillis..<it.offsetMillis + it.durationMillis
             }?.let {
                 val chapterName = if (it.name.isBlank()) "" else it.name + "\n"
-                return chapterName + renderSeconds(
+                return chapterName + renderProgressText(
                     previewTimeMillis / 1000,
                     state.totalDurationMillis / 1000,
                 ).substringBefore(" ")
             }
 
-            return renderSeconds(
+            return renderProgressText(
                 previewTimeMillis / 1000,
                 state.totalDurationMillis / 1000
             ).substringBefore(" ")
@@ -476,4 +476,22 @@ fun PreviewTimeText(
             textAlign = TextAlign.Center,
         )
     }
+}
+private fun renderPreviewTime(
+    previewTimeMillis: Long,
+    totalDurationMillis: Long,
+    chapters: List<Chapter>
+): String {
+    val chapterText = chapters.find {
+        previewTimeMillis in it.offsetMillis until (it.offsetMillis + it.durationMillis)
+    }?.let { chapter ->
+        if (chapter.name.isNotBlank()) "${chapter.name}\n" else ""
+    } ?: ""
+
+    val timeText = renderProgressText(
+        previewTimeMillis / 1000,
+        totalDurationMillis / 1000
+    ).substringBefore(" ")
+
+    return chapterText + timeText
 }
