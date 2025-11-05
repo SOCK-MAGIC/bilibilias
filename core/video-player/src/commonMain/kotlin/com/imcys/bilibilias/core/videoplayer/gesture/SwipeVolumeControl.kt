@@ -21,6 +21,17 @@ interface LevelController {
     fun setLevel(level: Float)
 }
 
+object NoOpLevelController : LevelController {
+    override val level: Float
+        get() = 0f
+
+    override val range: ClosedRange<Float> = 0f..1f
+
+    override fun setLevel(level: Float) {
+
+    }
+}
+
 @MainThread
 fun LevelController.increaseLevel(step: Float = 0.05f) {
     setLevel((level + step).coerceAtMost(range.endInclusive))
