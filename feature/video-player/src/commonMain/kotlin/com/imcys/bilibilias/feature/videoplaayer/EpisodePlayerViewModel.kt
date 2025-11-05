@@ -13,6 +13,8 @@ import com.imcys.bilibilias.core.result.asResult
 import com.imcys.bilibilias.core.videoplayer.PlayerControllerState
 import com.imcys.bilibilias.core.videoplayer.TimelineState
 import com.imcys.bilibilias.core.videoplayer.TimelineState.TIME_UNSET
+import com.imcys.bilibilias.core.videoplayer.features.AudioManager
+import com.imcys.bilibilias.core.videoplayer.features.BrightnessManager
 import com.imcys.bilibilias.core.videoplayer.playUri
 import com.imcys.bilibilias.danmaku.api.DanmakuCollection
 import com.imcys.bilibilias.danmaku.api.DanmakuContent
@@ -54,6 +56,8 @@ class EpisodePlayerViewModel(
     private val cid: Long,
     private val mediaCacheStorage: MediaCacheDataSource,
     private val api: BilibiliApi,
+    val audioManager: AudioManager,
+    val brightnessManager: BrightnessManager,
     playerFactory: MediaPlayerFactory,
 ) : ViewModel() {
     @OptIn(ExperimentalAtomicApi::class)
@@ -63,7 +67,11 @@ class EpisodePlayerViewModel(
     private val danmakuConfig = mutableStateOf(DanmakuConfig(displayArea = 0.65f))
     val danmakuHostState = DanmakuHostState(danmakuConfig)
 
+    //    val playerVolumeFlow: Flow<VideoScaffoldConfig.PlayerVolume> =
+//        settingsRepository.videoScaffoldConfig.flow.map { it.playerVolume }
     var isFullscreen by mutableStateOf(false)
+        private set
+    var danmakuEnabled by mutableStateOf(true)
         private set
 
     @OptIn(ExperimentalAtomicApi::class)
@@ -102,6 +110,10 @@ class EpisodePlayerViewModel(
 
     fun toggleFullScreen() {
         isFullscreen = !isFullscreen
+    }
+
+    fun toggleDanmakuEnabled() {
+        danmakuEnabled = !danmakuEnabled
     }
 
     private val danmakuCollectionFlow: Flow<DanmakuCollection> = TimelineState.durationMillis
