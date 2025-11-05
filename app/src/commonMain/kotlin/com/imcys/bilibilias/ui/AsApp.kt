@@ -104,8 +104,6 @@ internal fun AsApp(
 ) {
     val currentTopLevelKey = appState.currentTopLevelDestination!!.key
     val currentKey = appState.currentKey
-    println(currentKey)
-    println(currentKey.isTopLevel)
     val content: @Composable () -> Unit = {
         Scaffold(
             modifier = modifier,
