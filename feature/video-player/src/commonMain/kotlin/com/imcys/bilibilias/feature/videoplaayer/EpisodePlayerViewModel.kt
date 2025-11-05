@@ -56,8 +56,8 @@ class EpisodePlayerViewModel(
     private val cid: Long,
     private val mediaCacheStorage: MediaCacheDataSource,
     private val api: BilibiliApi,
-    val audioManager: AudioManager,
-    val brightnessManager: BrightnessManager,
+    val audioManager: AudioManager?,
+    val brightnessManager: BrightnessManager?,
     playerFactory: MediaPlayerFactory,
 ) : ViewModel() {
     @OptIn(ExperimentalAtomicApi::class)

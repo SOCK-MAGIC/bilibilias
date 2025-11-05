@@ -1,6 +1,8 @@
 package com.imcys.bilibilias.core.videoplayer.di
 
 import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import com.imcys.bilibilias.core.videoplayer.features.AndroidAudioManager
 import com.imcys.bilibilias.core.videoplayer.features.AndroidBrightnessManager
 import com.imcys.bilibilias.core.videoplayer.features.AudioManager
@@ -14,7 +16,13 @@ import org.koin.dsl.module
 actual val VideoPlayerModule: Module = module {
     factoryOf(::AndroidAudioManager) bind AudioManager::class
     factory<BrightnessManager> {
-        val window = (androidContext() as Activity).window
-        AndroidBrightnessManager(window, androidContext())
+        AndroidBrightnessManager(androidContext())
     }
+}
+
+// TODO: move to common
+fun Context.findActivity(): Activity? = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> null
 }

@@ -15,8 +15,8 @@ val EpisodePlayerModule: Module = module {
             mediaCacheStorage = get(),
             api = get(),
             playerFactory = get(),
-            audioManager = get(),
-            brightnessManager = get(),
+            audioManager = getOrNull(),
+            brightnessManager = getOrNull(),
         )
     }
     includes(VideoPlayerModule)
