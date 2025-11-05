@@ -10,7 +10,7 @@ import androidx.navigation3.ui.NavDisplay
 import com.imcys.bilibilias.core.navigation.AsBackStack
 import com.imcys.bilibilias.core.navigation.AsNavKey
 
-@Suppress("VisibleForTests")
+@Suppress("VisibleForTests", "NonSkippableComposable")
 @Composable
 fun AsNavDisplay(
     asBackStack: AsBackStack,
