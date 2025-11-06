@@ -92,7 +92,6 @@ fun rememberMediaProgressSliderState(
     }
 }
 
-
 /**
  * 播放器进度滑块的状态.
  *
@@ -260,23 +259,6 @@ fun MediaProgressSlider(
         var thumbWidth by rememberSaveable { mutableIntStateOf(0) }
         var sliderWidth by rememberSaveable { mutableIntStateOf(0) }
 
-        fun renderPreviewTime(previewTimeMillis: Long): String {
-            state.chapters.find {
-                previewTimeMillis in it.offsetMillis..<it.offsetMillis + it.durationMillis
-            }?.let {
-                val chapterName = if (it.name.isBlank()) "" else it.name + "\n"
-                return chapterName + renderProgressText(
-                    previewTimeMillis / 1000,
-                    state.totalDurationMillis / 1000,
-                ).substringBefore(" ")
-            }
-
-            return renderProgressText(
-                previewTimeMillis / 1000,
-                state.totalDurationMillis / 1000
-            ).substringBefore(" ")
-        }
-
         val previewTimeText by remember {
             derivedStateOf {
                 val containerWidth = sliderWidth - thumbWidth
@@ -286,8 +268,7 @@ fun MediaProgressSlider(
                     val percent = mousePosX.minus(thumbWidth / 2).div(containerWidth)
                         .coerceIn(0f, 1f)
                     val previewTimeMillis = state.totalDurationMillis.times(percent).toLong()
-
-                    renderPreviewTime(previewTimeMillis)
+                    renderPreviewTime(state.chapters, state.totalDurationMillis, previewTimeMillis)
                 }
             }
         }
@@ -295,8 +276,7 @@ fun MediaProgressSlider(
             derivedStateOf {
                 val previewTimeMillis =
                     state.totalDurationMillis.times(state.displayPositionRatio).toLong()
-
-                renderPreviewTime(previewTimeMillis)
+                renderPreviewTime(state.chapters, state.totalDurationMillis, previewTimeMillis)
             }
         }
         val hoverInteraction = remember { MutableInteractionSource() }
@@ -385,6 +365,27 @@ fun MediaProgressSlider(
                 },
         )
     }
+}
+
+fun renderPreviewTime(
+    chapters: List<Chapter>,
+    totalDurationMillis: Long,
+    previewTimeMillis: Long
+): String {
+    chapters.find {
+        previewTimeMillis in it.offsetMillis..<it.offsetMillis + it.durationMillis
+    }?.let {
+        val chapterName = if (it.name.isBlank()) "" else it.name + "\n"
+        return chapterName + renderProgressText(
+            previewTimeMillis / 1000,
+            totalDurationMillis / 1000,
+        ).substringBefore(" ")
+    }
+
+    return renderProgressText(
+        previewTimeMillis / 1000,
+        totalDurationMillis / 1000
+    ).substringBefore(" ")
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -476,22 +477,4 @@ fun PreviewTimeText(
             textAlign = TextAlign.Center,
         )
     }
-}
-private fun renderPreviewTime(
-    previewTimeMillis: Long,
-    totalDurationMillis: Long,
-    chapters: List<Chapter>
-): String {
-    val chapterText = chapters.find {
-        previewTimeMillis in it.offsetMillis until (it.offsetMillis + it.durationMillis)
-    }?.let { chapter ->
-        if (chapter.name.isNotBlank()) "${chapter.name}\n" else ""
-    } ?: ""
-
-    val timeText = renderProgressText(
-        previewTimeMillis / 1000,
-        totalDurationMillis / 1000
-    ).substringBefore(" ")
-
-    return chapterText + timeText
 }
