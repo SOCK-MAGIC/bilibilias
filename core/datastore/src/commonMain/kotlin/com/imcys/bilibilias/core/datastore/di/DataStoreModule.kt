@@ -5,10 +5,12 @@ import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import com.imcys.bilibilias.core.datastore.AsPreferencesDataSource
 import com.imcys.bilibilias.core.datastore.CookieJarDataSource
 import com.imcys.bilibilias.core.datastore.TokenRepository
+import com.imcys.bilibilias.core.datastore.WbiKeyDataStore
 import com.imcys.bilibilias.core.datastore.asDataStoreSerializer
 import com.imcys.bilibilias.core.datastore.model.TokenSave
 import com.imcys.bilibilias.core.datastore.model.TokenSave.Companion.INIT
 import com.imcys.bilibilias.core.datastore.model.UserPreferences
+import com.imcys.bilibilias.core.datastore.model.WbiKeysData
 import com.imcys.bilibilias.core.datastore.new
 import com.imcys.bilibilias.core.datastore.resolveDataStoreFile
 import com.imcys.bilibilias.core.di.applicationScope
@@ -47,6 +49,16 @@ val DataStoreModule = module {
                 serializer = TokenSave.serializer().asDataStoreSerializer { INIT },
                 corruptionHandler = ReplaceFileCorruptionHandler { INIT },
                 produceFile = { resolveDataStoreFile("token") },
+                scope = CoroutineScope(applicationScope.coroutineContext + Dispatchers.IO)
+            )
+        )
+    }
+    single {
+        WbiKeyDataStore(
+            DataStoreFactory.new(
+                serializer = WbiKeysData.serializer().asDataStoreSerializer { WbiKeysData() },
+                corruptionHandler = ReplaceFileCorruptionHandler { WbiKeysData() },
+                produceFile = { resolveDataStoreFile("wbi_key") },
                 scope = CoroutineScope(applicationScope.coroutineContext + Dispatchers.IO)
             )
         )
