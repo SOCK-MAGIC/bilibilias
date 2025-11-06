@@ -1,6 +1,8 @@
 package com.imcys.bilibilias.feature.videoplaayer
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
@@ -195,7 +197,11 @@ fun EpisodeVideo(
             )
         },
         danmakuHost = {
-            AnimatedVisibility(danmakuEnabled) {
+            AnimatedVisibility(
+                danmakuEnabled,
+                enter = fadeIn(),
+                exit = fadeOut()
+            ) {
                 PlayerDanmakuHost(
                     isPaused = !playbackState.isPlaying,
                     currentPosition = mediampPlayer.getCurrentPositionMillis(),
