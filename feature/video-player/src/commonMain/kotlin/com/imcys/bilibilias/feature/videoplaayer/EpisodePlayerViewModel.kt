@@ -5,8 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.imcys.bilibilias.core.data.MediaCacheDataSource
 import com.imcys.bilibilias.core.datasource.api.BilibiliApi
-import com.imcys.bilibilias.core.datastore.MediaCacheDataSource
 import com.imcys.bilibilias.core.flow.FlowRestarter
 import com.imcys.bilibilias.core.flow.restartable
 import com.imcys.bilibilias.core.logging.logger

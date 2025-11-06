@@ -1,8 +1,8 @@
 package com.imcys.bilibilias.core.domain
 
-import com.imcys.bilibilias.core.datastore.MediaCacheDataSource
-import com.imcys.bilibilias.core.datastore.model.EpisodeMetadata
-import com.imcys.bilibilias.core.datastore.model.MediaCacheMetadata
+import com.imcys.bilibilias.core.data.MediaCacheDataSource
+import com.imcys.bilibilias.core.data.model.EpisodeMetadata
+import com.imcys.bilibilias.core.data.model.MediaCacheMetadata
 import com.imcys.bilibilias.core.domain.model.CacheEpisodeState
 import com.imcys.bilibilias.core.http.downloader.HttpDownloader
 import com.imcys.bilibilias.core.http.downloader.model.DownloadId

@@ -1,14 +1,15 @@
-package com.imcys.bilibilias.core.datastore
+package com.imcys.bilibilias.core.data
 
 import androidx.datastore.core.DataStore
-import com.imcys.bilibilias.core.datastore.model.EpisodeMetadata
-import com.imcys.bilibilias.core.datastore.model.MediaCachePartMetadata
-import com.imcys.bilibilias.core.datastore.model.MediaCacheSave
+import com.imcys.bilibilias.core.data.model.EpisodeMetadata
+import com.imcys.bilibilias.core.data.model.MediaCachePartMetadata
+import com.imcys.bilibilias.core.data.model.MediaCacheSave
 import com.imcys.bilibilias.core.logging.logger
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlin.time.Clock
 
+// TODO: 或许要重构
 interface MediaCacheDataSource {
     val listFlow: Flow<List<MediaCacheSave>>
     suspend fun findCache(bvid: String, cid: Long): MediaCacheSave?

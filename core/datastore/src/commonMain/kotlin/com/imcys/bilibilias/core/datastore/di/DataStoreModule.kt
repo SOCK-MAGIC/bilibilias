@@ -4,11 +4,8 @@ import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import com.imcys.bilibilias.core.datastore.AsPreferencesDataSource
 import com.imcys.bilibilias.core.datastore.CookieJarDataSource
-import com.imcys.bilibilias.core.datastore.DataStoreMediaCacheDataSource
-import com.imcys.bilibilias.core.datastore.MediaCacheDataSource
 import com.imcys.bilibilias.core.datastore.TokenRepository
 import com.imcys.bilibilias.core.datastore.asDataStoreSerializer
-import com.imcys.bilibilias.core.datastore.model.MediaCacheSave
 import com.imcys.bilibilias.core.datastore.model.TokenSave
 import com.imcys.bilibilias.core.datastore.model.TokenSave.Companion.INIT
 import com.imcys.bilibilias.core.datastore.model.UserPreferences
@@ -17,22 +14,11 @@ import com.imcys.bilibilias.core.datastore.resolveDataStoreFile
 import com.imcys.bilibilias.core.di.applicationScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 import org.koin.dsl.module
 
 val DataStoreModule = module {
-    single<MediaCacheDataSource> {
-        DataStoreMediaCacheDataSource(
-            store = DataStoreFactory.new(
-                serializer = ListSerializer(MediaCacheSave.serializer()).asDataStoreSerializer { emptyList() },
-                corruptionHandler = ReplaceFileCorruptionHandler { emptyList() },
-                produceFile = { resolveDataStoreFile("media_cache_storage") },
-                scope = CoroutineScope(applicationScope.coroutineContext + Dispatchers.IO),
-            )
-        )
-    }
     single {
         AsPreferencesDataSource(
             DataStoreFactory.new(

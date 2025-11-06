@@ -2,8 +2,8 @@ package com.imcys.bilibilias.feature.cache
 
 import androidx.lifecycle.ViewModel
 import com.eygraber.uri.toKmpUri
-import com.imcys.bilibilias.core.datastore.MediaCacheDataSource
-import com.imcys.bilibilias.core.datastore.model.MetadataKey
+import com.imcys.bilibilias.core.data.MediaCacheDataSource
+import com.imcys.bilibilias.core.data.model.MetadataKey
 import com.imcys.bilibilias.core.domain.GetCachedEpisodeStateUseCase
 import com.imcys.bilibilias.core.domain.model.CacheEpisodeState
 import com.imcys.bilibilias.core.ffmpeg.MediaProcessor

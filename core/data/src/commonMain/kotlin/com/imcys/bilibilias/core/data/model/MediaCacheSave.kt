@@ -1,4 +1,4 @@
-package com.imcys.bilibilias.core.datastore.model
+package com.imcys.bilibilias.core.data.model
 
 import com.imcys.bilibilias.BuildConfig
 import com.imcys.bilibilias.core.io.resolve

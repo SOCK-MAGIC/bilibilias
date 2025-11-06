@@ -1,7 +1,7 @@
 package com.imcys.bilibilias.core.domain.model
 
-import com.imcys.bilibilias.core.datastore.model.EpisodeMetadata
-import com.imcys.bilibilias.core.datastore.model.MediaCacheMetadata
+import com.imcys.bilibilias.core.data.model.EpisodeMetadata
+import com.imcys.bilibilias.core.data.model.MediaCacheMetadata
 import com.imcys.bilibilias.core.model.FileStats
 
 data class CacheEpisodeState(
