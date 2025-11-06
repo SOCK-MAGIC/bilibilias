@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.imcys.bilibilias.core.datasource.api.BilibiliApi
 import com.imcys.bilibilias.core.datastore.MediaCacheDataSource
+import com.imcys.bilibilias.core.flow.FlowRestarter
+import com.imcys.bilibilias.core.flow.restartable
 import com.imcys.bilibilias.core.logging.logger
 import com.imcys.bilibilias.core.result.Result
 import com.imcys.bilibilias.core.result.asResult
@@ -50,6 +52,7 @@ import kotlin.concurrent.atomics.AtomicBoolean
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.time.Duration.Companion.milliseconds
 
+@OptIn(ExperimentalAtomicApi::class)
 class EpisodePlayerViewModel(
     private val aid: Long,
     private val bvid: String,
@@ -67,14 +70,12 @@ class EpisodePlayerViewModel(
     private val danmakuConfig = mutableStateOf(DanmakuConfig(displayArea = 0.65f))
     val danmakuHostState = DanmakuHostState(danmakuConfig)
 
-    //    val playerVolumeFlow: Flow<VideoScaffoldConfig.PlayerVolume> =
-//        settingsRepository.videoScaffoldConfig.flow.map { it.playerVolume }
+    private val refreshTrigger = FlowRestarter()
     var isFullscreen by mutableStateOf(false)
         private set
     var danmakuEnabled by mutableStateOf(true)
         private set
 
-    @OptIn(ExperimentalAtomicApi::class)
     val uiState = flow {
         val cache = mediaCacheStorage.findCache(bvid, cid)
             ?: throw NoSuchElementException("Video not found in cache for Bvid: $bvid, cid: $cid")
@@ -98,24 +99,12 @@ class EpisodePlayerViewModel(
                 playUri(state.uris)
             }
         }
+        .restartable(refreshTrigger)
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = PlayerUiState.Loading
         )
-
-    suspend fun playUri(uris: List<String>) {
-        mediampPlayer.playUri(uris)
-    }
-
-    fun toggleFullScreen() {
-        isFullscreen = !isFullscreen
-    }
-
-    fun toggleDanmakuEnabled() {
-        danmakuEnabled = !danmakuEnabled
-    }
-
     private val danmakuCollectionFlow: Flow<DanmakuCollection> = TimelineState.durationMillis
         .filter { it != TIME_UNSET }
         .transformLatest { duration ->
@@ -154,6 +143,24 @@ class EpisodePlayerViewModel(
             replay = 1
         )
     val danmakuEventFlow: Flow<DanmakuEvent> = danmakuSessionFlow.flatMapLatest { it.events }
+
+    fun reload() {
+        // 必须重置播放标记，否则刷新后即使成功也不会再次触发 playUri
+        playbackTriggered.store(false)
+        refreshTrigger.restart()
+    }
+
+    suspend fun playUri(uris: List<String>) {
+        mediampPlayer.playUri(uris)
+    }
+
+    fun toggleFullScreen() {
+        isFullscreen = !isFullscreen
+    }
+
+    fun toggleDanmakuEnabled() {
+        danmakuEnabled = !danmakuEnabled
+    }
 
     fun requestRepopulate() {
         viewModelScope.launch {
