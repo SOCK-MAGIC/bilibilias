@@ -23,6 +23,7 @@ composeHotReload = "1.0.0-rc02"
 composeMultiplatform = "1.9.2"
 coil = "3.3.0"
 composeRetain = "1.10.0-beta01"
+cryptographyCore = "0.5.0"
 ffmpegKit = "1.1.0"
 filekitCore = "0.12.0"
 flowredux = "2.0.0-alpha5"
@@ -80,6 +81,8 @@ coil = { group = "io.coil-kt.coil3", name = "coil", version.ref = "coil" }
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
 coil-network-ktor = { group = "io.coil-kt.coil3", name = "coil-network-ktor3", version.ref = "coil" }
 
+cryptography-core = { module = "dev.whyoleg.cryptography:cryptography-core", version.ref = "cryptographyCore" }
+cryptography-provider = { module = "dev.whyoleg.cryptography:cryptography-provider-optimal", version.ref = "cryptographyCore" }
 ffmpeg-kit-full-gpl = { module = "com.antonkarpenko:ffmpeg-kit-full-gpl", version.ref = "ffmpegKit" }
 
 filekit-core = { module = "io.github.vinceglb:filekit-core", version.ref = "filekitCore" }
