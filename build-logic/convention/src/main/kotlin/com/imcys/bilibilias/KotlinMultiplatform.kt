@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
  * A plugin that applies the Kotlin Multiplatform plugin and configures it for the project.
  * https://github.com/cashapp/sqldelight/blob/master/buildLogic/multiplatform-convention/src/main/kotlin/app/cash/sqldelight/multiplatform/MultiplatformConventions.kt
  */
+@OptIn(ExperimentalKotlinGradlePluginApi::class)
 internal fun Project.configureKotlinMultiplatform() {
     extensions.configure<KotlinMultiplatformExtension> {
         // Enable native group by default
@@ -27,7 +28,6 @@ internal fun Project.configureKotlinMultiplatform() {
         }
 
         androidTarget {
-            @OptIn(ExperimentalKotlinGradlePluginApi::class)
             instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)
             unitTestVariant.sourceSetTree.set(KotlinSourceSetTree.unitTest)
         }
