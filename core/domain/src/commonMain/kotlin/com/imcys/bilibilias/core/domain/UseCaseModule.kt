@@ -7,6 +7,8 @@ val UseCaseModule = module {
     factoryOf(::GetCachedEpisodeStateUseCase)
     factoryOf(::GetEpisodeInfoUseCase)
     factoryOf(::MediaSourceUseCase)
-    factoryOf(::GetIdFromTextUseCase)
+    factoryOf(::ParseBilibiliIdUseCase)
     factoryOf(::GetDmUseCase)
+    factoryOf(::GetPgcEpisodeInfoUseCase)
+    factoryOf(::GetUgcEpisodeInfoUseCase)
 }

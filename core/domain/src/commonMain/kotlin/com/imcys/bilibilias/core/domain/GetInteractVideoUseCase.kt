@@ -24,7 +24,7 @@ class GetInteractVideoUseCase(
     }
 
     private val logger = logger<GetInteractVideoUseCase>()
-    suspend fun invoke(aid: Long, bvid: String, rootCid: Long) {
+    suspend operator fun invoke(aid: Long, bvid: String, rootCid: Long) {
         val graphVersion = getGraphVersion(aid, rootCid)
 
         val processingQueue: ArrayDeque<TraversalItem> = ArrayDeque()
