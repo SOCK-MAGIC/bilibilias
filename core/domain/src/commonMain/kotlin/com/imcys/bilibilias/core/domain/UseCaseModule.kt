@@ -11,4 +11,6 @@ val UseCaseModule = module {
     factoryOf(::GetDmUseCase)
     factoryOf(::GetPgcEpisodeInfoUseCase)
     factoryOf(::GetUgcEpisodeInfoUseCase)
+    factoryOf(::GetPugvEpisodeInfoUseCase)
+    factoryOf(::GetInteractVideoUseCase)
 }
