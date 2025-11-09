@@ -20,6 +20,12 @@ class ParseBilibiliIdUseCase {
                 MatchResult.Bv(it.value)
             }
         },
+        // 课程: cheese123456 或 https://www.bilibili.com/cheese/play/ep123456
+        IdMatcher { text ->
+            CHEESE_REGEX.find(text)?.let {
+                MatchResult.Cheese(it.groupValues[1])
+            }
+        },
         // ep
         IdMatcher { text ->
             EPID_REGEX_PATTERN.find(text)?.let {
@@ -30,12 +36,6 @@ class ParseBilibiliIdUseCase {
         IdMatcher { text ->
             SSID_REGEX_PATTERN.find(text)?.let {
                 MatchResult.Ss(it.groupValues[1])
-            }
-        },
-        // 课程: cheese123456 或 https://www.bilibili.com/cheese/play/ep123456
-        IdMatcher { text ->
-            CHEESE_REGEX.find(text)?.let {
-                MatchResult.Cheese(it.groupValues[1])
             }
         },
         // 最后匹配短链接
@@ -90,7 +90,7 @@ class ParseBilibiliIdUseCase {
 
         private val SSID_REGEX_PATTERN = Regex("ss(\\d+)")
         private val EPID_REGEX_PATTERN = Regex("ep(\\d+)")
-        private val SHORT_LINK_REGEX_PATTERN = Regex("^https?://b23\\\\.tv/\\\\w+/?$")
+        private val SHORT_LINK_REGEX_PATTERN = Regex("^https?://b23\\.tv/[a-zA-Z0-9]+/?$")
         private val CHEESE_REGEX = Regex("(?:cheese/play/ep|cheese)(\\d+)")
     }
 }
