@@ -18,7 +18,7 @@ jobs:
     steps:
       - id: 'step-0'
         name: 'Checkout'
-        uses: 'actions/checkout@v4'
+        uses: 'actions/checkout@v5'
       - id: 'step-1'
         name: 'Copy CI gradle.properties'
         run: 'mkdir -p ~/.gradle ; cp .github/ci-gradle.properties ~/.gradle/gradle.properties'
@@ -29,13 +29,13 @@ jobs:
           java-version: '21'
           distribution: 'zulu'
       - id: 'step-3'
-        name: 'Setup Ndk'
+        name: 'Setup Android'
         uses: 'android-actions/setup-android@v3'
         with:
           packages: 'cmake;4.1.0'
       - id: 'step-4'
         name: 'Setup Gradle'
-        uses: 'gradle/actions/setup-gradle@v4'
+        uses: 'gradle/actions/setup-gradle@v5'
         with:
           cache-encryption-key: '${{ secrets.GRADLE_ENCRYPTION_KEY }}'
           build-scan-publish: 'true'
@@ -57,7 +57,7 @@ jobs:
         name: 'Get Tag'
         uses: 'dawidd6/action-get-tag@v1'
       - id: 'step-8'
-        uses: 'bhowell2/github-substring-action@v1.0.0'
+        uses: 'bhowell2/github-substring-action@v1'
         with:
           value: '${{ steps.step-7.outputs.tag }}'
           index_of_str: 'v'

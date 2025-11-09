@@ -2,15 +2,15 @@
 
 @file:CompilerOptions("-Xmulti-dollar-interpolation", "-Xdont-warn-on-error-suppression")
 @file:Repository("https://repo.maven.apache.org/maven2/")
-@file:DependsOn("io.github.typesafegithub:github-workflows-kt:3.5.0")
+@file:DependsOn("io.github.typesafegithub:github-workflows-kt:3.6.0")
 @file:Repository("https://bindings.krzeminski.it")
-@file:DependsOn("actions:checkout:v4")
-@file:DependsOn("actions:upload-artifact:v4")
+@file:DependsOn("actions:checkout:v5")
+@file:DependsOn("actions:upload-artifact:v5")
 @file:DependsOn("actions:setup-java:v5")
-@file:DependsOn("gradle:actions__setup-gradle:v4")
+@file:DependsOn("gradle:actions__setup-gradle:v5")
 @file:DependsOn("dawidd6:action-get-tag:v1")
 @file:DependsOn("softprops:action-gh-release:v2")
-@file:DependsOn("bhowell2:github-substring-action:v1.0.0")
+@file:DependsOn("bhowell2:github-substring-action:v1")
 @file:DependsOn("android-actions:setup-android:v3")
 
 import io.github.typesafegithub.workflows.actions.actions.Checkout
