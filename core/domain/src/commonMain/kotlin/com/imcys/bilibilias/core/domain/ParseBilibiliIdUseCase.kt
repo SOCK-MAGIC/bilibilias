@@ -1,96 +1,94 @@
 package com.imcys.bilibilias.core.domain
 
+import com.imcys.bilibilias.core.domain.model.CheeseType
 import com.imcys.bilibilias.core.logging.logger
 
 class ParseBilibiliIdUseCase {
-    private fun interface IdMatcher {
-        fun match(text: String): MatchResult?
-    }
+    private data class PatternDefinition(
+        val regex: Regex,
+        // 使用一个接收String并返回Success结果的构造函数引用
+        val factory: (MatchResult.Destructured) -> MatchResult
+    )
 
-    private val matchers = listOf(
-        // av
-        IdMatcher { text ->
-            AVID_REGEX_PATTERN.find(text)?.let {
-                MatchResult.Av(it.groupValues[1])
+    private val patterns = listOf(
+        PatternDefinition(CHEESE_REGEX_PATTERN) { (typeStr, id) ->
+            val type = when (typeStr.lowercase()) {
+                "ss" -> CheeseType.SEASON
+                "ep" -> CheeseType.EPISODE
+                else -> throw IllegalStateException("Unknown cheese type")
             }
+            MatchResult.Cheese(id, type)
         },
-        // bv
-        IdMatcher { text ->
-            BVID_REGEX_PATTERN.find(text)?.let {
-                MatchResult.Bv(it.value)
-            }
-        },
-        // 课程: cheese123456 或 https://www.bilibili.com/cheese/play/ep123456
-        IdMatcher { text ->
-            CHEESE_REGEX.find(text)?.let {
-                MatchResult.Cheese(it.groupValues[1])
-            }
-        },
-        // ep
-        IdMatcher { text ->
-            EPID_REGEX_PATTERN.find(text)?.let {
-                MatchResult.Ep(it.groupValues[1])
-            }
-        },
-        // ss
-        IdMatcher { text ->
-            SSID_REGEX_PATTERN.find(text)?.let {
-                MatchResult.Ss(it.groupValues[1])
-            }
-        },
-        // 最后匹配短链接
-        IdMatcher { text ->
-            SHORT_LINK_REGEX_PATTERN.find(text)?.let {
-                MatchResult.ShortLink(it.value)
-            }
-        }
+
+        PatternDefinition(AVID_REGEX_PATTERN) { (id) -> MatchResult.Av(id) },
+        PatternDefinition(BVID_REGEX_PATTERN) { (id) -> MatchResult.Bv(id) },
+
+        PatternDefinition(EPID_REGEX_PATTERN) { (id) -> MatchResult.Ep(id) },
+        PatternDefinition(SSID_REGEX_PATTERN) { (id) -> MatchResult.Ss(id) },
+        PatternDefinition(SHORT_LINK_REGEX_PATTERN) { (code) -> MatchResult.ShortLink(code) }
     )
 
     operator fun invoke(sourceText: String): MatchResult {
-        val result = matchers
+        val result = patterns
             .asSequence()
-            .mapNotNull { it.match(sourceText) }
+            .mapNotNull { pattern ->
+                pattern.regex.find(sourceText)?.let { match ->
+                    pattern.factory(match.destructured)
+                }
+            }
             .firstOrNull() ?: MatchResult.NoMatch
+
         when (result) {
             is MatchResult.NoMatch -> {
-                logger.info { "Failed to match any pattern for input: '$sourceText'" }
+                logger.info { "未匹配到任何Bilibili ID: '$sourceText'" }
             }
 
-            else -> {
-                logger.debug { "Parsed input '$sourceText' as ${result::class.simpleName} with value '${result.getIdentifier()}'" }
+            is MatchResult -> {
+                logger.debug { "解析 '$sourceText' 成功，类型: ${result::class.simpleName}, ID: '${result}'" }
             }
         }
         return result
     }
 
     sealed interface MatchResult {
-        data class Bv(val id: String) : MatchResult
-        data class Ep(val id: String) : MatchResult
-        data class Ss(val id: String) : MatchResult
-        data class Av(val id: String) : MatchResult
-        data class ShortLink(val url: String) : MatchResult
-        data class Cheese(val id: String) : MatchResult
-        data object NoMatch : MatchResult
-
-        fun getIdentifier(): String = when (this) {
-            is Av -> id
-            is Bv -> id
-            is Cheese -> id
-            is Ep -> id
-            is Ss -> id
-            is ShortLink -> url
-            is NoMatch -> "N/A"
+        data class Bv(val id: String) : MatchResult {
+            override fun toString(): String = id
         }
+
+        data class Ep(val id: String) : MatchResult {
+            override fun toString(): String = id
+        }
+
+        data class Ss(val id: String) : MatchResult {
+            override fun toString(): String = id
+        }
+
+        data class Av(val id: String) : MatchResult {
+            override fun toString(): String = id
+        }
+
+        data class ShortLink(val url: String) : MatchResult {
+            override fun toString(): String = url
+        }
+
+        data class Cheese(val id: String, val type: CheeseType) : MatchResult {
+            override fun toString(): String = "${type.name.lowercase()}$id"
+        }
+
+        data object NoMatch : MatchResult
     }
 
     companion object {
         private val logger = logger<ParseBilibiliIdUseCase>()
-        private val BVID_REGEX_PATTERN = Regex("BV1[1-9A-HJ-NP-Za-km-z]{9}")
+        private val BVID_REGEX_PATTERN =
+            Regex("BV1[1-9A-HJ-NP-Za-km-z]{9}", RegexOption.IGNORE_CASE)
         private val AVID_REGEX_PATTERN = Regex("av(\\d+)", RegexOption.IGNORE_CASE)
 
-        private val SSID_REGEX_PATTERN = Regex("ss(\\d+)")
-        private val EPID_REGEX_PATTERN = Regex("ep(\\d+)")
+        private val SSID_REGEX_PATTERN = Regex("ss(\\d+)", RegexOption.IGNORE_CASE)
+        private val EPID_REGEX_PATTERN = Regex("ep(\\d+)", RegexOption.IGNORE_CASE)
+
         private val SHORT_LINK_REGEX_PATTERN = Regex("^https?://b23\\.tv/[a-zA-Z0-9]+/?$")
-        private val CHEESE_REGEX = Regex("(?:cheese/play/ep|cheese)(\\d+)")
+
+        private val CHEESE_REGEX_PATTERN = Regex("cheese/play/(ep|ss)(\\d+)")
     }
 }
