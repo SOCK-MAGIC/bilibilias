@@ -13,8 +13,13 @@ object BuildConfig {
 
     val DEBUG: Boolean = BuildKonfig.debugBuild
 
+    @Deprecated("无法测试")
     val LOG_DIR: Path = PlatformFile(FileKit.filesDir, "logs").toKotlinxIoPath()
+
+    @Deprecated("无法测试")
     val DATASTORE_DIR: Path = PlatformFile(FileKit.filesDir, "datastore").toKotlinxIoPath()
+
+    @Deprecated("无法测试")
     val MEDIA_DOWNLOAD: Path = PlatformFile(FileKit.filesDir, "media-download").toKotlinxIoPath()
 
     /**
