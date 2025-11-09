@@ -5,30 +5,28 @@ import com.imcys.bilibilias.core.datasource.api.BilibiliApi
 import com.imcys.bilibilias.core.datasource.model.InteractiveChoiceDetails
 import com.imcys.bilibilias.core.logging.logger
 
+/**
+ * 获取Bilibili互动视频所有节点信息的无状态UseCase。
+ * 它通过遍历互动视频的节点图来收集所有可达的分支信息。
+ */
 class GetInteractVideoUseCase(
     private val api: BilibiliApi
 ) {
-    /**
-     * 模块id映射到node，模块id是不会重复的，但是模块内的cid是会与其他模块内的cid重复的，为了防止重复下载
-     */
-    private val edgeIdToNodeMap = mutableLongObjectMapOf<Node>()
-
-    fun getSortedNodes(): List<Node> {
-        return buildSet {
-            edgeIdToNodeMap.forEachValue {
-                add(it)
-            }
-        }
-            .distinctBy { it.cid }
-            .sortedBy { it.edgeId }
-    }
-
     private val logger = logger<GetInteractVideoUseCase>()
-    suspend operator fun invoke(aid: Long, bvid: String, rootCid: Long) {
-        val graphVersion = getGraphVersion(aid, rootCid)
 
+    /**
+     * @param aid 视频的AID
+     * @param bvid 视频的BVID
+     * @param rootCid 起始节点的CID
+     * @return 一个包含所有节点信息的列表，按edgeId排序。
+     */
+    suspend operator fun invoke(aid: Long, bvid: String, rootCid: Long): List<Node> {
+        val edgeIdToNodeMap = mutableLongObjectMapOf<Node>()
+
+        val graphVersion = getGraphVersion(aid, rootCid)
         val processingQueue: ArrayDeque<TraversalItem> = ArrayDeque()
 
+        // 从根节点开始遍历
         processingQueue.addLast(TraversalItem(edgeId = 0L, contentId = rootCid, level = 0))
 
         while (processingQueue.isNotEmpty()) {
@@ -37,19 +35,20 @@ class GetInteractVideoUseCase(
             val cid = currentItem.contentId
             val currentLevel = currentItem.level
 
+            // 如果节点已经处理过，则跳过
             if (edgeId in edgeIdToNodeMap) {
                 continue
             }
 
-            val edgeInfo: InteractiveChoiceDetails?
-            try {
-                edgeInfo = getInteractiveChoiceOutcome(aid, bvid, graphVersion, edgeId)
+            val edgeInfo = try {
+                getInteractiveChoiceOutcome(aid, bvid, graphVersion, edgeId)
             } catch (e: Exception) {
-                logger.error(e) { "Error fetching data for edgeId $edgeId" }
-                continue
+                logger.error(e) { "获取互动视频节点失败，edgeId: $edgeId" }
+                null
             }
 
             edgeInfo ?: continue
+
             val node = Node(
                 cid = cid,
                 edgeId = edgeId,
@@ -60,34 +59,30 @@ class GetInteractVideoUseCase(
                 height = edgeInfo.edges.dimension.height,
             )
 
-            edgeIdToNodeMap[edgeId] = node
+            edgeIdToNodeMap.put(edgeId, node)
 
-            val questions = edgeInfo.edges.questions
-            val childNodeLevel = currentLevel + 1
-            for (question in questions) {
-                for (choice in question.choices) {
-                    val nextEdgeId = choice.id
-                    val nextContentId = choice.cid
-
-                    // Add to queue only if not already processed.
-                    // The check `nextEdgeId in edgeIdToNodeMap` at the start of the loop
-                    // will handle nodes already fully processed.
-                    // To avoid adding the same child multiple times to the queue if multiple paths
-                    // lead to it before it's processed, you might need an additional "isQueued" set,
-                    // or rely on the `edgeIdToNodeMap` check at the start of the loop.
-                    // For simplicity, the current check is fine for correctness.
-                    if (nextEdgeId !in edgeIdToNodeMap) {
-                        processingQueue.addLast(
-                            TraversalItem(
-                                nextEdgeId,
-                                nextContentId,
-                                childNodeLevel
+            // 如果不是叶子节点，则将其所有子选项加入处理队列
+            if (!edgeInfo.isLeaf) {
+                val childNodeLevel = currentLevel + 1
+                for (question in edgeInfo.edges.questions) {
+                    for (choice in question.choices) {
+                        val nextEdgeId = choice.id
+                        if (nextEdgeId !in edgeIdToNodeMap) {
+                            processingQueue.addLast(
+                                TraversalItem(nextEdgeId, choice.cid, childNodeLevel)
                             )
-                        )
+                        }
                     }
                 }
             }
         }
+
+        edgeIdToNodeMap
+        return buildSet {
+            edgeIdToNodeMap.forEachValue { add(it) }
+        }
+            .distinctBy { it.cid }
+            .sortedBy { it.edgeId }
     }
 
     private suspend fun getInteractiveChoiceOutcome(

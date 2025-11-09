@@ -82,11 +82,9 @@ class GetUgcEpisodeInfoUseCase(
         detail: BiliVideoData,
         cachedItemsByCid: Map<Long, MediaCacheSave>
     ): EpisodeCacheListState {
-        // TODO: 修改这个 use case
-        getInteractVideoUseCase(detail.aid, detail.bvid, detail.cid)
+        val nodes = getInteractVideoUseCase(detail.aid, detail.bvid, detail.cid)
 
-        val states =
-            getInteractVideoUseCase.getSortedNodes().mapIndexed { index, node ->
+        val states = nodes.mapIndexed { index, node ->
                 val cid = node.cid
                 val cacheStatus = if (cachedItemsByCid.containsKey(cid)) {
                     EpisodeCacheStatus.Cached
