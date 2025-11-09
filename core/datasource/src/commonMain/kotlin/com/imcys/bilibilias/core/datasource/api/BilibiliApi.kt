@@ -3,6 +3,7 @@ package com.imcys.bilibilias.core.datasource.api
 import com.imcys.bilibilias.core.datasource.ktor.DisableLogging
 import com.imcys.bilibilias.core.datasource.model.BiliVideoData
 import com.imcys.bilibilias.core.datasource.model.BilibiliNavigationData
+import com.imcys.bilibilias.core.datasource.model.CheeseInfoData
 import com.imcys.bilibilias.core.datasource.model.DmSegMobileReply
 import com.imcys.bilibilias.core.datasource.model.InteractiveChoiceDetails
 import com.imcys.bilibilias.core.datasource.model.PgcPlayUrl
@@ -57,6 +58,7 @@ class BilibiliApi(
             parameter("aid", aid)
         }.body()
     }
+
     suspend fun getNavigationData(): BilibiliNavigationData {
         return client.get("/x/web-interface/nav").body<BilibiliNavigationData>()
     }
@@ -203,6 +205,13 @@ class BilibiliApi(
             parameter("bvid", bvid)
             parameter("graph_version", interactionGraphVersion)
             parameter("edge_id", choiceId)
+        }.body()
+    }
+
+    suspend fun getCourseInfo(id: String): CheeseInfoData {
+        return client.get("/pugv/view/web/season") {
+            parameter("season_id", id)
+//            parameter("ep_id", id)
         }.body()
     }
 }
