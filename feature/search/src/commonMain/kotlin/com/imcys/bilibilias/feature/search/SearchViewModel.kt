@@ -15,6 +15,7 @@ import com.imcys.bilibilias.core.datastore.CookieJarDataSource
 import com.imcys.bilibilias.core.domain.GetDmUseCase
 import com.imcys.bilibilias.core.domain.GetEpisodeInfoUseCase
 import com.imcys.bilibilias.core.domain.MediaSourceUseCase
+import com.imcys.bilibilias.core.domain.RedirectResolverUseCase
 import com.imcys.bilibilias.core.domain.model.DanmuRequest
 import com.imcys.bilibilias.core.domain.model.EpisodeCacheRequest
 import com.imcys.bilibilias.core.domain.model.EpisodeCacheState
@@ -35,6 +36,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -53,6 +55,7 @@ class SearchViewModel(
     private val preferences: AsPreferencesDataSource,
     private val api: BilibiliLoginApi,
     private val cookieJar: CookieJarDataSource,
+    private val redirectResolverUseCase: RedirectResolverUseCase,
 ) : ViewModel() {
     val selfInfoUiState = preferences.userData
         .map { preferences ->
@@ -69,42 +72,51 @@ class SearchViewModel(
     private val restarter = FlowRestarter()
     val searchResultUiState: StateFlow<SearchResultUiState> =
         searchQuery.flatMapLatest { query ->
-            if (query.isEmpty()) {
-                flowOf(SearchResultUiState.EmptyQuery)
-            } else {
-                getEpisodeInfoUseCase(query)
-                    .asResult()
-                    .map { result ->
-                        when (result) {
-                            is Success -> {
-                                val data = result.data
-                                if (data == null) {
-                                    SearchResultUiState.LoadFailed("解析失败")
-                                } else {
-                                    SearchResultUiState.Success(
-                                        episodeCacheListState = data,
-                                        episodeInfo = data.episodeInfo,
-                                        episodes = data.episodes,
-                                    )
-                                }
-                            }
-
-                            is Error -> SearchResultUiState.LoadFailed(
-                                result.exception.message ?: "Unknown error"
-                            )
-
-                            is Loading -> SearchResultUiState.Loading
-                        }
-                    }
+            if (query.isBlank()) {
+                return@flatMapLatest flowOf(SearchResultUiState.EmptyQuery)
             }
+
+            val preparedQueryFlow = flowOf(
+                if (isBilibiliShortLink(query)) {
+                    redirectResolverUseCase.resolveUrl(query)
+                } else {
+                    query
+                }
+            )
+
+            preparedQueryFlow.flatMapLatest { finalQuery ->
+                getEpisodeInfoUseCase(finalQuery)
+            }
+                .asResult()
+                .map { result ->
+                    when (result) {
+                        is Success -> {
+                            result.data?.let {
+                                SearchResultUiState.Success(
+                                    episodeCacheListState = it,
+                                    episodeInfo = it.episodeInfo,
+                                    episodes = it.episodes,
+                                )
+                            } ?: SearchResultUiState.LoadFailed("解析失败")
+                        }
+
+                        is Error -> SearchResultUiState.LoadFailed(
+                            result.exception.message ?: "未知错误"
+                        )
+
+                        is Loading -> SearchResultUiState.Loading
+                    }
+                }
+                .catch { exception ->
+                    emit(SearchResultUiState.LoadFailed("请求失败: ${exception.message}"))
+                }
         }
             .restartable(restarter)
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5_000),
-                initialValue = SearchResultUiState.Loading
+                initialValue = SearchResultUiState.EmptyQuery,
             )
-
     private val currentSelectEpisode = MutableStateFlow<SelectedEpisodeContext?>(null)
     val mediaSourceSelectedUiState: StateFlow<MediaSourceSelectedUiState> =
         currentSelectEpisode.filterNotNull()
@@ -180,6 +192,18 @@ class SearchViewModel(
             metadata,
             MediaCachePartMetadata(downloadId.value)
         )
+    }
+
+    private fun isBilibiliShortLink(query: String): Boolean {
+        val containsShortDomain = query.contains("b23.tv")
+
+        if (!containsShortDomain) {
+            return false
+        }
+
+        val isParsableLongLinkFormat = query.contains("/av") || query.contains("/BV1")
+
+        return !isParsableLongLinkFormat
     }
 
     private suspend fun cacheTrack(track: TrackInfo?, metadata: EpisodeMetadata) {
