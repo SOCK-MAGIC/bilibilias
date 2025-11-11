@@ -7,6 +7,7 @@ import com.imcys.bilibilias.core.datasource.model.BiliVideoData
 import com.imcys.bilibilias.core.domain.model.EpisodeCacheListState
 import com.imcys.bilibilias.core.domain.model.EpisodeCacheState
 import com.imcys.bilibilias.core.domain.model.EpisodeCacheStatus
+import com.imcys.bilibilias.core.domain.model.UgcId
 import com.imcys.bilibilias.core.domain.model.toEpisodeInfo
 import com.imcys.bilibilias.core.flow.flowFromSuspend
 import kotlinx.coroutines.flow.Flow
@@ -20,26 +21,23 @@ class GetUgcEpisodeInfoUseCase(
     private val api: BilibiliApi,
     private val getInteractVideoUseCase: GetInteractVideoUseCase
 ) {
-    operator fun invoke(aid: String? = null, bvid: String? = null): Flow<EpisodeCacheListState?> {
+    operator fun invoke(ugcId: UgcId): Flow<EpisodeCacheListState?> {
         val detailFlow = flowFromSuspend {
-            when {
-                aid != null -> api.getVideoDetailsByAid(aid.toLong())
-                bvid != null -> api.getVideoDetailsByBvid(bvid)
-                else -> null
+            when (ugcId) {
+                is UgcId.Aid -> api.getVideoDetailsByAid(ugcId.id.toLong())
+                is UgcId.Bvid -> api.getVideoDetailsByBvid(ugcId.id)
             }
         }
 
         return detailFlow.combine(mediaCacheStorage.listFlow) { detail, cachedItemsList ->
-            if (detail != null) {
-                val cachedItemsByCid = cachedItemsList
-                    .filter { it.origin.bvid == detail.bvid }
-                    .associateBy { it.origin.cid }
-                if (detail.rights.isSteinGate) {
-                    processInteractiveVideo(detail, cachedItemsByCid)
-                } else {
-                    processRegularVideo(detail, cachedItemsByCid)
-                }
-            } else null
+            val cachedItemsByCid = cachedItemsList
+                .filter { it.origin.bvid == detail.bvid }
+                .associateBy { it.origin.cid }
+            if (detail.rights.isSteinGate) {
+                processInteractiveVideo(detail, cachedItemsByCid)
+            } else {
+                processRegularVideo(detail, cachedItemsByCid)
+            }
         }
     }
 
@@ -85,24 +83,24 @@ class GetUgcEpisodeInfoUseCase(
         val nodes = getInteractVideoUseCase(detail.aid, detail.bvid, detail.cid)
 
         val states = nodes.mapIndexed { index, node ->
-                val cid = node.cid
-                val cacheStatus = if (cachedItemsByCid.containsKey(cid)) {
-                    EpisodeCacheStatus.Cached
-                } else {
-                    EpisodeCacheStatus.NotCached
-                }
-                EpisodeCacheState(
-                    episodeId = detail.bvid,
-                    episodeSubId = cid,
-                    episodeAliasId = detail.aid,
-                    index = index + 1,
-                    title = node.title,
-                    cacheStatus = cacheStatus,
-                    duration = 0,
-                    width = node.width,
-                    height = node.height,
-                )
+            val cid = node.cid
+            val cacheStatus = if (cachedItemsByCid.containsKey(cid)) {
+                EpisodeCacheStatus.Cached
+            } else {
+                EpisodeCacheStatus.NotCached
             }
+            EpisodeCacheState(
+                episodeId = detail.bvid,
+                episodeSubId = cid,
+                episodeAliasId = detail.aid,
+                index = index + 1,
+                title = node.title,
+                cacheStatus = cacheStatus,
+                duration = 0,
+                width = node.width,
+                height = node.height,
+            )
+        }
         return EpisodeCacheListState(
             episodeInfo = detail.toEpisodeInfo(),
             episodes = states,

@@ -5,6 +5,7 @@ import com.imcys.bilibilias.core.datasource.api.BilibiliApi
 import com.imcys.bilibilias.core.domain.model.EpisodeCacheListState
 import com.imcys.bilibilias.core.domain.model.EpisodeCacheState
 import com.imcys.bilibilias.core.domain.model.EpisodeCacheStatus
+import com.imcys.bilibilias.core.domain.model.PgcId
 import com.imcys.bilibilias.core.domain.model.toEpisodeInfo
 import com.imcys.bilibilias.core.flow.flowFromSuspend
 import kotlinx.coroutines.flow.Flow
@@ -17,17 +18,15 @@ class GetPgcEpisodeInfoUseCase(
     private val mediaCacheStorage: MediaCacheDataSource,
     private val api: BilibiliApi,
 ) {
-    operator fun invoke(epId: String? = null, ssId: String? = null): Flow<EpisodeCacheListState?> {
+    operator fun invoke(pgcId: PgcId): Flow<EpisodeCacheListState?> {
         val seasonDetails = flowFromSuspend {
-            when {
-                epId != null -> api.getSeasonDetailsByEpisodeId(epId)
-                ssId != null -> api.getSeasonDetailsBySeasonId(ssId)
-                else -> null
+            when (pgcId) {
+                is PgcId.Ep -> api.getSeasonDetailsByEpisodeId(pgcId.id)
+                is PgcId.Ss -> api.getSeasonDetailsBySeasonId(pgcId.id)
             }
         }
 
         return seasonDetails.combine(mediaCacheStorage.listFlow) { detail, cachedItemsList ->
-            if (detail != null) {
                 val episodeBvids = detail.episodes.map { it.bvid }.toSet()
 
                 val cachedItemsByCid = cachedItemsList
@@ -57,7 +56,6 @@ class GetPgcEpisodeInfoUseCase(
                     episodeInfo = detail.toEpisodeInfo(),
                     episodes = states,
                 )
-            } else null
         }
     }
 }

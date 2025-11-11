@@ -1,6 +1,7 @@
 package com.imcys.bilibilias.core.domain.model
 
 import com.imcys.bilibilias.core.datasource.model.BiliVideoData
+import com.imcys.bilibilias.core.datasource.model.CheeseInfoData
 import com.imcys.bilibilias.core.datasource.model.Season
 import com.imcys.bilibilias.core.model.VideoType
 
@@ -19,5 +20,14 @@ fun Season.toEpisodeInfo(): EpisodeInfo {
         desc = evaluate,
         cover = cover,
         videoType = VideoType.PGC
+    )
+}
+
+fun CheeseInfoData.toEpisodeInfo(): EpisodeInfo {
+    return EpisodeInfo(
+        title = title,
+        desc = brief.content,
+        cover = cover,
+        videoType = VideoType.PUGV
     )
 }
