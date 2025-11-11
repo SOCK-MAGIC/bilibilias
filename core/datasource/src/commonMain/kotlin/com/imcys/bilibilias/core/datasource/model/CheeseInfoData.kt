@@ -31,8 +31,6 @@ data class CheeseInfoData(
     val episodes: List<Episode>,
     @SerialName("expiry_day")
     val expiryDay: Int,
-    @SerialName("expiry_info_content")
-    val expiryInfoContent: String,
     @SerialName("faq")
     val faq: Faq,
     @SerialName("faq1")
@@ -53,16 +51,6 @@ data class CheeseInfoData(
     val paidView: Boolean,
     @SerialName("payment")
     val payment: Payment,
-    @SerialName("previewed_purchase_note")
-    val previewedPurchaseNote: PreviewedPurchaseNote,
-    @SerialName("purchase_format_note")
-    val purchaseFormatNote: PurchaseFormatNote,
-    @SerialName("purchase_note")
-    val purchaseNote: PurchaseNote,
-    @SerialName("purchase_protocol")
-    val purchaseProtocol: PurchaseProtocol,
-    @SerialName("recommend_seasons")
-    val recommendSeasons: List<RecommendSeason>,
     @SerialName("release_bottom_info")
     val releaseBottomInfo: String,
     @SerialName("release_info")
