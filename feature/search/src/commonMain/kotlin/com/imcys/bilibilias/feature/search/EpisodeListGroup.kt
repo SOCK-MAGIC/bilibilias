@@ -73,8 +73,8 @@ private fun EpisodeItem(cacheState: EpisodeCacheState, onSelectedEpisodeSubId: (
 @Composable
 fun VerticallyCenteredSingleLineText(
     text: String,
-    textAlign: TextAlign = TextAlign.Start,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    textAlign: TextAlign = TextAlign.Start
 ) {
     Text(
         text = text,
