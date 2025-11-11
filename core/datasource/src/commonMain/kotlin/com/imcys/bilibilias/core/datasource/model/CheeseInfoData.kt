@@ -165,7 +165,7 @@ data class CheeseInfoData(
         @SerialName("index")
         val index: Int,
         @SerialName("label")
-        val label: String?,
+        val label: String? = null,
         @SerialName("page")
         val page: Int,
         @SerialName("play")
