@@ -15,6 +15,7 @@ import com.imcys.bilibilias.core.domain.UseCaseModule
 import com.imcys.bilibilias.core.ffmpeg.MediaProcessorModule
 import com.imcys.bilibilias.core.http.downloader.HttpDownloader
 import com.imcys.bilibilias.core.http.downloader.KtorPersistentHttpDownloader
+import com.imcys.bilibilias.core.http.downloader.di.HttpDownloaderModule
 import com.imcys.bilibilias.core.http.downloader.model.DownloadState
 import com.imcys.bilibilias.core.ktor.client.createHttpClient
 import com.imcys.bilibilias.core.logging.logger
@@ -65,6 +66,7 @@ fun KoinApplication.commonModules() = module {
         DataStoreModule,
         MediaProcessorModule,
         UseCaseModule,
+        HttpDownloaderModule,
         featureModules(),
         otherModules()
     )
