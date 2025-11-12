@@ -1,11 +1,11 @@
 package com.imcys.bilibilias.core.domain
 
-import com.imcys.bilibilias.BuildConfig
 import com.imcys.bilibilias.core.datasource.api.BilibiliApi
 import com.imcys.bilibilias.core.datasource.model.DanmakuElem
 import com.imcys.bilibilias.core.domain.model.DanmuRequest
 import com.imcys.bilibilias.core.io.resolve
 import com.imcys.bilibilias.core.logging.logger
+import com.imcys.bilibilias.core.platform.AppDirs
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.io.buffered
@@ -14,15 +14,17 @@ import kotlinx.io.files.SystemFileSystem
 import kotlinx.io.writeString
 import kotlin.uuid.Uuid
 
-class GetDmUseCase(private val api: BilibiliApi) {
+class GetDmUseCase(
+    private val api: BilibiliApi,
+    private val appDirs: AppDirs,
+) {
     private val logger = logger<GetDmUseCase>()
 
     suspend operator fun invoke(request: DanmuRequest): String = withContext(Dispatchers.IO) {
         val dmSeg = api.dmSegMobile(request.aid, request.cid, request.duration).flatMap { it.elems }
 
 //        val tempPath = BuildConfig.MEDIA_DOWNLOAD.resolve("danmaku.xml")
-        val danmakuOutputPath =
-            BuildConfig.MEDIA_DOWNLOAD.resolve(Uuid.random().toString())
+        val danmakuOutputPath = appDirs.defaultBaseMediaCacheDir.resolve(Uuid.random().toString())
 
 //        val xmlWriter = XmlWriter(tempPath)
 //        xmlWriter.use {
