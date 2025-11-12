@@ -6,10 +6,9 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            api(projects.core.ktorClient)
             implementation(projects.core.common)
-
-            api(libs.androidx.datastore)
+            implementation(projects.core.ktorClient)
+            implementation(projects.core.datastore)
         }
     }
 }
