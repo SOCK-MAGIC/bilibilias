@@ -11,6 +11,8 @@ kotlin {
         implementation(libs.kotlinx.serialization.json)
 
         implementation(libs.store5)
+
+        implementation(libs.androidx.datastore)
     }
 }
 
