@@ -66,8 +66,7 @@ class ParseBilibiliIdUseCase {
 
     companion object {
         private val logger = logger<ParseBilibiliIdUseCase>()
-        private val BVID_REGEX_PATTERN =
-            Regex("BV1[1-9A-HJ-NP-Za-km-z]{9}", RegexOption.IGNORE_CASE)
+        private val BVID_REGEX_PATTERN = Regex("(BV1[1-9A-HJ-NP-Za-km-z]{9})")
         private val AVID_REGEX_PATTERN = Regex("av(\\d+)", RegexOption.IGNORE_CASE)
         private val SSID_REGEX_PATTERN = Regex("ss(\\d+)", RegexOption.IGNORE_CASE)
         private val EPID_REGEX_PATTERN = Regex("ep(\\d+)", RegexOption.IGNORE_CASE)
