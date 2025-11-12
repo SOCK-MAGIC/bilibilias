@@ -55,7 +55,7 @@ internal expect fun <T> DataStoreFactory.create(
     produceFile: () -> SystemPath
 ): DataStore<T>
 
-expect fun resolveDataStoreFile(name: String): SystemPath
+expect fun resolveDataStoreFile(dir: SystemPath, filename: String): SystemPath
 
 internal val DataStoreJson = Json {
     ignoreUnknownKeys = true
