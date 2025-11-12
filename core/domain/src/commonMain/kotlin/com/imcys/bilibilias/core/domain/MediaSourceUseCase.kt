@@ -44,8 +44,16 @@ class MediaSourceUseCase(
                     )
                     createMediaAssetFromDash(playUrl.videoInfo.dash, sortAudioById = true)
                 }
+                // https://api.bilibili.com/pugv/view/web/season?ep_id=1715488&isGaiaAvoided=false
 
-                PUGV -> TODO("Support for PUGV video type is not yet implemented.")
+                PUGV -> {
+                    val epId = request.cacheState.episodeId
+                    val aId = request.cacheState.episodeAliasId
+                    val cId = request.cacheState.episodeSubId
+                    api.getPugvPlayUrl(aId, epId, cId)
+
+                    TODO("Support for PUGV video type is not yet implemented.")
+                }
             }
         }
     }
