@@ -7,8 +7,11 @@ import com.imcys.bilibilias.core.datasource.ktor.ApiResponseUnwrapper
 import com.imcys.bilibilias.core.datasource.ktor.CookiesStorageImpl
 import com.imcys.bilibilias.core.datasource.ktor.HttpClientJson
 import com.imcys.bilibilias.core.datasource.ktor.HttpLogging
+import com.imcys.bilibilias.core.datasource.local.AsPreferencesDataSource
+import com.imcys.bilibilias.core.datasource.local.CookieJarDataSource
 import com.imcys.bilibilias.core.datasource.local.DataStoreMediaCacheDataSource
 import com.imcys.bilibilias.core.datasource.local.MediaCacheDataSource
+import com.imcys.bilibilias.core.datasource.local.TokenRepository
 import com.imcys.bilibilias.core.datasource.utils.WbiInitializer
 import com.imcys.bilibilias.core.datastore.ReplaceFileCorruptionHandler
 import com.imcys.bilibilias.core.datastore.asDataStoreSerializer
@@ -17,6 +20,9 @@ import com.imcys.bilibilias.core.datastore.resolveDataStoreFile
 import com.imcys.bilibilias.core.di.applicationScope
 import com.imcys.bilibilias.core.ktor.client.createHttpClient
 import com.imcys.bilibilias.core.model.MediaCacheSave
+import com.imcys.bilibilias.core.model.TokenSave
+import com.imcys.bilibilias.core.model.TokenSave.Companion.INIT
+import com.imcys.bilibilias.core.model.UserPreferences
 import io.ktor.client.plugins.BrowserUserAgent
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.cookies.CookiesStorage
@@ -30,6 +36,8 @@ import io.ktor.serialization.kotlinx.protobuf.protobuf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.builtins.MapSerializer
+import kotlinx.serialization.builtins.serializer
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -88,6 +96,38 @@ val DataSourceModule = module {
                 corruptionHandler = ReplaceFileCorruptionHandler { emptyList() },
                 produceFile = { resolveDataStoreFile("media_cache_storage") },
                 scope = CoroutineScope(applicationScope.coroutineContext + Dispatchers.IO),
+            )
+        )
+    }
+    single {
+        AsPreferencesDataSource(
+            DataStoreFactory.new(
+                serializer = UserPreferences.serializer()
+                    .asDataStoreSerializer { UserPreferences.DEFAULT },
+                corruptionHandler = androidx.datastore.core.handlers.ReplaceFileCorruptionHandler { UserPreferences.DEFAULT },
+                produceFile = { resolveDataStoreFile("user_preferences") },
+                scope = CoroutineScope(applicationScope.coroutineContext + Dispatchers.IO),
+            ),
+        )
+    }
+    single {
+        CookieJarDataSource(
+            DataStoreFactory.new(
+                serializer = MapSerializer(String.serializer(), String.serializer())
+                    .asDataStoreSerializer { emptyMap() },
+                corruptionHandler = androidx.datastore.core.handlers.ReplaceFileCorruptionHandler { emptyMap() },
+                produceFile = { resolveDataStoreFile("cookie_jar") },
+                scope = CoroutineScope(applicationScope.coroutineContext + Dispatchers.IO),
+            ),
+        )
+    }
+    single<TokenRepository> {
+        TokenRepository(
+            DataStoreFactory.new(
+                serializer = TokenSave.serializer().asDataStoreSerializer { INIT },
+                corruptionHandler = androidx.datastore.core.handlers.ReplaceFileCorruptionHandler { INIT },
+                produceFile = { resolveDataStoreFile("token") },
+                scope = CoroutineScope(applicationScope.coroutineContext + Dispatchers.IO)
             )
         )
     }

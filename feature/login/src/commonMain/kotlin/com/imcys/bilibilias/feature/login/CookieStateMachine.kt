@@ -3,9 +3,9 @@ package com.imcys.bilibilias.feature.login
 import com.freeletics.flowredux2.FlowReduxStateMachineFactory
 import com.freeletics.flowredux2.initializeWith
 import com.imcys.bilibilias.core.datasource.api.BilibiliApi
-import com.imcys.bilibilias.core.datastore.AsPreferencesDataSource
-import com.imcys.bilibilias.core.datastore.model.SelfInfo
+import com.imcys.bilibilias.core.datasource.local.AsPreferencesDataSource
 import com.imcys.bilibilias.core.logging.logger
+import com.imcys.bilibilias.core.model.SelfInfo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlin.uuid.Uuid

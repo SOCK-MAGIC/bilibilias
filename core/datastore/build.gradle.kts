@@ -5,14 +5,11 @@ plugins {
 
 kotlin {
     dependencies {
-        implementation(projects.core.model)
         implementation(projects.core.common)
 
         implementation(libs.kotlinx.serialization.json)
 
-        implementation(libs.store5)
-
-        implementation(libs.androidx.datastore)
+        api(libs.androidx.datastore)
     }
 }
 

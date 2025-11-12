@@ -1,4 +1,4 @@
-package com.imcys.bilibilias.core.datastore.model
+package com.imcys.bilibilias.core.model
 
 data class Credentials(
     val cookie: Map<String, String> = emptyMap(),

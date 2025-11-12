@@ -1,10 +1,10 @@
-package com.imcys.bilibilias.core.datastore
+package com.imcys.bilibilias.core.datasource.local
 
 import androidx.datastore.core.DataStore
-import com.imcys.bilibilias.core.datastore.model.Codecs
-import com.imcys.bilibilias.core.datastore.model.Resolution
-import com.imcys.bilibilias.core.datastore.model.SelfInfo
-import com.imcys.bilibilias.core.datastore.model.UserPreferences
+import com.imcys.bilibilias.core.model.Codecs
+import com.imcys.bilibilias.core.model.Resolution
+import com.imcys.bilibilias.core.model.SelfInfo
+import com.imcys.bilibilias.core.model.UserPreferences
 import kotlin.uuid.ExperimentalUuidApi
 
 // expect/actual DataStore 工厂	通用基础设施	:core:datastore	...core.datastore
@@ -15,22 +15,26 @@ class AsPreferencesDataSource(
     private val userPreferences: DataStore<UserPreferences>,
 ) {
     val userData = userPreferences.data
+
     @OptIn(ExperimentalUuidApi::class)
     suspend fun setSelfInfo(info: SelfInfo?) {
         userPreferences.updateData {
             it.copy(selfInfo = info)
         }
     }
+
     suspend fun setTryLookEnabled(enable: Boolean) {
         userPreferences.updateData {
             it.copy(enableTryLook = enable)
         }
     }
+
     suspend fun setDecoderCodecPriorityList(newCodecs: List<Codecs>) {
         userPreferences.updateData {
             it.copy(codecPriorityList = newCodecs)
         }
     }
+
     suspend fun setVideoResolutions(newResolutions: List<Resolution>) {
         userPreferences.updateData {
             it.copy(videoResolutions = newResolutions)

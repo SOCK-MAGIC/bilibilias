@@ -1,4 +1,4 @@
-package com.imcys.bilibilias.core.datastore.model
+package com.imcys.bilibilias.core.model
 
 import kotlinx.serialization.Serializable
 
@@ -46,3 +46,4 @@ class Resolution(val id: Int, val displayName: String) {
         )
     }
 }
+

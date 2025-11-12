@@ -6,7 +6,6 @@ import com.imcys.bilibilias.core.data.di.DataModule
 import com.imcys.bilibilias.core.datasource.di.DataSourceModule
 import com.imcys.bilibilias.core.datasource.utils.WbiInitializer
 import com.imcys.bilibilias.core.datastore.asDataStoreSerializer
-import com.imcys.bilibilias.core.datastore.di.DataStoreModule
 import com.imcys.bilibilias.core.datastore.new
 import com.imcys.bilibilias.core.datastore.resolveDataStoreFile
 import com.imcys.bilibilias.core.di.CommonModule
@@ -63,7 +62,6 @@ fun KoinApplication.commonModules() = module {
         CommonModule,
         DataModule,
         DataSourceModule,
-        DataStoreModule,
         MediaProcessorModule,
         UseCaseModule,
         HttpDownloaderModule,

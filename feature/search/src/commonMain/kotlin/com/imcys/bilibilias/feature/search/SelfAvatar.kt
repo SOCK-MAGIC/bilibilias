@@ -28,7 +28,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.imcys.bilibilias.core.datastore.model.SelfInfo
+import com.imcys.bilibilias.core.model.SelfInfo
 import com.imcys.bilibilias.feature.search.state.SelfInfoUiState
 
 @Composable

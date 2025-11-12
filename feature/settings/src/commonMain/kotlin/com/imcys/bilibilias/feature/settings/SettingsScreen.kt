@@ -21,10 +21,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.alorma.compose.settings.ui.SettingsSwitch
-import com.imcys.bilibilias.core.datastore.model.Codecs
-import com.imcys.bilibilias.core.datastore.model.Resolution
-import com.imcys.bilibilias.core.datastore.model.UserPreferences
 import com.imcys.bilibilias.core.designsystem.component.BackButton
+import com.imcys.bilibilias.core.model.Codecs
+import com.imcys.bilibilias.core.model.Resolution
+import com.imcys.bilibilias.core.model.UserPreferences
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable

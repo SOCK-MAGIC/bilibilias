@@ -1,6 +1,6 @@
 package com.imcys.bilibilias.core.datasource.ktor
 
-import com.imcys.bilibilias.core.datastore.CookieJarDataSource
+import com.imcys.bilibilias.core.datasource.local.CookieJarDataSource
 import io.ktor.client.plugins.cookies.CookiesStorage
 import io.ktor.http.Cookie
 import io.ktor.http.Url

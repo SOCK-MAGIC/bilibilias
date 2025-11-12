@@ -1,4 +1,4 @@
-package com.imcys.bilibilias.core.model
+package com.imcys.bilibilias.core.utils
 
 import java.math.RoundingMode
 import java.text.DecimalFormat

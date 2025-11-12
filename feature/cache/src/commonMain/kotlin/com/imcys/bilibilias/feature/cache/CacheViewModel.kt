@@ -69,7 +69,8 @@ class CacheViewModel(
             }
             val request = ProcessRequest(
                 inputUris = state.mediaCacheMetadata.metadata.map {
-                    it.filePath.toString().toKmpUri()
+                    TODO()
+//                    it.filePath.toString().toKmpUri()
                 },
                 outputUri = videoUri,
                 subtitleTracks = subtitle,
@@ -95,8 +96,9 @@ class CacheViewModel(
             try {
                 // todo 下载记录也要删除
                 logger.info { "Attempting to delete media cache metadata for episode: ${state.episodeMetadata}" }
-                val metadataSuccess = state.mediaCacheMetadata.delete()
-                if (metadataSuccess) {
+//                val metadataSuccess = state.mediaCacheMetadata.delete()
+                TODO()
+                if (true) {
                     logger.info { "Media cache metadata deleted successfully." }
 
                     logger.info { "Attempting to delete media cache storage for episode: ${state.episodeMetadata}" }

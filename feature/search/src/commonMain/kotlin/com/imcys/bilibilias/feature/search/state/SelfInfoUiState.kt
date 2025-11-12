@@ -1,6 +1,6 @@
 package com.imcys.bilibilias.feature.search.state
 
-import com.imcys.bilibilias.core.datastore.model.SelfInfo
+import com.imcys.bilibilias.core.model.SelfInfo
 
 sealed interface SelfInfoUiState {
     data object Loading : SelfInfoUiState

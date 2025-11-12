@@ -1,6 +1,6 @@
-package com.imcys.bilibilias.core.model
+package com.imcys.bilibilias.core.utils
 
-import com.imcys.bilibilias.core.model.Progress.Companion.Unspecified
+import com.imcys.bilibilias.core.utils.Progress.Companion.Unspecified
 
 /**
  * 表示一个范围为 `0f..1f`, 且可能为未知 [Unspecified] 的进度数值.
@@ -41,4 +41,4 @@ value class Progress private constructor(
  * @see Unspecified
  */
 fun Float.toProgress(): Progress = Progress.fromZeroToOne(this)
-fun Float?.toProgress(): Progress = this?.toProgress() ?: Progress.Companion.Unspecified
+fun Float?.toProgress(): Progress = this?.toProgress() ?: Unspecified

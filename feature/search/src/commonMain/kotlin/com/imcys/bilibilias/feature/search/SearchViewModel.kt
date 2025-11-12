@@ -5,9 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.imcys.bilibilias.BuildConfig
 import com.imcys.bilibilias.core.datasource.api.BilibiliLoginApi
+import com.imcys.bilibilias.core.datasource.local.AsPreferencesDataSource
+import com.imcys.bilibilias.core.datasource.local.CookieJarDataSource
 import com.imcys.bilibilias.core.datasource.local.MediaCacheDataSource
-import com.imcys.bilibilias.core.datastore.AsPreferencesDataSource
-import com.imcys.bilibilias.core.datastore.CookieJarDataSource
 import com.imcys.bilibilias.core.domain.GetDmUseCase
 import com.imcys.bilibilias.core.domain.GetEpisodeInfoUseCase
 import com.imcys.bilibilias.core.domain.MediaSourceUseCase
