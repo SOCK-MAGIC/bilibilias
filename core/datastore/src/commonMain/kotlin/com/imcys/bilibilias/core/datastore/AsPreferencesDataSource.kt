@@ -7,6 +7,10 @@ import com.imcys.bilibilias.core.datastore.model.SelfInfo
 import com.imcys.bilibilias.core.datastore.model.UserPreferences
 import kotlin.uuid.ExperimentalUuidApi
 
+// expect/actual DataStore 工厂	通用基础设施	:core:datastore	...core.datastore
+// UserPreferences	共享数据模型	:core:model	...core.model.user
+// PreferencesDataSource (接口)	数据源抽象	:core:datasource	...core.datasource.preferences
+// AsPreferencesDataSource (实现)	数据源具体实现	:core:datasource	...core.datasource.preferences
 class AsPreferencesDataSource(
     private val userPreferences: DataStore<UserPreferences>,
 ) {
