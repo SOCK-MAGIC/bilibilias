@@ -13,7 +13,7 @@ class AndroidAppDirs(
 ) : AppDirs {
     override val cacheDir: SystemPath =
         (context.cacheDir ?: File("")).toKtPath().inSystem
-
+    override val dataStoreDir: SystemPath = File(context.filesDir, "datastore").toKtPath().inSystem
     override val dataDir: SystemPath =
         (context.filesDir ?: File("")).toKtPath().inSystem
     override val logsDir: SystemPath =

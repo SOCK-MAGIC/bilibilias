@@ -12,6 +12,7 @@ class DesktopAppDirs : AppDirs {
     override val dataDir: SystemPath = filesDir.resolve("data").inSystem
     override val logsDir: SystemPath = filesDir.resolve("logs").inSystem
     override val defaultBaseMediaCacheDir: SystemPath = filesDir.resolve("media-downloads").inSystem
+    override val dataStoreDir: SystemPath = filesDir.resolve("datastore").inSystem
 
     private fun getEnv(key: String): String {
         return System.getenv(key)
