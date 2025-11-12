@@ -11,7 +11,6 @@ import com.imcys.bilibilias.core.datasource.local.AsPreferencesDataSource
 import com.imcys.bilibilias.core.datasource.local.CookieJarDataSource
 import com.imcys.bilibilias.core.datasource.local.DataStoreMediaCacheDataSource
 import com.imcys.bilibilias.core.datasource.local.MediaCacheDataSource
-import com.imcys.bilibilias.core.datasource.local.TokenRepository
 import com.imcys.bilibilias.core.datasource.utils.WbiInitializer
 import com.imcys.bilibilias.core.datastore.ReplaceFileCorruptionHandler
 import com.imcys.bilibilias.core.datastore.asDataStoreSerializer
@@ -20,8 +19,6 @@ import com.imcys.bilibilias.core.datastore.resolveDataStoreFile
 import com.imcys.bilibilias.core.di.applicationScope
 import com.imcys.bilibilias.core.ktor.client.createHttpClient
 import com.imcys.bilibilias.core.model.MediaCacheSave
-import com.imcys.bilibilias.core.model.TokenSave
-import com.imcys.bilibilias.core.model.TokenSave.Companion.INIT
 import com.imcys.bilibilias.core.model.UserPreferences
 import io.ktor.client.plugins.BrowserUserAgent
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -119,16 +116,6 @@ val DataSourceModule = module {
                 produceFile = { resolveDataStoreFile("cookie_jar") },
                 scope = CoroutineScope(applicationScope.coroutineContext + Dispatchers.IO),
             ),
-        )
-    }
-    single<TokenRepository> {
-        TokenRepository(
-            DataStoreFactory.new(
-                serializer = TokenSave.serializer().asDataStoreSerializer { INIT },
-                corruptionHandler = androidx.datastore.core.handlers.ReplaceFileCorruptionHandler { INIT },
-                produceFile = { resolveDataStoreFile("token") },
-                scope = CoroutineScope(applicationScope.coroutineContext + Dispatchers.IO)
-            )
         )
     }
 }

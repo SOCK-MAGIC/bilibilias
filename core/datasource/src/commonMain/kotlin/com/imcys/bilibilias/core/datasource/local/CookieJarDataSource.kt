@@ -1,10 +1,7 @@
 package com.imcys.bilibilias.core.datasource.local
 
 import androidx.datastore.core.DataStore
-import com.imcys.bilibilias.core.model.TokenSave
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 
 class CookieJarDataSource(
     private val cookieDataStore: DataStore<Map<String, String>>,
@@ -28,16 +25,5 @@ class CookieJarDataSource(
 
     suspend fun clearCookies() {
         cookieDataStore.updateData { emptyMap() }
-    }
-}
-
-class TokenRepository(
-    private val dataStore: DataStore<TokenSave>
-) {
-    val refreshToken: Flow<String?> = dataStore.data.map { it.refreshToken }
-    suspend fun setRefreshToken(value: String) {
-        dataStore.updateData {
-            it.copy(refreshToken = value)
-        }
     }
 }

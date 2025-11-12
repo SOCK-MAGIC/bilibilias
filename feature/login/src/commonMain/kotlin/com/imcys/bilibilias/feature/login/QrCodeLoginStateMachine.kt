@@ -6,7 +6,6 @@ import com.imcys.bilibilias.core.data.util.ErrorMonitor
 import com.imcys.bilibilias.core.datasource.api.BilibiliApi
 import com.imcys.bilibilias.core.datasource.api.BilibiliLoginApi
 import com.imcys.bilibilias.core.datasource.local.AsPreferencesDataSource
-import com.imcys.bilibilias.core.datasource.local.TokenRepository
 import com.imcys.bilibilias.core.datasource.model.OauthCode.Companion.Expired
 import com.imcys.bilibilias.core.datasource.model.OauthCode.Companion.Success
 import com.imcys.bilibilias.core.datasource.model.OauthCode.Companion.WaitingConfirmation
@@ -25,7 +24,6 @@ import kotlin.uuid.Uuid
 
 class QrCodeLoginStateMachine(
     private val loginApi: BilibiliLoginApi,
-    private val tokenRepository: TokenRepository,
     private val errorMonitor: ErrorMonitor,
     private val api: BilibiliApi,
     private val preferences: AsPreferencesDataSource,
@@ -60,7 +58,8 @@ class QrCodeLoginStateMachine(
                 collectWhileInState({ poll(it.key) }) {
                     when (it.status) {
                         Success -> {
-                            tokenRepository.setRefreshToken(it.refreshToken)
+                            TODO()
+//                            tokenRepository.setRefreshToken(it.refreshToken)
                             override { QrCodeLoginState.LoginSuccess }
                         }
 

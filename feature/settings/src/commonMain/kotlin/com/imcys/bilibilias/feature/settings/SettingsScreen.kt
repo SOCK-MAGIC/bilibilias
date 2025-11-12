@@ -5,9 +5,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Album
-import androidx.compose.material.icons.outlined.Hd
-import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -19,29 +16,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.alorma.compose.settings.ui.SettingsSwitch
 import com.imcys.bilibilias.core.designsystem.component.BackButton
-import com.imcys.bilibilias.core.model.Codecs
-import com.imcys.bilibilias.core.model.Resolution
 import com.imcys.bilibilias.core.model.UserPreferences
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun SettingsScreen(
     onBack: () -> Unit,
-    settingsViewModel: SettingsViewModel = koinViewModel(),
+    viewModel: SettingsViewModel = koinViewModel(),
 ) {
-    val state by settingsViewModel.preferences.collectAsState()
+    val state by viewModel.preferences.collectAsState()
     SettingsContent(
         state = state,
         onBack = onBack,
-        updateTryLook = settingsViewModel::setTryLook,
-        updateDecoderCodec = settingsViewModel::setDecoderCodecPriorityList,
-        updateVideoResolutions = settingsViewModel::setVideoResolutions,
-        updateAudioResolutions = settingsViewModel::setAudioResolutions,
-        updateSubtitles = settingsViewModel::setSubtitles,
-        errorTip = settingsViewModel::errorTip
+        updateTryLook = viewModel::setTryLook,
+        updateSubtitles = viewModel::setSubtitles,
+        errorTip = viewModel::errorTip
     )
 }
 
@@ -51,9 +42,6 @@ fun SettingsContent(
     state: UserPreferences,
     onBack: () -> Unit = {},
     updateTryLook: (Boolean) -> Unit = {},
-    updateDecoderCodec: (List<Codecs>) -> Unit = {},
-    updateVideoResolutions: (List<Resolution>) -> Unit = {},
-    updateAudioResolutions: (List<Resolution>) -> Unit = {},
     updateSubtitles: (Boolean) -> Unit,
     errorTip: (String) -> Unit,
 ) {
@@ -69,48 +57,6 @@ fun SettingsContent(
             modifier = Modifier.padding(innerPadding)
                 .verticalScroll(rememberScrollState())
         ) {
-            SortableItem(
-                values = { Resolution.videoResolutions },
-                onSort = updateVideoResolutions,
-                exposed = { list ->
-                    Text(
-                        text = list.joinToString { it.displayName },
-                        maxLines = 1
-                    )
-                },
-                item = { Text(it.displayName, modifier = Modifier.padding(vertical = 8.dp)) },
-                key = { it.id },
-                title = { Text("画质") },
-                description = { Text("请根据设备支持情况与需求调整") },
-                icon = { Icon(Icons.Outlined.PlayCircle, null) },
-            )
-            SortableItem(
-                values = { Resolution.audioResolutions },
-                onSort = updateAudioResolutions,
-                exposed = { list ->
-                    Text(text = list.joinToString { it.displayName }, maxLines = 1)
-                },
-                item = { Text(it.displayName, modifier = Modifier.padding(vertical = 8.dp)) },
-                key = { it.id },
-                title = { Text("音质") },
-                description = { Text("请根据设备支持情况与需求调整") },
-                icon = { Icon(Icons.Outlined.Album, null) },
-            )
-
-            SortableItem(
-                values = { state.codecPriorityList },
-                onSort = updateDecoderCodec,
-                exposed = { list -> Text(text = list.joinToString()) },
-                item = { item ->
-                    Text(text = item.toString(), modifier = Modifier.padding(vertical = 16.dp))
-                },
-                key = { it },
-                title = { Text("解码格式") },
-                description = { Text("请根据设备支持情况与需求调整") },
-                dialogDescription = { Text("长按排序，优先选择顺序较高的项目。") },
-                icon = { Icon(Icons.Outlined.Hd, null) },
-            )
-
             SettingsSwitch(
                 state.setSubtitle,
                 title = { Text("添加字幕") },

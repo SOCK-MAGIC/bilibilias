@@ -4,8 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.imcys.bilibilias.core.data.util.ErrorMonitor
 import com.imcys.bilibilias.core.datasource.local.AsPreferencesDataSource
-import com.imcys.bilibilias.core.model.Codecs
-import com.imcys.bilibilias.core.model.Resolution
 import com.imcys.bilibilias.core.model.UserPreferences
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
@@ -25,24 +23,6 @@ class SettingsViewModel(
     fun setTryLook(enable: Boolean) {
         viewModelScope.launch {
             asPreferencesDataSource.setTryLookEnabled(enable)
-        }
-    }
-
-    fun setDecoderCodecPriorityList(newCodecs: List<Codecs>) {
-        viewModelScope.launch {
-            asPreferencesDataSource.setDecoderCodecPriorityList(newCodecs)
-        }
-    }
-
-    fun setVideoResolutions(newResolutions: List<Resolution>) {
-        viewModelScope.launch {
-            asPreferencesDataSource.setVideoResolutions(newResolutions)
-        }
-    }
-
-    fun setAudioResolutions(newResolutions: List<Resolution>) {
-        viewModelScope.launch {
-            asPreferencesDataSource.setAudioResolutions(newResolutions)
         }
     }
 
