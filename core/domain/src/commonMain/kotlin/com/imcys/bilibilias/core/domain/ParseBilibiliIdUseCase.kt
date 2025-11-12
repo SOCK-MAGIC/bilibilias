@@ -54,9 +54,24 @@ class ParseBilibiliIdUseCase {
     }
 
     sealed interface MatchResult {
-        data class UgcMatch(val id: UgcId) : MatchResult
+        data class UgcMatch(val id: UgcId) : MatchResult {
+            override fun toString(): String {
+                return when (id) {
+                    is UgcId.Aid -> id.toString()
+                    is UgcId.Bvid -> id.toString()
+                }
+            }
+        }
 
-        data class PgcMatch(val id: PgcId) : MatchResult
+        data class PgcMatch(val id: PgcId) : MatchResult {
+            override fun toString(): String {
+                return when (id) {
+                    is PgcId.Ep -> id.toString()
+                    is PgcId.Ss -> id.toString()
+                }
+            }
+        }
+
         data class Cheese(val id: PgcId) : MatchResult {
             override fun toString(): String = id.toString()
         }
