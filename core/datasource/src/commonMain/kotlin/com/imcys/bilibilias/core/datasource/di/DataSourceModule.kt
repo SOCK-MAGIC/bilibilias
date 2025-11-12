@@ -20,6 +20,7 @@ import com.imcys.bilibilias.core.di.applicationScope
 import com.imcys.bilibilias.core.ktor.client.createHttpClient
 import com.imcys.bilibilias.core.model.MediaCacheSave
 import com.imcys.bilibilias.core.model.UserPreferences
+import com.imcys.bilibilias.core.platform.AppDirs
 import io.ktor.client.plugins.BrowserUserAgent
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.cookies.CookiesStorage
@@ -86,12 +87,13 @@ val DataSourceModule = module {
     factoryOf(::WbiInitializer)
     singleOf(::CookiesStorageImpl) bind CookiesStorage::class
     single<MediaCacheDataSource> {
-        // todo resolveDataStoreFile("media_cache_storage")
         DataStoreMediaCacheDataSource(
             store = DataStoreFactory.new(
                 serializer = ListSerializer(MediaCacheSave.serializer()).asDataStoreSerializer { emptyList() },
                 corruptionHandler = ReplaceFileCorruptionHandler { emptyList() },
-                produceFile = { resolveDataStoreFile("media_cache_storage") },
+                produceFile = {
+                    resolveDataStoreFile(get<AppDirs>().dataStoreDir, "media_cache_storage")
+                },
                 scope = CoroutineScope(applicationScope.coroutineContext + Dispatchers.IO),
             )
         )
@@ -101,8 +103,13 @@ val DataSourceModule = module {
             DataStoreFactory.new(
                 serializer = UserPreferences.serializer()
                     .asDataStoreSerializer { UserPreferences.DEFAULT },
-                corruptionHandler = androidx.datastore.core.handlers.ReplaceFileCorruptionHandler { UserPreferences.DEFAULT },
-                produceFile = { resolveDataStoreFile("user_preferences") },
+                corruptionHandler = ReplaceFileCorruptionHandler { UserPreferences.DEFAULT },
+                produceFile = {
+                    resolveDataStoreFile(
+                        get<AppDirs>().dataStoreDir,
+                        "user_preferences"
+                    )
+                },
                 scope = CoroutineScope(applicationScope.coroutineContext + Dispatchers.IO),
             ),
         )
@@ -112,8 +119,8 @@ val DataSourceModule = module {
             DataStoreFactory.new(
                 serializer = MapSerializer(String.serializer(), String.serializer())
                     .asDataStoreSerializer { emptyMap() },
-                corruptionHandler = androidx.datastore.core.handlers.ReplaceFileCorruptionHandler { emptyMap() },
-                produceFile = { resolveDataStoreFile("cookie_jar") },
+                corruptionHandler = ReplaceFileCorruptionHandler { emptyMap() },
+                produceFile = { resolveDataStoreFile(get<AppDirs>().dataStoreDir, "cookie_jar") },
                 scope = CoroutineScope(applicationScope.coroutineContext + Dispatchers.IO),
             ),
         )
