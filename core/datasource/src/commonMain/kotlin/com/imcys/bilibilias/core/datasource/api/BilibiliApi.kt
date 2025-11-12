@@ -105,6 +105,17 @@ class BilibiliApi(
         return WbiSign.enc(queryParams)
     }
 
+    suspend fun getPugvPlayUrl(avid: Long, epid: String, cid: Long) {
+        client.get("/pugv/player/web/playurl") {
+            parameter("avid", avid)
+            parameter("ep_id", epid)
+            parameter("cid", cid)
+            parameter("fnver", 0)
+            parameter("fnval", 1)
+            parameter("fourk", 1)
+        }
+    }
+
     suspend fun getSeasonDetailsBySeasonId(ss: String): Season {
         return client.get("pgc/view/web/season") {
             parameter("season_id", ss)
