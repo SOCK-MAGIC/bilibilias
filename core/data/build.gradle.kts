@@ -10,6 +10,9 @@ kotlin {
             api(projects.core.datasource)
             api(projects.core.model)
             api(projects.core.datastore)
+
+            // todo 重构
+            implementation(libs.androidx.datastore)
         }
     }
 }
