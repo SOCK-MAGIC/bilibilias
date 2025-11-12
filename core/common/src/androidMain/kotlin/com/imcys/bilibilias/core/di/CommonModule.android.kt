@@ -10,7 +10,7 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
-actual val CommonModule: Module = module {
+actual val CommonInternalModule: Module = module {
     factoryOf(::AndroidMediaStoreAccess) bind MediaStoreAccess::class
     singleOf(::AndroidAppDirs) bind AppDirs::class
 }
