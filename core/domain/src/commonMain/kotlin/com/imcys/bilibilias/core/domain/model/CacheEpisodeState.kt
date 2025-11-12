@@ -1,8 +1,8 @@
 package com.imcys.bilibilias.core.domain.model
 
-import com.imcys.bilibilias.core.data.model.EpisodeMetadata
-import com.imcys.bilibilias.core.data.model.MediaCacheMetadata
+import com.imcys.bilibilias.core.model.EpisodeMetadata
 import com.imcys.bilibilias.core.model.FileStats
+import com.imcys.bilibilias.core.model.MediaCacheMetadata
 
 data class CacheEpisodeState(
     val episodeMetadata: EpisodeMetadata,

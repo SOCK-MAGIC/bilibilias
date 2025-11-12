@@ -9,6 +9,9 @@ kotlin {
             implementation(projects.core.common)
             implementation(projects.core.datastore)
             implementation(projects.core.ktorClient)
+            implementation(projects.core.model)
+
+            implementation(libs.androidx.datastore)
         }
     }
 }

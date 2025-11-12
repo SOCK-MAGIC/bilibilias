@@ -1,13 +1,22 @@
-package com.imcys.bilibilias.core.datasource
+package com.imcys.bilibilias.core.datasource.di
 
+import androidx.datastore.core.DataStoreFactory
 import com.imcys.bilibilias.core.datasource.api.BilibiliApi
 import com.imcys.bilibilias.core.datasource.api.BilibiliLoginApi
 import com.imcys.bilibilias.core.datasource.ktor.ApiResponseUnwrapper
 import com.imcys.bilibilias.core.datasource.ktor.CookiesStorageImpl
 import com.imcys.bilibilias.core.datasource.ktor.HttpClientJson
 import com.imcys.bilibilias.core.datasource.ktor.HttpLogging
+import com.imcys.bilibilias.core.datasource.local.DataStoreMediaCacheDataSource
+import com.imcys.bilibilias.core.datasource.local.MediaCacheDataSource
 import com.imcys.bilibilias.core.datasource.utils.WbiInitializer
+import com.imcys.bilibilias.core.datastore.ReplaceFileCorruptionHandler
+import com.imcys.bilibilias.core.datastore.asDataStoreSerializer
+import com.imcys.bilibilias.core.datastore.new
+import com.imcys.bilibilias.core.datastore.resolveDataStoreFile
+import com.imcys.bilibilias.core.di.applicationScope
 import com.imcys.bilibilias.core.ktor.client.createHttpClient
+import com.imcys.bilibilias.core.model.MediaCacheSave
 import io.ktor.client.plugins.BrowserUserAgent
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.cookies.CookiesStorage
@@ -18,6 +27,9 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.serialization.kotlinx.protobuf.protobuf
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.serialization.builtins.ListSerializer
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -68,4 +80,15 @@ val DataSourceModule = module {
     }
     factoryOf(::WbiInitializer)
     singleOf(::CookiesStorageImpl) bind CookiesStorage::class
+    single<MediaCacheDataSource> {
+        // todo resolveDataStoreFile("media_cache_storage")
+        DataStoreMediaCacheDataSource(
+            store = DataStoreFactory.new(
+                serializer = ListSerializer(MediaCacheSave.serializer()).asDataStoreSerializer { emptyList() },
+                corruptionHandler = ReplaceFileCorruptionHandler { emptyList() },
+                produceFile = { resolveDataStoreFile("media_cache_storage") },
+                scope = CoroutineScope(applicationScope.coroutineContext + Dispatchers.IO),
+            )
+        )
+    }
 }

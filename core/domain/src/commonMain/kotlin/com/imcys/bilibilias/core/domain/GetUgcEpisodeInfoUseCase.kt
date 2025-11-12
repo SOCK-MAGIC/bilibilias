@@ -1,8 +1,7 @@
 package com.imcys.bilibilias.core.domain
 
-import com.imcys.bilibilias.core.data.MediaCacheDataSource
-import com.imcys.bilibilias.core.data.model.MediaCacheSave
 import com.imcys.bilibilias.core.datasource.api.BilibiliApi
+import com.imcys.bilibilias.core.datasource.local.MediaCacheDataSource
 import com.imcys.bilibilias.core.datasource.model.BiliVideoData
 import com.imcys.bilibilias.core.domain.model.EpisodeCacheListState
 import com.imcys.bilibilias.core.domain.model.EpisodeCacheState
@@ -10,6 +9,7 @@ import com.imcys.bilibilias.core.domain.model.EpisodeCacheStatus
 import com.imcys.bilibilias.core.domain.model.UgcId
 import com.imcys.bilibilias.core.domain.model.toEpisodeInfo
 import com.imcys.bilibilias.core.flow.flowFromSuspend
+import com.imcys.bilibilias.core.model.MediaCacheSave
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 

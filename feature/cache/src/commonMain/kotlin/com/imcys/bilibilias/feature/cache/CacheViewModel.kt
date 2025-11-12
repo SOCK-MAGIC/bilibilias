@@ -2,8 +2,7 @@ package com.imcys.bilibilias.feature.cache
 
 import androidx.lifecycle.ViewModel
 import com.eygraber.uri.toKmpUri
-import com.imcys.bilibilias.core.data.MediaCacheDataSource
-import com.imcys.bilibilias.core.data.model.MetadataKey
+import com.imcys.bilibilias.core.datasource.local.MediaCacheDataSource
 import com.imcys.bilibilias.core.domain.GetCachedEpisodeStateUseCase
 import com.imcys.bilibilias.core.domain.model.CacheEpisodeState
 import com.imcys.bilibilias.core.ffmpeg.MediaProcessor
@@ -11,6 +10,7 @@ import com.imcys.bilibilias.core.ffmpeg.ProcessRequest
 import com.imcys.bilibilias.core.ffmpeg.SubtitleMode
 import com.imcys.bilibilias.core.ffmpeg.SubtitleTrack
 import com.imcys.bilibilias.core.logging.logger
+import com.imcys.bilibilias.core.model.MetadataKey
 import com.imcys.bilibilias.core.storage.MediaStoreAccess
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -47,12 +47,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.imcys.bilibilias.core.data.model.EpisodeMetadata
-import com.imcys.bilibilias.core.data.model.MediaCacheMetadata
 import com.imcys.bilibilias.core.designsystem.theme.AsTheme
 import com.imcys.bilibilias.core.domain.model.CacheEpisodeState
 import com.imcys.bilibilias.core.model.DataUnit
+import com.imcys.bilibilias.core.model.EpisodeMetadata
 import com.imcys.bilibilias.core.model.FileStats
+import com.imcys.bilibilias.core.model.MediaCacheMetadata
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.time.Clock

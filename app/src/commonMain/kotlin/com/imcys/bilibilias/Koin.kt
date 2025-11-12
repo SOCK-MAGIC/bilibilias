@@ -3,7 +3,7 @@ package com.imcys.bilibilias
 import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import com.imcys.bilibilias.core.data.di.DataModule
-import com.imcys.bilibilias.core.datasource.DataSourceModule
+import com.imcys.bilibilias.core.datasource.di.DataSourceModule
 import com.imcys.bilibilias.core.datasource.utils.WbiInitializer
 import com.imcys.bilibilias.core.datastore.asDataStoreSerializer
 import com.imcys.bilibilias.core.datastore.di.DataStoreModule

@@ -1,18 +1,14 @@
-package com.imcys.bilibilias.core.data
+package com.imcys.bilibilias.core.datasource.local
 
 import androidx.datastore.core.DataStore
-import com.imcys.bilibilias.core.data.model.EpisodeMetadata
-import com.imcys.bilibilias.core.data.model.MediaCachePartMetadata
-import com.imcys.bilibilias.core.data.model.MediaCacheSave
 import com.imcys.bilibilias.core.logging.logger
+import com.imcys.bilibilias.core.model.EpisodeMetadata
+import com.imcys.bilibilias.core.model.MediaCachePartMetadata
+import com.imcys.bilibilias.core.model.MediaCacheSave
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlin.time.Clock
 
-// MediaCacheSave 等模型	数据容器	:core:model	...core.model.media
-//MediaCacheDataSource (接口和实现)	直接与DataStore交互	:core:datasource	...core.datasource.media
-//MediaCacheRepository (待创建)	统一数据出口，组合数据源	:core:data	...core.data.repository
-// TODO: move to core:datasource
 interface MediaCacheDataSource {
     val listFlow: Flow<List<MediaCacheSave>>
     suspend fun findCache(bvid: String, cid: Long): MediaCacheSave?

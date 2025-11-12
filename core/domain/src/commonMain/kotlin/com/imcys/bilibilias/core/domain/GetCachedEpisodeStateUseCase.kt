@@ -1,15 +1,15 @@
 package com.imcys.bilibilias.core.domain
 
-import com.imcys.bilibilias.core.data.MediaCacheDataSource
-import com.imcys.bilibilias.core.data.model.EpisodeMetadata
-import com.imcys.bilibilias.core.data.model.MediaCacheMetadata
+import com.imcys.bilibilias.core.datasource.local.MediaCacheDataSource
 import com.imcys.bilibilias.core.domain.model.CacheEpisodeState
 import com.imcys.bilibilias.core.http.downloader.HttpDownloader
 import com.imcys.bilibilias.core.http.downloader.model.DownloadId
 import com.imcys.bilibilias.core.http.downloader.model.DownloadProgress
 import com.imcys.bilibilias.core.http.downloader.model.DownloadStatus
 import com.imcys.bilibilias.core.model.DataSize.Companion.bytes
+import com.imcys.bilibilias.core.model.EpisodeMetadata
 import com.imcys.bilibilias.core.model.FileStats
+import com.imcys.bilibilias.core.model.MediaCacheMetadata
 import com.imcys.bilibilias.core.model.Progress
 import com.imcys.bilibilias.core.model.toProgress
 import kotlinx.coroutines.flow.Flow

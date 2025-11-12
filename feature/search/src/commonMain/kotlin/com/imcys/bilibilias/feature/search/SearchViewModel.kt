@@ -4,12 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.imcys.bilibilias.BuildConfig
-import com.imcys.bilibilias.core.data.MediaCacheDataSource
-import com.imcys.bilibilias.core.data.model.EpisodeMetadata
-import com.imcys.bilibilias.core.data.model.MediaCacheMetadata
-import com.imcys.bilibilias.core.data.model.MediaCachePartMetadata
-import com.imcys.bilibilias.core.data.model.MediaCacheSave
 import com.imcys.bilibilias.core.datasource.api.BilibiliLoginApi
+import com.imcys.bilibilias.core.datasource.local.MediaCacheDataSource
 import com.imcys.bilibilias.core.datastore.AsPreferencesDataSource
 import com.imcys.bilibilias.core.datastore.CookieJarDataSource
 import com.imcys.bilibilias.core.domain.GetDmUseCase
@@ -26,6 +22,10 @@ import com.imcys.bilibilias.core.flow.FlowRestarter
 import com.imcys.bilibilias.core.flow.restartable
 import com.imcys.bilibilias.core.http.downloader.HttpDownloader
 import com.imcys.bilibilias.core.http.downloader.model.DownloadId
+import com.imcys.bilibilias.core.model.EpisodeMetadata
+import com.imcys.bilibilias.core.model.MediaCacheMetadata
+import com.imcys.bilibilias.core.model.MediaCachePartMetadata
+import com.imcys.bilibilias.core.model.MediaCacheSave
 import com.imcys.bilibilias.core.result.Result
 import com.imcys.bilibilias.core.result.Result.Error
 import com.imcys.bilibilias.core.result.Result.Loading

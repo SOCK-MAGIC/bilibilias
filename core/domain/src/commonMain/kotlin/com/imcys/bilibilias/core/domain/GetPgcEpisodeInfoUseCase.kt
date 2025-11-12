@@ -1,7 +1,7 @@
 package com.imcys.bilibilias.core.domain
 
-import com.imcys.bilibilias.core.data.MediaCacheDataSource
 import com.imcys.bilibilias.core.datasource.api.BilibiliApi
+import com.imcys.bilibilias.core.datasource.local.MediaCacheDataSource
 import com.imcys.bilibilias.core.domain.model.EpisodeCacheListState
 import com.imcys.bilibilias.core.domain.model.EpisodeCacheState
 import com.imcys.bilibilias.core.domain.model.EpisodeCacheStatus
