@@ -35,9 +35,9 @@ class GetPugvEpisodeInfoUseCase(
                 } else {
                     EpisodeCacheStatus.NotCached
                 }
-
+                // id 是 epid
                 EpisodeCacheState(
-                    episodeId = "没有bvid，需要转换",
+                    episodeId = episode.id.toString(),
                     episodeSubId = episode.cid,
                     episodeAliasId = episode.aid,
                     title = episode.title,
