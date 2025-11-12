@@ -4,14 +4,14 @@ plugins {
 
 kotlin {
     dependencies {
-
+        implementation("io.github.oshai:kotlin-logging:7.0.7")
     }
     sourceSets {
-        jvmMain.dependencies {
-            implementation("org.slf4j:slf4j-api:2.0.17")
-            implementation("uk.uuid.slf4j:slf4j-android:2.0.17-0")
+        androidMain.dependencies {
+            implementation("io.github.oshai:kotlin-logging-android:7.0.7")
         }
     }
+    explicitApi()
 }
 
 android {
