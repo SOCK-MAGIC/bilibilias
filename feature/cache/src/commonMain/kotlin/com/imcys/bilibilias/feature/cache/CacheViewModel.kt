@@ -1,7 +1,9 @@
 package com.imcys.bilibilias.feature.cache
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.eygraber.uri.toKmpUri
+import com.imcys.bilibilias.core.data.MediaCacheRepository
 import com.imcys.bilibilias.core.datasource.local.MediaCacheDataSource
 import com.imcys.bilibilias.core.domain.GetCachedEpisodeStateUseCase
 import com.imcys.bilibilias.core.domain.model.CacheEpisodeState
@@ -26,6 +28,7 @@ class CacheViewModel(
     private val getCachedEpisodeStateUseCase: GetCachedEpisodeStateUseCase,
     private val mediaCacheStorage: MediaCacheDataSource,
     private val applicationScope: CoroutineScope,
+    private val mediaCacheRepository: MediaCacheRepository
 ) : ViewModel() {
 
     private val lock = MutableStateFlow(false)
@@ -33,7 +36,7 @@ class CacheViewModel(
     //    val canProcess = multiplexer.isRunning.map { !it }.stateInViewModelScope(true)
     val stateFlow = getCachedEpisodeStateUseCase()
         .stateIn(
-            scope = applicationScope,
+            scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()
         )
@@ -69,8 +72,7 @@ class CacheViewModel(
             }
             val request = ProcessRequest(
                 inputUris = state.mediaCacheMetadata.metadata.map {
-                    TODO()
-//                    it.filePath.toString().toKmpUri()
+                    it.fullPath.toKmpUri()
                 },
                 outputUri = videoUri,
                 subtitleTracks = subtitle,
@@ -90,31 +92,23 @@ class CacheViewModel(
             logger.error(e) { "An unexpected error occurred before starting muxing for ${state.episodeMetadata}" }
         }
     }
-
     fun deleteEpisodeCache(state: CacheEpisodeState) {
-        applicationScope.launch {
+        viewModelScope.launch {
             try {
-                // todo 下载记录也要删除
-                logger.info { "Attempting to delete media cache metadata for episode: ${state.episodeMetadata}" }
-//                val metadataSuccess = state.mediaCacheMetadata.delete()
-
-                TODO()
-                if (true) {
-                    logger.info { "Media cache metadata deleted successfully." }
-
-                    logger.info { "Attempting to delete media cache storage for episode: ${state.episodeMetadata}" }
-                    val storageDeleted = mediaCacheStorage.delete(state.episodeMetadata)
-                    if (true) {
-                        logger.warn { "Failed to delete from media cache storage, but metadata might be deleted." }
-                        return@launch
-                    }
-                    logger.info { "Media cache storage deleted successfully." }
-                } else {
-                    logger.warn { "Failed to delete media cache metadata." }
-                }
+                performDelete(state)
             } catch (e: Exception) {
                 logger.error(e) { "Error deleting cache for episode: ${state.episodeMetadata}" }
             }
+        }
+    }
+
+    private suspend fun performDelete(state: CacheEpisodeState) {
+        mediaCacheStorage.delete(state.episodeMetadata)
+
+        val filesDeletedSuccessfully = mediaCacheRepository.delete(state.mediaCacheMetadata)
+
+        if (!filesDeletedSuccessfully) {
+            logger.warn { "Record deleted, but failed to clean up all associated files for ${state.episodeMetadata}" }
         }
     }
 }
