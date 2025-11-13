@@ -1,6 +1,5 @@
 package com.imcys.bilibilias.core.di
 
-import com.imcys.bilibilias.core.logging.logger
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
