@@ -2,7 +2,7 @@
 androidGradlePlugin = "8.13.0"
 androidTools = "31.13.0"
 android-compileSdk = "36"
-android-minSdk = "24"
+android-minSdk = "26"
 android-targetSdk = "36"
 androidx-activity = "1.11.0"
 androidx-annotation = "1.9.1"
