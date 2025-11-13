@@ -22,10 +22,13 @@ import com.imcys.bilibilias.core.flow.FlowRestarter
 import com.imcys.bilibilias.core.flow.restartable
 import com.imcys.bilibilias.core.http.downloader.HttpDownloader
 import com.imcys.bilibilias.core.http.downloader.model.DownloadId
+import com.imcys.bilibilias.core.io.absolutePath
+import com.imcys.bilibilias.core.io.resolve
 import com.imcys.bilibilias.core.model.EpisodeMetadata
 import com.imcys.bilibilias.core.model.MediaCacheMetadata
 import com.imcys.bilibilias.core.model.MediaCachePartMetadata
 import com.imcys.bilibilias.core.model.MediaCacheSave
+import com.imcys.bilibilias.core.platform.AppDirs
 import com.imcys.bilibilias.core.result.Result
 import com.imcys.bilibilias.core.result.Result.Error
 import com.imcys.bilibilias.core.result.Result.Loading
@@ -59,6 +62,7 @@ class SearchViewModel(
     private val api: BilibiliLoginApi,
     private val cookieJar: CookieJarDataSource,
     private val redirectResolverUseCase: RedirectResolverUseCase,
+    private val appDirs: AppDirs,
 ) : ViewModel() {
     val selfInfoUiState = preferences.userData
         .map { preferences ->
@@ -128,6 +132,7 @@ class SearchViewModel(
                 started = SharingStarted.WhileSubscribed(5_000),
                 initialValue = MediaSourceSelectedUiState.Loading
             )
+
     fun requestCache(request: EpisodeCacheRequest) {
         val currentState = searchResultUiState.value
         if (currentState !is SearchResultUiState.Success) {
@@ -136,22 +141,21 @@ class SearchViewModel(
 
         applicationScope.launch {
             currentState.episodes.getOrNull(request.index - 1)?.let { episodeCacheState ->
-                val metadata = EpisodeMetadata(
-                    aid = episodeCacheState.episodeAliasId,
+                val key = EpisodeMetadata(
+                    aid = episodeCacheState.episodeAliasId.toString(),
                     bvid = episodeCacheState.episodeId,
                     cid = episodeCacheState.episodeSubId,
-                    title = episodeCacheState.title
                 )
 
                 val mediaCacheSave = MediaCacheSave(
-                    origin = metadata,
+                    key = key,
                     metadata = MediaCacheMetadata(emptyList())
                 )
-                mediaCacheStorage.cacheEpisode(mediaCacheSave)
+                mediaCacheStorage.save(mediaCacheSave)
 
                 // 并行启动音视频轨道缓存
-                launch { cacheTrack(request.videoTrack, metadata) }
-                launch { cacheTrack(request.audioTrack, metadata) }
+                launch { cacheTrack(request.videoTrack, key) }
+                launch { cacheTrack(request.audioTrack, key) }
             }
         }
     }
@@ -178,11 +182,10 @@ class SearchViewModel(
         }
     }
 
-    private suspend fun cachePartMetadata(metadata: EpisodeMetadata, downloadId: DownloadId) {
-        mediaCacheStorage.updateMediaCacheMetadata(
-            metadata,
-            MediaCachePartMetadata(downloadId.value)
-        )
+    private suspend fun cachePartMetadata(key: EpisodeMetadata, downloadId: DownloadId) {
+        val path = appDirs.defaultBaseMediaCacheDir.resolve(downloadId.value).absolutePath
+        val save = MediaCacheSave(key, MediaCacheMetadata(listOf(MediaCachePartMetadata(path))))
+        mediaCacheStorage.save(save)
     }
 
     private fun isBilibiliShortLink(query: String): Boolean {
@@ -193,10 +196,10 @@ class SearchViewModel(
         return !isAlreadyLongLink
     }
 
-    private suspend fun cacheTrack(track: TrackInfo?, metadata: EpisodeMetadata) {
+    private suspend fun cacheTrack(track: TrackInfo?, key: EpisodeMetadata) {
         track?.urls?.randomOrNull()?.let { url ->
             val downloadId = httpDownloader.download(url)
-            cachePartMetadata(metadata, downloadId)
+            cachePartMetadata(key, downloadId)
         }
     }
 

@@ -22,7 +22,7 @@ class GetCachedEpisodeStateUseCase(
     private val mediaCacheStorage: MediaCacheDataSource,
 ) {
     operator fun invoke(): Flow<List<CacheEpisodeState>> {
-        return mediaCacheStorage.listFlow.flatMapLatest { mediaCacheSaves ->
+        return mediaCacheStorage.allCachesFlow.flatMapLatest { mediaCacheSaves ->
             if (mediaCacheSaves.isEmpty()) {
                 flowOf(emptyList())
             } else {
@@ -42,7 +42,7 @@ class GetCachedEpisodeStateUseCase(
         mediaCacheMetadata: MediaCacheMetadata
     ): Flow<CacheEpisodeState> {
         val downloadPartProgressFlows = mediaCacheMetadata.metadata.map { metaItem ->
-            httpDownloader.getProgressFlow(DownloadId(metaItem.downloadId))
+            httpDownloader.getProgressFlow(DownloadId(metaItem.fullPath))
         }
 
         return if (downloadPartProgressFlows.isEmpty()) {

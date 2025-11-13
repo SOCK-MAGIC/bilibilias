@@ -97,13 +97,14 @@ class CacheViewModel(
                 // todo 下载记录也要删除
                 logger.info { "Attempting to delete media cache metadata for episode: ${state.episodeMetadata}" }
 //                val metadataSuccess = state.mediaCacheMetadata.delete()
+
                 TODO()
                 if (true) {
                     logger.info { "Media cache metadata deleted successfully." }
 
                     logger.info { "Attempting to delete media cache storage for episode: ${state.episodeMetadata}" }
                     val storageDeleted = mediaCacheStorage.delete(state.episodeMetadata)
-                    if (!storageDeleted) {
+                    if (true) {
                         logger.warn { "Failed to delete from media cache storage, but metadata might be deleted." }
                         return@launch
                     }

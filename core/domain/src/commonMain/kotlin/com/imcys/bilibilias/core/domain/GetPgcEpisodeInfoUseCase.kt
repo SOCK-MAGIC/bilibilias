@@ -26,12 +26,12 @@ class GetPgcEpisodeInfoUseCase(
             }
         }
 
-        return seasonDetails.combine(mediaCacheStorage.listFlow) { detail, cachedItemsList ->
+        return seasonDetails.combine(mediaCacheStorage.allCachesFlow) { detail, cachedItemsList ->
                 val episodeBvids = detail.episodes.map { it.bvid }.toSet()
 
                 val cachedItemsByCid = cachedItemsList
-                    .filter { cachedItem -> cachedItem.origin.bvid in episodeBvids }
-                    .associateBy { it.origin.cid }
+                    .filter { cachedItem -> cachedItem.key.bvid in episodeBvids }
+                    .associateBy { it.key.cid }
 
                 val states = detail.episodes.mapIndexed { index, episode ->
                     val cid = episode.cid

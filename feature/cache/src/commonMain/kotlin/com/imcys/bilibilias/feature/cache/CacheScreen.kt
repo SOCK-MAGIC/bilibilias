@@ -45,7 +45,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.imcys.bilibilias.core.designsystem.theme.AsTheme
 import com.imcys.bilibilias.core.domain.model.CacheEpisodeState
@@ -59,7 +58,7 @@ import kotlin.time.Clock
 
 @Composable
 fun CacheScreen(
-    navigationToPlayer: (Long, String, Long) -> Unit,
+    navigationToPlayer: (String, String, Long) -> Unit,
     cacheViewModel: CacheViewModel = koinViewModel()
 ) {
     val state by cacheViewModel.stateFlow.collectAsState()
@@ -82,7 +81,7 @@ fun CaCheContent(
     canMux: Boolean,
     onDelete: (CacheEpisodeState) -> Unit = { },
     onCombine: (CacheEpisodeState) -> Unit = { },
-    navigationToPlayer: (Long, String, Long) -> Unit,
+    navigationToPlayer: (String, String, Long) -> Unit,
 ) {
     Scaffold { innerPadding ->
         LazyColumn(modifier = Modifier.padding(innerPadding)) {
@@ -203,12 +202,12 @@ private fun CacheEpisodeItem(state: CacheEpisodeState, onClick: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = state.episodeMetadata.title,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    style = MaterialTheme.typography.titleMedium
-                )
+//                Text(
+//                    text = state.episodeMetadata.title,
+//                    maxLines = 2,
+//                    overflow = TextOverflow.Ellipsis,
+//                    style = MaterialTheme.typography.titleMedium
+//                )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = state.fileStats.downloadedBytes.toString(DataUnit.MEGABYTES),
@@ -255,10 +254,9 @@ private fun CacheEpisodeItemPreview() {
         CacheEpisodeItem(
             state = CacheEpisodeState(
                 episodeMetadata = EpisodeMetadata(
-                    aid = 1111111111111111,
+                    aid = "1111111111111111",
                     bvid = "BV1fx411y7R2",
                     cid = 123456L,
-                    title = "Sample Episode Title - A very long title to check how text overflow behaves in the UI design"
                 ),
                 mediaCacheMetadata = MediaCacheMetadata(
                     metadata = emptyList(),

@@ -51,7 +51,7 @@ val NavigationModule = module {
             entry<CacheRoute> {
                 CacheScreen(
                     navigationToPlayer = { aid, bvid, cid ->
-                        backStack.navigate(PlayerRoute(aid, bvid, cid))
+                        backStack.navigate(PlayerRoute(aid.toLong(), bvid, cid))
                     },
                 )
             }

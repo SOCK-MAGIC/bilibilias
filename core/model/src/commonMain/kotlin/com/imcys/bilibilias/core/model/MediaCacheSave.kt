@@ -6,35 +6,11 @@ import kotlin.time.Instant
 
 @Serializable
 data class MediaCacheSave(
-    val origin: EpisodeMetadata,
+    val key: EpisodeMetadata,
     val metadata: MediaCacheMetadata,
 )
-
 @Serializable
-data class EpisodeMetadata(
-    val aid: Long,
-    val bvid: String,
-    val cid: Long,
-    val title: String,
-) {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as EpisodeMetadata
-
-        if (cid != other.cid) return false
-        if (bvid != other.bvid) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = cid.hashCode()
-        result = 31 * result + bvid.hashCode()
-        return result
-    }
-}
+data class EpisodeMetadata(val aid: String, val bvid: String, val cid: Long)
 
 @Serializable
 data class MediaCacheMetadata(
@@ -42,51 +18,17 @@ data class MediaCacheMetadata(
     val createdAt: Instant = Clock.System.now(),
     val extra: Map<MetadataKey, String> = emptyMap(),
 ) {
-//    fun delete(): Boolean {
-//        // Collect all file paths into a single list
-//        val allPaths = metadata.map { it.filePath } +
-//                (extra[ASS_FILE]?.let { listOf(Path(it)) }
-//                    ?: emptyList())
-//
-//        return allPaths.map { path -> deleteFile(path) }.all { it }
-//    }
-//
-//    fun withExtra(other: Map<MetadataKey, String>): MediaCacheMetadata {
-//        return copy(
-//            extra = extra + other,
-//        )
-//    }
-//
-//    private fun deleteFile(path: Path): Boolean {
-//        return try {
-//            if (SystemFileSystem.exists(path)) {
-//                SystemFileSystem.delete(path)
-//            } else {
-//                logger.warn { "Warning: File not found, skipping delete: $path" }
-//            }
-//            true
-//        } catch (e: IOException) {
-//            logger.error(e) { "Delete failed for file: $path" }
-//            false
-//        }
-//    }
-//
-//    companion object {
-//        private val logger by lazy { logger<MediaCacheMetadata>() }
-//    }
+    fun withExtra(other: Map<MetadataKey, String>): MediaCacheMetadata {
+        return copy(
+            extra = extra + other,
+        )
+    }
 }
 
 @Serializable
 data class MediaCachePartMetadata(
-    val downloadId: String
-) {
-//    val filePath: Path
-//        get() = baseSaveDir.resolve(downloadId)
-
-    companion object {
-//        private val baseSaveDir = Path(BuildConfig.MEDIA_DOWNLOAD)
-    }
-}
+    val fullPath: String
+)
 
 @Serializable
 @JvmInline

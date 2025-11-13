@@ -29,10 +29,10 @@ class GetUgcEpisodeInfoUseCase(
             }
         }
 
-        return detailFlow.combine(mediaCacheStorage.listFlow) { detail, cachedItemsList ->
+        return detailFlow.combine(mediaCacheStorage.allCachesFlow) { detail, cachedItemsList ->
             val cachedItemsByCid = cachedItemsList
-                .filter { it.origin.bvid == detail.bvid }
-                .associateBy { it.origin.cid }
+                .filter { it.key.bvid == detail.bvid }
+                .associateBy { it.key.cid }
             if (detail.rights.isSteinGate) {
                 processInteractiveVideo(detail, cachedItemsByCid)
             } else {

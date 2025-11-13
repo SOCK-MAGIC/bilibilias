@@ -3,95 +3,55 @@ package com.imcys.bilibilias.core.datasource.local
 import androidx.datastore.core.DataStore
 import com.imcys.bilibilias.core.logging.logger
 import com.imcys.bilibilias.core.model.EpisodeMetadata
-import com.imcys.bilibilias.core.model.MediaCachePartMetadata
 import com.imcys.bilibilias.core.model.MediaCacheSave
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlin.time.Clock
 
 interface MediaCacheDataSource {
-    val listFlow: Flow<List<MediaCacheSave>>
-    suspend fun findCache(bvid: String, cid: Long): MediaCacheSave?
-    suspend fun delete(episodeMetadata: EpisodeMetadata): Boolean
+    val allCachesFlow: Flow<List<MediaCacheSave>>
+    suspend fun get(key: EpisodeMetadata): MediaCacheSave?
 
-    suspend fun cacheEpisode(episodeData: MediaCacheSave)
+    suspend fun save(cache: MediaCacheSave)
 
-    suspend fun updateMediaCacheMetadata(
-        targetEpisodeKey: EpisodeMetadata,
-        newPartMetadata: MediaCachePartMetadata
-    )
+    suspend fun delete(key: EpisodeMetadata)
 }
 
 internal class DataStoreMediaCacheDataSource(
     private val store: DataStore<List<MediaCacheSave>>,
-    private val clock: Clock = Clock.System,
 ) : MediaCacheDataSource {
 
-    override val listFlow = store.data
-    override suspend fun findCache(bvid: String, cid: Long): MediaCacheSave? {
-        val saves = store.data.first()
-        return saves.find { episode ->
-            episode.origin.bvid == bvid && episode.origin.cid == cid
-        }
+    override val allCachesFlow = store.data
+    override suspend fun get(key: EpisodeMetadata): MediaCacheSave? {
+        return store.data.first().find { it.key == key }
     }
 
-    override suspend fun cacheEpisode(episodeData: MediaCacheSave) {
-        val itemWithTimestamp = episodeData.copy(
-            metadata = episodeData.metadata.copy(createdAt = clock.now())
-        )
-        store.updateData { list ->
-            list + itemWithTimestamp
-        }
-    }
-
-    override suspend fun updateMediaCacheMetadata(
-        targetEpisodeKey: EpisodeMetadata,
-        newPartMetadata: MediaCachePartMetadata
-    ) {
+    override suspend fun save(cache: MediaCacheSave) {
         store.updateData { currentList ->
-            currentList.map { episode ->
-                if (isSameEpisode(episode, targetEpisodeKey)) {
-                    // This is the episode we want to update
-                    val updatedPartMetadataList = episode.metadata.metadata + newPartMetadata
-                    val updatedEpisodeMetadata = episode.metadata.copy(
-                        metadata = updatedPartMetadataList,
-                        createdAt = clock.now()
-                    )
-                    episode.copy(metadata = updatedEpisodeMetadata)
-                } else {
-                    // This is not the episode we're looking for, return it as is
-                    episode
-                }
-            }
-        }
-    }
+            val indexToUpdate = currentList.indexOfFirst { it.key == cache.key }
 
-    override suspend fun delete(episodeMetadata: EpisodeMetadata): Boolean {
-        var deleted = false
-        val key = "${episodeMetadata.bvid}-${episodeMetadata.cid}" // For logging
-        logger.debug { "Attempting to delete $key" }
-        store.updateData { list ->
-            val originalSize = list.size
-            val newList = list.filterNot { isSameEpisode(it, episodeMetadata) }
-            deleted = newList.size < originalSize
-            if (deleted) {
-                logger.info { "Deleted $key from cache" } // Info if successful
+            if (indexToUpdate != -1) {
+                logger.info { "Updating cache for key: ${cache.key}" }
+                currentList.toMutableList().apply { this[indexToUpdate] = cache }
             } else {
-                logger.debug { "$key not found in cache for deletion" }
+                logger.info { "Adding new cache for key: ${cache.key}" }
+                currentList + cache
             }
-            newList
         }
-        return deleted
     }
 
-    private fun isSameEpisode(
-        cache: MediaCacheSave,
-        episodeMetadata: EpisodeMetadata
-    ): Boolean {
-        return cache.origin == episodeMetadata
+    override suspend fun delete(key: EpisodeMetadata) {
+        store.updateData { currentList ->
+            val indexToDelete = currentList.indexOfFirst { it.key == key }
+
+            if (indexToDelete != -1) {
+                logger.info { "Deleting cache for key: $key" }
+                currentList.toMutableList().apply { removeAt(indexToDelete) }
+            } else {
+                logger.warn { "Attempted to delete non-existent cache for key: $key" }
+                currentList
+            }
+        }
     }
-
-
     companion object {
         private val logger = logger<DataStoreMediaCacheDataSource>()
     }

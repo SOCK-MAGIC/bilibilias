@@ -24,12 +24,12 @@ class GetPugvEpisodeInfoUseCase(
             }
         }
 
-        return detailFlow.combine(mediaCacheStorage.listFlow) { detail, cachedItemsList ->
+        return detailFlow.combine(mediaCacheStorage.allCachesFlow) { detail, cachedItemsList ->
             val cachedItemsMap = cachedItemsList.associateBy {
-                it.origin.aid to it.origin.cid
+                it.key.aid to it.key.cid
             }
             val cacheStates = detail.episodes.map { episode ->
-                val isCached = cachedItemsMap.containsKey(episode.aid to episode.cid)
+                val isCached = cachedItemsMap.containsKey(episode.aid.toString() to episode.cid)
                 val cacheStatus = if (isCached) {
                     EpisodeCacheStatus.Cached
                 } else {

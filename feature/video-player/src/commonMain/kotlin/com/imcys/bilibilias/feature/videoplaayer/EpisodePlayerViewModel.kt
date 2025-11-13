@@ -10,6 +10,7 @@ import com.imcys.bilibilias.core.datasource.local.MediaCacheDataSource
 import com.imcys.bilibilias.core.flow.FlowRestarter
 import com.imcys.bilibilias.core.flow.restartable
 import com.imcys.bilibilias.core.logging.logger
+import com.imcys.bilibilias.core.model.EpisodeMetadata
 import com.imcys.bilibilias.core.result.Result
 import com.imcys.bilibilias.core.result.asResult
 import com.imcys.bilibilias.core.videoplayer.PlayerControllerState
@@ -77,11 +78,11 @@ class EpisodePlayerViewModel(
         private set
 
     val uiState = flow {
-        val cache = mediaCacheStorage.findCache(bvid, cid)
+        val cache = mediaCacheStorage.get(EpisodeMetadata(aid.toString(), bvid, cid))
             ?: throw NoSuchElementException("Video not found in cache for Bvid: $bvid, cid: $cid")
 
         val uris = cache.metadata.metadata.map { TODO() /*it.filePath.toString()*/ }
-        emit(PlayerUiState.Success(cache.origin.title, uris))
+        emit(PlayerUiState.Success("", uris))
     }.asResult()
         .map { result ->
             when (result) {
