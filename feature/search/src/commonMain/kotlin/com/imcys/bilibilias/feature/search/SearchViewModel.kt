@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.imcys.bilibilias.BuildConfig
 import com.imcys.bilibilias.core.datasource.api.BilibiliLoginApi
 import com.imcys.bilibilias.core.datasource.local.AsPreferencesDataSource
-import com.imcys.bilibilias.core.datasource.local.CookieJarDataSource
+import com.imcys.bilibilias.core.datasource.local.CredentialsDataSource
 import com.imcys.bilibilias.core.datasource.local.MediaCacheDataSource
 import com.imcys.bilibilias.core.domain.GetDmUseCase
 import com.imcys.bilibilias.core.domain.GetEpisodeInfoUseCase
@@ -60,9 +60,9 @@ class SearchViewModel(
     private val getDmUseCase: GetDmUseCase,
     private val preferences: AsPreferencesDataSource,
     private val api: BilibiliLoginApi,
-    private val cookieJar: CookieJarDataSource,
     private val redirectResolverUseCase: RedirectResolverUseCase,
     private val appDirs: AppDirs,
+    private val credentialStore: CredentialsDataSource,
 ) : ViewModel() {
     val selfInfoUiState = preferences.userData
         .map { preferences ->
@@ -176,9 +176,9 @@ class SearchViewModel(
 
     fun onLogout() {
         applicationScope.launch {
-            api.exit()
+//            api.exit()
             preferences.setSelfInfo(null)
-            cookieJar.clearCookies()
+            credentialStore.clearCredentials()
         }
     }
 

@@ -2,7 +2,7 @@ package com.imcys.bilibilias.core.datasource.api
 
 import com.imcys.bilibilias.core.datasource.ktor.DisableLogging
 import com.imcys.bilibilias.core.datasource.local.AsPreferencesDataSource
-import com.imcys.bilibilias.core.datasource.local.CookieJarDataSource
+import com.imcys.bilibilias.core.datasource.local.CredentialsDataSource
 import com.imcys.bilibilias.core.datasource.model.BiliVideoData
 import com.imcys.bilibilias.core.datasource.model.BilibiliNavigationData
 import com.imcys.bilibilias.core.datasource.model.CheeseInfoData
@@ -32,7 +32,7 @@ import kotlinx.coroutines.flow.first
 
 class BilibiliApi(
     private val client: HttpClient,
-    private val cookieJarDataSource: CookieJarDataSource,
+    private val cookieJarDataSource: CredentialsDataSource,
     private val preferencesDataSource: AsPreferencesDataSource,
 ) {
     private val logger: Logger = logger<BilibiliApi>()
@@ -178,9 +178,10 @@ class BilibiliApi(
         }
         parseClientCookiesHeader(cookieText)
             .forEach { (name, encodedValue) ->
-                cookieJarDataSource.add(
-                    name,
-                    decodeCookieValue(encodedValue, CookieEncoding.URI_ENCODING),
+                cookieJarDataSource.updateCookies(
+                    mapOf(
+                        name to decodeCookieValue(encodedValue, CookieEncoding.URI_ENCODING),
+                    )
                 )
             }
     }

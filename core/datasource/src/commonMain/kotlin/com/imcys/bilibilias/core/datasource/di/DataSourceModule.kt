@@ -8,7 +8,7 @@ import com.imcys.bilibilias.core.datasource.ktor.CookiesStorageImpl
 import com.imcys.bilibilias.core.datasource.ktor.HttpClientJson
 import com.imcys.bilibilias.core.datasource.ktor.HttpLogging
 import com.imcys.bilibilias.core.datasource.local.AsPreferencesDataSource
-import com.imcys.bilibilias.core.datasource.local.CookieJarDataSource
+import com.imcys.bilibilias.core.datasource.local.CredentialsDataSource
 import com.imcys.bilibilias.core.datasource.local.DataStoreMediaCacheDataSource
 import com.imcys.bilibilias.core.datasource.local.MediaCacheDataSource
 import com.imcys.bilibilias.core.datasource.utils.WbiInitializer
@@ -17,7 +17,9 @@ import com.imcys.bilibilias.core.datastore.asDataStoreSerializer
 import com.imcys.bilibilias.core.datastore.new
 import com.imcys.bilibilias.core.datastore.resolveDataStoreFile
 import com.imcys.bilibilias.core.di.applicationScope
+import com.imcys.bilibilias.core.io.resolve
 import com.imcys.bilibilias.core.ktor.client.createHttpClient
+import com.imcys.bilibilias.core.model.Credentials
 import com.imcys.bilibilias.core.model.MediaCacheSave
 import com.imcys.bilibilias.core.model.UserPreferences
 import com.imcys.bilibilias.core.platform.AppDirs
@@ -34,8 +36,6 @@ import io.ktor.serialization.kotlinx.protobuf.protobuf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.builtins.ListSerializer
-import kotlinx.serialization.builtins.MapSerializer
-import kotlinx.serialization.builtins.serializer
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -115,12 +115,11 @@ val DataSourceModule = module {
         )
     }
     single {
-        CookieJarDataSource(
+        CredentialsDataSource(
             DataStoreFactory.new(
-                serializer = MapSerializer(String.serializer(), String.serializer())
-                    .asDataStoreSerializer { emptyMap() },
-                corruptionHandler = ReplaceFileCorruptionHandler { emptyMap() },
-                produceFile = { resolveDataStoreFile(get<AppDirs>().dataStoreDir, "cookie_jar") },
+                serializer = Credentials.serializer().asDataStoreSerializer { Credentials() },
+                corruptionHandler = ReplaceFileCorruptionHandler { Credentials() },
+                produceFile = { get<AppDirs>().dataStoreDir.resolve("credentials") },
                 scope = CoroutineScope(applicationScope.coroutineContext + Dispatchers.IO),
             ),
         )

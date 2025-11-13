@@ -1,23 +1,21 @@
 package com.imcys.bilibilias.core.datasource.ktor
 
-import com.imcys.bilibilias.core.datasource.local.CookieJarDataSource
+import com.imcys.bilibilias.core.datasource.local.CredentialsDataSource
 import io.ktor.client.plugins.cookies.CookiesStorage
 import io.ktor.http.Cookie
 import io.ktor.http.Url
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 
 internal class CookiesStorageImpl(
-    private val cookieJar: CookieJarDataSource,
+    private val credentials: CredentialsDataSource,
 ) : CookiesStorage {
     override suspend fun get(requestUrl: Url): List<Cookie> {
-        return cookieJar.cookies.map {
-            it.map { Cookie(it.key, it.value) }
-        }.first()
+        return credentials.getCredentials().cookie.map {
+            Cookie(it.key, it.value)
+        }
     }
 
     override suspend fun addCookie(requestUrl: Url, cookie: Cookie) {
-        cookieJar.add(cookie.name, cookie.value)
+        credentials.updateCookies(mapOf(cookie.name to cookie.value))
     }
 
     override fun close() = Unit

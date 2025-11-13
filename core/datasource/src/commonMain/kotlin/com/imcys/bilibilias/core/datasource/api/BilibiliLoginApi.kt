@@ -1,6 +1,6 @@
 package com.imcys.bilibilias.core.datasource.api
 
-import com.imcys.bilibilias.core.datasource.local.CookieJarDataSource
+import com.imcys.bilibilias.core.datasource.local.CredentialsDataSource
 import com.imcys.bilibilias.core.datasource.model.PollResponse
 import com.imcys.bilibilias.core.datasource.model.QrCode
 import com.imcys.bilibilias.core.logging.logger
@@ -17,7 +17,7 @@ import io.ktor.http.parametersOf
 
 class BilibiliLoginApi(
     private val client: HttpClient,
-    private val cookieJar: CookieJarDataSource,
+    private val cookieJar: CredentialsDataSource,
 ) {
     private val logger = logger<BilibiliLoginApi>()
     suspend fun getQrcode(): QrCode {
@@ -31,7 +31,7 @@ class BilibiliLoginApi(
     }
 
     suspend fun exit() {
-        val csrf = cookieJar.getCookie("bili_jct") ?: return
+        val csrf = cookieJar.getCredentials().cookie["bili_jct"] ?: return
         client.post("/login/exit/v2") {
             contentType(ContentType.Application.FormUrlEncoded)
             setBody(
