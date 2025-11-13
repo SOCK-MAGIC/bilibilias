@@ -19,6 +19,7 @@ import com.imcys.bilibilias.core.logging.logger
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
+import io.ktor.client.request.head
 import io.ktor.client.request.parameter
 import io.ktor.client.statement.request
 import io.ktor.http.CookieEncoding
@@ -224,5 +225,13 @@ class BilibiliApi(
             parameter("season_id", id)
 //            parameter("ep_id", id)
         }.body()
+    }
+
+    suspend fun resolve(url: String): String {
+        val response = client.head(url)
+        val longUrl = response.headers[HttpHeaders.Location]
+            ?: throw IllegalStateException("No location header in redirect response for $url")
+
+        return longUrl
     }
 }
