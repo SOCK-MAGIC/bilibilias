@@ -41,10 +41,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -76,27 +76,30 @@ class SearchViewModel(
         savedStateHandle.getStateFlow(SEARCH_QUERY, getDefaultSearchQuery())
 
     private val restarter = FlowRestarter()
-    val searchResultUiState: StateFlow<SearchResultUiState> = searchQuery.map { query ->
-        if (isBilibiliShortLink(query)) {
-            redirectResolverUseCase.resolveUrl(query)
-        } else {
-            query
+    val searchResultUiState: StateFlow<SearchResultUiState> =
+        searchQuery.flatMapLatest { query ->
+            if (query.isBlank()) {
+                return@flatMapLatest flowOf(SearchResultUiState.EmptyQuery)
+            }
+
+            val finaQuery = if (isBilibiliShortLink(query)) {
+                redirectResolverUseCase.resolveUrl(query)
+            } else {
+                query
+            }
+            flowOf(finaQuery)
+                .flatMapLatest { finalQuery ->
+                    getEpisodeInfoUseCase(finalQuery)
+                }
+                .asResult()
+                .map { result -> result.toSearchResultUiState() }
         }
-    }
-        .flatMapLatest { finalQuery ->
-            getEpisodeInfoUseCase(finalQuery)
-        }
-        .asResult()
-        .map { result -> result.toSearchResultUiState() }
-        .catch { exception ->
-            emit(SearchResultUiState.LoadFailed("请求失败: ${exception.message}"))
-        }
-        .restartable(restarter)
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = SearchResultUiState.EmptyQuery,
-        )
+            .restartable(restarter)
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5_000),
+                initialValue = SearchResultUiState.EmptyQuery,
+            )
 
     private val currentSelectEpisode = MutableStateFlow<SelectedEpisodeContext?>(null)
     val mediaSourceSelectedUiState: StateFlow<MediaSourceSelectedUiState> =
