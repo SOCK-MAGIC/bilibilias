@@ -7,8 +7,9 @@ kotlin {
         api(libs.kotlin.logging)
     }
     sourceSets {
-        androidMain.dependencies {
-//            api(libs.kotlin.logging.android)
+        jvmMain.dependencies {
+            implementation("org.apache.logging.log4j:log4j-slf4j2-impl:2.25.2")
+            implementation("org.apache.logging.log4j:log4j-core:2.25.2")
         }
     }
     explicitApi()
