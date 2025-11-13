@@ -35,6 +35,7 @@ import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -86,24 +87,23 @@ fun CaCheContent(
     Scaffold { innerPadding ->
         LazyColumn(modifier = Modifier.padding(innerPadding)) {
             items(cacheEpisodeState, key = { it.episodeMetadata.cid }) { item ->
-                val swipeToDismissBoxState = rememberSwipeToDismissBoxState(
-                    confirmValueChange = {
-                        when (it) {
+                val swipeToDismissBoxState = rememberSwipeToDismissBoxState()
+                LaunchedEffect(swipeToDismissBoxState.currentValue) {
+                    if (swipeToDismissBoxState.currentValue != SwipeToDismissBoxValue.Settled) {
+                        when (swipeToDismissBoxState.currentValue) {
                             SwipeToDismissBoxValue.StartToEnd -> {
                                 onCombine(item)
-                                false
+                                swipeToDismissBoxState.reset()
                             }
 
-                            SwipeToDismissBoxValue.EndToStart -> {
-                                onDelete(item)
-                                true
-                            }
+                            SwipeToDismissBoxValue.EndToStart -> onDelete(item)
 
-                            SwipeToDismissBoxValue.Settled -> true
+                            SwipeToDismissBoxValue.Settled -> { /* Do nothing */
+                            }
                         }
-                    },
-                    positionalThreshold = { totalDistance -> totalDistance * 0.3f }
-                )
+                    }
+                }
+
                 SwipeToDismissBox(
                     state = swipeToDismissBoxState,
                     backgroundContent = {
