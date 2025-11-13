@@ -4,8 +4,6 @@ import co.touchlab.kermit.LoggerConfig
 import co.touchlab.kermit.NoTagFormatter
 import co.touchlab.kermit.loggerConfigInit
 import co.touchlab.kermit.platformLogWriter
-import com.imcys.bilibilias.BuildConfig
-import kotlinx.io.files.SystemFileSystem
 import co.touchlab.kermit.Logger as KermitLogger
 
 fun logger(tag: String): Logger {
@@ -73,14 +71,12 @@ class LoggerImpl(private val log: KermitLogger) : Logger {
 }
 
 fun loggerConfigurationInit(): LoggerConfig {
-    SystemFileSystem.createDirectories(BuildConfig.LOG_DIR)
-
     return loggerConfigInit(
         platformLogWriter(NoTagFormatter),
         FileLogWriter(
             FileLogWriterConfig(
                 "app",
-                BuildConfig.LOG_DIR,
+                TODO(),
                 maxLogFiles = 1
             ),
         )

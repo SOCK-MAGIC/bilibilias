@@ -11,18 +11,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.FileProvider
 import com.imcys.bilibilias.BuildConfig
+import com.imcys.bilibilias.core.io.SystemPath
 import com.imcys.bilibilias.core.io.resolve
 import com.imcys.bilibilias.core.io.toFile
-import kotlinx.io.files.Path
 
 @Composable
-internal actual fun ShareLogFileSection(onTip: (String) -> Unit) {
+internal actual fun ShareLogFileSection(logDir: SystemPath, onTip: (String) -> Unit) {
     val context = LocalContext.current
 
     val shareAction = remember {
         {
             try {
-                val logFile = getCurrentLogFile().toFile()
+                val logFile = getCurrentLogFile(logDir).toFile()
                 if (logFile.exists()) {
                     val uri = FileProvider.getUriForFile(
                         context,
@@ -58,6 +58,6 @@ internal actual fun ShareLogFileSection(onTip: (String) -> Unit) {
     }
 }
 
-private fun getCurrentLogFile(): Path {
-    return BuildConfig.LOG_DIR.resolve("app.log")
+private fun getCurrentLogFile(logDir: SystemPath): SystemPath {
+    return logDir.resolve("app.log")
 }

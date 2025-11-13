@@ -18,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.alorma.compose.settings.ui.SettingsSwitch
 import com.imcys.bilibilias.core.designsystem.component.BackButton
+import com.imcys.bilibilias.core.io.SystemPath
 import com.imcys.bilibilias.core.model.UserPreferences
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -27,12 +28,14 @@ fun SettingsScreen(
     viewModel: SettingsViewModel = koinViewModel(),
 ) {
     val state by viewModel.preferences.collectAsState()
+
     SettingsContent(
         state = state,
         onBack = onBack,
         updateTryLook = viewModel::setTryLook,
         updateSubtitles = viewModel::setSubtitles,
-        errorTip = viewModel::errorTip
+        errorTip = viewModel::errorTip,
+        logDir = viewModel.appDirs.logsDir
     )
 }
 
@@ -44,6 +47,7 @@ fun SettingsContent(
     updateTryLook: (Boolean) -> Unit = {},
     updateSubtitles: (Boolean) -> Unit,
     errorTip: (String) -> Unit,
+    logDir: SystemPath,
 ) {
     Scaffold(
         topBar = {
@@ -82,10 +86,10 @@ fun SettingsContent(
             ) {
                 updateTryLook(it)
             }
-            ShareLogFileSection(errorTip)
+            ShareLogFileSection(logDir, errorTip)
         }
     }
 }
 
 @Composable
-internal expect fun ShareLogFileSection(onTip: (String) -> Unit)
+internal expect fun ShareLogFileSection(logDir: SystemPath, onTip: (String) -> Unit)

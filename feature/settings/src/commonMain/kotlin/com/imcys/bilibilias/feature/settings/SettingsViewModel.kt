@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.imcys.bilibilias.core.data.util.ErrorMonitor
 import com.imcys.bilibilias.core.datasource.local.AsPreferencesDataSource
 import com.imcys.bilibilias.core.model.UserPreferences
+import com.imcys.bilibilias.core.platform.AppDirs
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -12,6 +13,7 @@ import kotlinx.coroutines.launch
 class SettingsViewModel(
     private val asPreferencesDataSource: AsPreferencesDataSource,
     private val errorMonitor: ErrorMonitor,
+    val appDirs: AppDirs
 ) : ViewModel() {
     val preferences = asPreferencesDataSource.userData
         .stateIn(
