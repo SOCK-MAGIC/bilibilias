@@ -4,11 +4,11 @@ plugins {
 
 kotlin {
     dependencies {
-        implementation(libs.kotlin.logging)
+        api(libs.kotlin.logging)
     }
     sourceSets {
         androidMain.dependencies {
-            implementation(libs.kotlin.logging.android)
+//            api(libs.kotlin.logging.android)
         }
     }
     explicitApi()

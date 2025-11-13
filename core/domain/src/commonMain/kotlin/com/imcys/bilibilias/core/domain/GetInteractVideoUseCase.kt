@@ -4,6 +4,7 @@ import androidx.collection.mutableLongObjectMapOf
 import com.imcys.bilibilias.core.datasource.api.BilibiliApi
 import com.imcys.bilibilias.core.datasource.model.InteractiveChoiceDetails
 import com.imcys.bilibilias.core.logging.logger
+import io.github.oshai.kotlinlogging.KotlinLogging
 
 /**
  * 获取Bilibili互动视频所有节点信息的无状态UseCase。
@@ -12,7 +13,7 @@ import com.imcys.bilibilias.core.logging.logger
 class GetInteractVideoUseCase(
     private val api: BilibiliApi
 ) {
-    private val logger = logger<GetInteractVideoUseCase>()
+    private val logger = KotlinLogging.logger{}
 
     /**
      * @param aid 视频的AID

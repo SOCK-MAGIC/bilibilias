@@ -12,6 +12,7 @@ import com.imcys.bilibilias.core.http.downloader.model.DownloadState
 import com.imcys.bilibilias.core.ktor.client.createHttpClient
 import com.imcys.bilibilias.core.logging.logger
 import com.imcys.bilibilias.core.platform.AppDirs
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
@@ -45,7 +46,7 @@ val HttpDownloaderModule = module {
                 Logging {
                     level = LogLevel.HEADERS
                     logger = object : Logger {
-                        private val logger = logger<HttpDownloader>()
+                        private val logger = KotlinLogging.logger("HttpDownloader")
 
                         override fun log(message: String) {
                             logger.info { message }

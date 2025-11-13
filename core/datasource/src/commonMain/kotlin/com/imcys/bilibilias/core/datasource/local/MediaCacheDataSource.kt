@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import com.imcys.bilibilias.core.logging.logger
 import com.imcys.bilibilias.core.model.EpisodeMetadata
 import com.imcys.bilibilias.core.model.MediaCacheSave
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 
@@ -52,7 +53,5 @@ internal class DataStoreMediaCacheDataSource(
             }
         }
     }
-    companion object {
-        private val logger = logger<DataStoreMediaCacheDataSource>()
-    }
 }
+private val logger = KotlinLogging.logger{}

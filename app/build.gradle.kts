@@ -45,6 +45,7 @@ kotlin {
             implementation(projects.core.ktorClient)
             implementation(projects.core.ffmpeg)
             implementation(projects.core.navigation)
+            implementation(projects.core.logging)
 
             implementation(projects.feature.cache)
             implementation(projects.feature.login)

@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.imcys.bilibilias.core.logging.logger
 import com.imcys.bilibilias.danmaku.api.DanmakuLocation
 import com.imcys.bilibilias.danmaku.ui.config.DanmakuConfig
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
@@ -766,7 +767,7 @@ class DanmakuHostState(
     }
 
     private companion object {
-        val logger = logger<DanmakuHostState>()
+        val logger = KotlinLogging.logger("DanmakuHostState")
     }
 }
 

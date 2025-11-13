@@ -5,6 +5,7 @@ import com.imcys.bilibilias.core.http.downloader.model.DownloadId
 import com.imcys.bilibilias.core.http.downloader.model.DownloadState
 import com.imcys.bilibilias.core.http.downloader.model.DownloadStatus
 import com.imcys.bilibilias.core.logging.logger
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineStart
@@ -87,8 +88,5 @@ class KtorPersistentHttpDownloader(
             logger.info { "Restored ${currentMap.size} downloads from DataStore" }
         }
     }
-
-    private companion object {
-        private val logger = logger<KtorPersistentHttpDownloader>()
-    }
 }
+private val logger = KotlinLogging.logger{}

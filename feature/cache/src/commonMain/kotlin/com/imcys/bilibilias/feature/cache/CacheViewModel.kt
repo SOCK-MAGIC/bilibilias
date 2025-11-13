@@ -14,6 +14,7 @@ import com.imcys.bilibilias.core.ffmpeg.SubtitleTrack
 import com.imcys.bilibilias.core.logging.logger
 import com.imcys.bilibilias.core.model.MetadataKey
 import com.imcys.bilibilias.core.storage.MediaStoreAccess
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -21,7 +22,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.time.Clock
-
+private val logger = KotlinLogging.logger {}
 class CacheViewModel(
     private val multiplexer: MediaProcessor,
     private val mediaStoreAccess: MediaStoreAccess,
@@ -40,7 +41,6 @@ class CacheViewModel(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()
         )
-    private val logger = logger<CacheViewModel>()
     fun onCombine(state: CacheEpisodeState) {
         if (lock.value) {
             logger.info { "Muxing task for ${state.episodeMetadata} rejected: Another muxing task is in progress." }

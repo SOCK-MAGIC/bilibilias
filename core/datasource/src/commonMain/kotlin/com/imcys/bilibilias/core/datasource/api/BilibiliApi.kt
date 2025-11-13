@@ -14,8 +14,8 @@ import com.imcys.bilibilias.core.datasource.model.Season
 import com.imcys.bilibilias.core.datasource.model.UgcPlayUrl
 import com.imcys.bilibilias.core.datasource.model.UserProfile
 import com.imcys.bilibilias.core.datasource.utils.WbiSign
-import com.imcys.bilibilias.core.logging.Logger
 import com.imcys.bilibilias.core.logging.logger
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -30,13 +30,13 @@ import io.ktor.http.parseQueryString
 import io.ktor.http.renderSetCookieHeader
 import kotlinx.coroutines.flow.first
 
+private val logger = KotlinLogging.logger {}
+
 class BilibiliApi(
     private val client: HttpClient,
     private val cookieJarDataSource: CredentialsDataSource,
     private val preferencesDataSource: AsPreferencesDataSource,
 ) {
-    private val logger: Logger = logger<BilibiliApi>()
-
     val FNVAL_FLAGS = listOf(
 //        1,    // MP4 格式，仅 H.264 编码（与 FLV、DASH 格式互斥）
         16,     // DASH 格式	，与 MP4、FLV 格式互斥

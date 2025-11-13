@@ -1,6 +1,7 @@
 package com.imcys.bilibilias.core.di
 
 import com.imcys.bilibilias.core.logging.logger
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -13,7 +14,7 @@ val CommonModule = module {
     single<CoroutineScope> {
         CoroutineScope(
             CoroutineExceptionHandler { coroutineContext, throwable ->
-                logger("ApplicationScope").warn(throwable) {
+                KotlinLogging.logger("ApplicationScope").warn(throwable) {
                     "Uncaught exception in coroutine $coroutineContext"
                 }
             } + SupervisorJob() + Dispatchers.IO,

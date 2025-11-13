@@ -192,8 +192,4 @@ class EpisodePlayerViewModel(
         }
         return result
     }
-
-    companion object {
-        private val logger = logger<EpisodePlayerViewModel>()
-    }
 }

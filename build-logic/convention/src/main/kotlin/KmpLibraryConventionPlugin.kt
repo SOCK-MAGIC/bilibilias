@@ -29,6 +29,8 @@ class KmpLibraryConventionPlugin : Plugin<Project> {
                 "androidMainImplementation"(libs.findLibrary("androidx.core").get())
                 "androidMainImplementation"(libs.findLibrary("koin.android").get())
 
+                "commonMainImplementation"(libs.findLibrary("kotlin.logging").get())
+
                 "commonTestImplementation"(libs.findLibrary("kotlin.test").get())
                 "commonTestImplementation"(libs.findLibrary("kotlinx.coroutines.test").get())
             }

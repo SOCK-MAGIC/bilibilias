@@ -5,6 +5,7 @@ import com.antonkarpenko.ffmpegkit.FFmpegKit
 import com.antonkarpenko.ffmpegkit.FFmpegKitConfig
 import com.eygraber.uri.toAndroidUri
 import com.imcys.bilibilias.core.logging.logger
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,8 +25,6 @@ internal class FfmpegMediaProcessor(
 
     private val _progress = MutableStateFlow(0)
     override val progress = _progress.asStateFlow()
-
-    private val logger = logger<MediaProcessor>()
 
     // 原子布尔值确保并发安全
     @OptIn(ExperimentalAtomicApi::class)
@@ -165,3 +164,4 @@ internal class FfmpegMediaProcessor(
         return metadata.toString().trim()
     }
 }
+private val logger = KotlinLogging.logger{}

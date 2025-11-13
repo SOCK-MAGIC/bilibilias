@@ -21,8 +21,6 @@ kotlin {
 
             api(libs.filekit.core)
 
-            implementation(libs.kermit)
-
             api(libs.androidx.collection)
         }
     }

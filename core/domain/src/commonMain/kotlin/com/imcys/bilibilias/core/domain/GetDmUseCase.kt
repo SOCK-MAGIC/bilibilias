@@ -18,8 +18,6 @@ class GetDmUseCase(
     private val api: BilibiliApi,
     private val appDirs: AppDirs,
 ) {
-    private val logger = logger<GetDmUseCase>()
-
     suspend operator fun invoke(request: DanmuRequest): String = withContext(Dispatchers.IO) {
         val dmSeg = api.dmSegMobile(request.aid, request.cid, request.duration).flatMap { it.elems }
 

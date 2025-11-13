@@ -11,7 +11,6 @@ import com.imcys.bilibilias.core.datasource.model.OauthCode.Companion.Success
 import com.imcys.bilibilias.core.datasource.model.OauthCode.Companion.WaitingConfirmation
 import com.imcys.bilibilias.core.datasource.model.OauthCode.Companion.WaitingScanned
 import com.imcys.bilibilias.core.datasource.model.PollResponse
-import com.imcys.bilibilias.core.logging.logger
 import com.imcys.bilibilias.core.model.SelfInfo
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.saveImageToGallery
@@ -29,7 +28,6 @@ class QrCodeLoginStateMachine(
     private val preferences: AsPreferencesDataSource,
     private val applicationScope: CoroutineScope,
 ) : FlowReduxStateMachineFactory<QrCodeLoginState, QrCodeLoginAction>() {
-    private val logger = logger<QrCodeLoginStateMachine>()
     private var shouldContinuePolling = true
 
     init {

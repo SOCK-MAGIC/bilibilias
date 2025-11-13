@@ -14,6 +14,7 @@ import androidx.media3.transformer.ProgressHolder
 import androidx.media3.transformer.Transformer
 import com.imcys.bilibilias.core.flow.interval
 import com.imcys.bilibilias.core.logging.logger
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -26,7 +27,7 @@ import java.io.File
 internal class Media3MediaProcessor(
     private val context: Context,
 ) : MediaProcessor {
-    private val logger = logger<Media3MediaProcessor>()
+    private val logger = KotlinLogging.logger{}
 
     override val progress = MutableStateFlow(0)
     override val isRunning = MutableStateFlow(false)

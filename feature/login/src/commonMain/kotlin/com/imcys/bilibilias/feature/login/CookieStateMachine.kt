@@ -6,16 +6,16 @@ import com.imcys.bilibilias.core.datasource.api.BilibiliApi
 import com.imcys.bilibilias.core.datasource.local.AsPreferencesDataSource
 import com.imcys.bilibilias.core.logging.logger
 import com.imcys.bilibilias.core.model.SelfInfo
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlin.uuid.Uuid
-
+private val logger = KotlinLogging.logger {}
 class CookieStateMachine(
     private val api: BilibiliApi,
     private val preferences: AsPreferencesDataSource,
     private val applicationScope: CoroutineScope,
 ) : FlowReduxStateMachineFactory<CookieLoginState, CookieAction>() {
-    private val logger = logger<CookieStateMachine>()
 
     init {
         initializeWith { CookieLoginState("") }

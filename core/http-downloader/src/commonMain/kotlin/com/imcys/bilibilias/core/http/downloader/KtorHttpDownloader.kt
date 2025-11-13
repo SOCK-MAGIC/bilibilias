@@ -16,6 +16,7 @@ import com.imcys.bilibilias.core.io.absolutePath
 import com.imcys.bilibilias.core.io.inSystem
 import com.imcys.bilibilias.core.io.resolve
 import com.imcys.bilibilias.core.logging.logger
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.HttpClient
 import io.ktor.client.request.prepareGet
 import io.ktor.client.statement.HttpStatement
@@ -837,8 +838,5 @@ open class KtorHttpDownloader(
             }
         }
     }
-
-    private companion object {
-        val logger = logger<KtorHttpDownloader>()
-    }
 }
+private val logger = KotlinLogging.logger{}

@@ -3,7 +3,6 @@ package com.imcys.bilibilias.core.datasource.api
 import com.imcys.bilibilias.core.datasource.local.CredentialsDataSource
 import com.imcys.bilibilias.core.datasource.model.PollResponse
 import com.imcys.bilibilias.core.datasource.model.QrCode
-import com.imcys.bilibilias.core.logging.logger
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.forms.FormDataContent
@@ -19,7 +18,6 @@ class BilibiliLoginApi(
     private val client: HttpClient,
     private val cookieJar: CredentialsDataSource,
 ) {
-    private val logger = logger<BilibiliLoginApi>()
     suspend fun getQrcode(): QrCode {
         return client.get("/x/passport-login/web/qrcode/generate").body<QrCode>()
     }

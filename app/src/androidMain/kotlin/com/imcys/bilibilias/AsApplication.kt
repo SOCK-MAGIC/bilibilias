@@ -11,6 +11,7 @@ import com.imcys.bilibilias.core.logging.logger
 import com.imcys.bilibilias.core.platform.AppDirs
 import com.imcys.bilibilias.core.platform.createDirectories
 import com.imcys.bilibilias.work.Sync
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.workmanager.koin.workManagerFactory
 import org.koin.core.component.KoinComponent
@@ -23,7 +24,7 @@ class AsApplication : Application(), SingletonImageLoader.Factory, KoinComponent
 
         val defaultUEH = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler { t, e ->
-            logger<AsApplication>().error(e) { "!!! FATAL !!!" }
+            KotlinLogging.logger("AsApplication").error(e) { "!!! FATAL !!!" }
             defaultUEH?.uncaughtException(t, e)
         }
 
@@ -33,7 +34,6 @@ class AsApplication : Application(), SingletonImageLoader.Factory, KoinComponent
             workManagerFactory()
         }
         Sync.initialize(this)
-        BuildConfig.initDirectory()
         appDirs.createDirectories()
     }
 

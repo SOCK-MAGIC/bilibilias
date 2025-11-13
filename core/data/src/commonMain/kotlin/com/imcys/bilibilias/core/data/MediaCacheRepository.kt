@@ -2,6 +2,7 @@ package com.imcys.bilibilias.core.data
 
 import com.imcys.bilibilias.core.logging.logger
 import com.imcys.bilibilias.core.model.MediaCacheMetadata
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.io.IOException
 import kotlinx.io.files.FileSystem
 import kotlinx.io.files.Path
@@ -9,7 +10,7 @@ import kotlinx.io.files.Path
 class MediaCacheRepository(
     private val fileSystem: FileSystem,
 ) {
-    private val logger = logger<MediaCacheRepository>()
+    private val logger = KotlinLogging.logger("MediaCacheRepository")
 
     /**
      * 根据给定的元数据，删除所有关联的缓存文件。
