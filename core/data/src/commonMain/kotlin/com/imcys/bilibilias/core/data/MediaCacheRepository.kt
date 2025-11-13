@@ -1,6 +1,6 @@
 package com.imcys.bilibilias.core.data
 
-import com.imcys.bilibilias.core.logging.logger
+
 import com.imcys.bilibilias.core.model.MediaCacheMetadata
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.io.IOException

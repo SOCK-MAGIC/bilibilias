@@ -9,7 +9,7 @@ import com.imcys.bilibilias.core.datasource.api.BilibiliApi
 import com.imcys.bilibilias.core.datasource.local.MediaCacheDataSource
 import com.imcys.bilibilias.core.flow.FlowRestarter
 import com.imcys.bilibilias.core.flow.restartable
-import com.imcys.bilibilias.core.logging.logger
+
 import com.imcys.bilibilias.core.model.EpisodeMetadata
 import com.imcys.bilibilias.core.result.Result
 import com.imcys.bilibilias.core.result.asResult

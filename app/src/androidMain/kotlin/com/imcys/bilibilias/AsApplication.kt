@@ -7,7 +7,7 @@ import coil3.SingletonImageLoader
 import coil3.network.ktor3.KtorNetworkFetcherFactory
 import coil3.util.DebugLogger
 import com.imcys.bilibilias.core.ktor.client.createHttpClient
-import com.imcys.bilibilias.core.logging.logger
+
 import com.imcys.bilibilias.core.platform.AppDirs
 import com.imcys.bilibilias.core.platform.createDirectories
 import com.imcys.bilibilias.work.Sync

@@ -10,7 +10,7 @@ import com.imcys.bilibilias.core.http.downloader.HttpDownloader
 import com.imcys.bilibilias.core.http.downloader.KtorPersistentHttpDownloader
 import com.imcys.bilibilias.core.http.downloader.model.DownloadState
 import com.imcys.bilibilias.core.ktor.client.createHttpClient
-import com.imcys.bilibilias.core.logging.logger
+
 import com.imcys.bilibilias.core.platform.AppDirs
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.plugins.defaultRequest

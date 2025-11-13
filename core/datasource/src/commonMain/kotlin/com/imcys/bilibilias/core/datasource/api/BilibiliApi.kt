@@ -14,7 +14,7 @@ import com.imcys.bilibilias.core.datasource.model.Season
 import com.imcys.bilibilias.core.datasource.model.UgcPlayUrl
 import com.imcys.bilibilias.core.datasource.model.UserProfile
 import com.imcys.bilibilias.core.datasource.utils.WbiSign
-import com.imcys.bilibilias.core.logging.logger
+
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body

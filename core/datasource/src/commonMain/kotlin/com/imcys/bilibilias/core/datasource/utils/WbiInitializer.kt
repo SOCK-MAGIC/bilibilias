@@ -1,7 +1,7 @@
 package com.imcys.bilibilias.core.datasource.utils
 
 import com.imcys.bilibilias.core.datasource.api.BilibiliApi
-import com.imcys.bilibilias.core.logging.logger
+
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds

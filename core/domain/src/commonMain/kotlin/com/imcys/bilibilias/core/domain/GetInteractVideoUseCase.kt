@@ -3,7 +3,7 @@ package com.imcys.bilibilias.core.domain
 import androidx.collection.mutableLongObjectMapOf
 import com.imcys.bilibilias.core.datasource.api.BilibiliApi
 import com.imcys.bilibilias.core.datasource.model.InteractiveChoiceDetails
-import com.imcys.bilibilias.core.logging.logger
+
 import io.github.oshai.kotlinlogging.KotlinLogging
 
 /**

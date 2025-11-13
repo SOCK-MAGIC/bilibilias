@@ -2,7 +2,7 @@ package com.imcys.bilibilias.core.domain
 
 import com.imcys.bilibilias.core.domain.model.PgcId
 import com.imcys.bilibilias.core.domain.model.UgcId
-import com.imcys.bilibilias.core.logging.logger
+
 import io.github.oshai.kotlinlogging.KotlinLogging
 
 class ParseBilibiliIdUseCase {
