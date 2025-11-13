@@ -45,7 +45,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -77,34 +76,28 @@ class SearchViewModel(
         savedStateHandle.getStateFlow(SEARCH_QUERY, getDefaultSearchQuery())
 
     private val restarter = FlowRestarter()
-    val searchResultUiState: StateFlow<SearchResultUiState> =
-        searchQuery.flatMapLatest { query ->
-            if (query.isBlank()) {
-                return@flatMapLatest flowOf(SearchResultUiState.EmptyQuery)
-            }
-
-            flowOf(
-                if (isBilibiliShortLink(query)) {
-                    redirectResolverUseCase.resolveUrl(query)
-                } else {
-                    query
-                }
-            )
-                .flatMapLatest { finalQuery ->
-                    getEpisodeInfoUseCase(finalQuery)
-                }
-                .asResult()
-                .map { result -> result.toSearchResultUiState() }
-                .catch { exception ->
-                    emit(SearchResultUiState.LoadFailed("请求失败: ${exception.message}"))
-                }
+    val searchResultUiState: StateFlow<SearchResultUiState> = searchQuery.map { query ->
+        if (isBilibiliShortLink(query)) {
+            redirectResolverUseCase.resolveUrl(query)
+        } else {
+            query
         }
-            .restartable(restarter)
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5_000),
-                initialValue = SearchResultUiState.EmptyQuery,
-            )
+    }
+        .flatMapLatest { finalQuery ->
+            getEpisodeInfoUseCase(finalQuery)
+        }
+        .asResult()
+        .map { result -> result.toSearchResultUiState() }
+        .catch { exception ->
+            emit(SearchResultUiState.LoadFailed("请求失败: ${exception.message}"))
+        }
+        .restartable(restarter)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = SearchResultUiState.EmptyQuery,
+        )
+
     private val currentSelectEpisode = MutableStateFlow<SelectedEpisodeContext?>(null)
     val mediaSourceSelectedUiState: StateFlow<MediaSourceSelectedUiState> =
         currentSelectEpisode.filterNotNull()
