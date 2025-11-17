@@ -8,8 +8,8 @@ kotlin {
     }
     sourceSets {
         jvmMain.dependencies {
-            implementation("org.apache.logging.log4j:log4j-slf4j2-impl:2.25.2")
-            implementation("org.apache.logging.log4j:log4j-core:2.25.2")
+            implementation(libs.log4j.slf4j2.impl)
+            implementation(libs.log4j.core)
         }
     }
     explicitApi()

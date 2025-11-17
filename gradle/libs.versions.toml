@@ -40,6 +40,7 @@ kotlinx-io = "0.8.0"
 kotlinx-serialization = "1.9.0"
 ktor = "3.3.1"
 androidx-material3-adaptive = "1.2.0"
+log4j2 = "2.25.2"
 qr = "1.0.1"
 reorderable = "3.0.0"
 settings-ui = "2.13.0"
@@ -118,6 +119,10 @@ kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+
+log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j2" }
+log4j-slf4j2-impl = { module = "org.apache.logging.log4j:log4j-slf4j2-impl", version.ref = "log4j2" }
+
 qr-kit = { module = "io.github.alexzhirkevich:qrose", version.ref = "qr" }
 reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
 
